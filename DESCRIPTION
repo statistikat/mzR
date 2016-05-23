@@ -1,0 +1,20 @@
+Package: mzR
+Version: 0.9.8
+Date: 2016-03-04
+Title: mzR - To compute estimates and their errors for Austrian microcensus data
+Author: Alexander Kowarik <alexander.kowarik@statistik.gv.at>, Angelika Meraner
+    <angelika.meraner@statistik.gv.at>
+Maintainer: Angelika Meraner <angelika.meraner@statistik.gv.at>
+Depends:
+    R (>= 2.14.0),stats,utils,grDevices,data.table
+Imports:
+    methods,survey,plyr,Hmisc,readr,XLConnect
+Suggests: knitr
+Description: Data sets from Austrian Microcensus can be loaded and estimates
+    with their respective errors can be computed.
+License: GPL (>= 2)
+LazyData: TRUE
+ByteCompile: TRUE
+Encoding: UTF-8
+VignetteBuilder: knitr
+RoxygenNote: 5.0.1
