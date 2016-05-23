@@ -1,7 +1,8 @@
 # mzR
 R package to compute estimates and their errors for Austrian Microcensus data.
 
-install.packages("https://github.com/statistikat/mzR/archive/master.zip", repos = NULL,type="binary")
+`install.packages("http://github.com/statistikat/mzR/releases/download/Windows/mzR_1.0.0.zip",repos=NULL,type="binary")`
+
 
 The zip file of the package can be downloaded from https://github.com/statistikat/mzR/archive/master.zip and then installed manually.
 
