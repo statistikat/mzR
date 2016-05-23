@@ -10,5 +10,5 @@ You can find examples for getting started with mzR with `help(package=mzR)` unde
 
 Please report all issues, bug or feature request to the github issue tracking system https://github.com/statistikat/mzR/issues.
 
-The development version of the package can be installed with `devtools::install_github("statistikat/mzR",ref="1.0.0)` and checked out from https://github.com/statistikat/mzR and then installed manually.
+The development version of the package can be installed with `devtools::install_github("statistikat/mzR")` and checked out from https://github.com/statistikat/mzR and then installed manually.
 
