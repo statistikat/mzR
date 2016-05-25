@@ -42,8 +42,8 @@
 #' in \code{curr_inFile_bw} bzw. \code{prev_inFile_bw}. Default ist NULL, dabei
 #' ist die Variablenbezeichnung der Bootstrapgewichte \code{"gew1_1"}, \code{"gew1_2"}, \code{"gew1_3"}, \ldots wie beim Mikrozensus ueblich.
 #' @param weightName Character: Name des Gewichtsvektors der eingelesenen Daten, default ist \code{weightName="gew1"}.
-#' @param weightDecimals Numerischer Wert oder NULL. Anzahl der Nachkommastellen der Stichprobengewichte. 
-#' Falls NULL, werden die Gewichte so uebernommen wie sie in den eingelesenen Daten enthalten sind.
+#' @param weightDecimals Numerischer Wert oder NULL. Anzahl der Nachkommastellen der Stichprobengewichte, gerundet nach SPSS RND Logik (0.5 bwz. -0.5 wird dabei immer "weg von 0" gerundet). 
+#' Falls NULL, werden die Gewichte so uebernommen wie sie in den eingelesenen Daten enthalten sind, diese Variante ist schneller.
 #' @return Output ist eine Liste mit einem oder zwei Elementen, je nachdem ob
 #' \code{prev_inFile=NULL} oder nicht. Die Listenelemente sind Objekte der Klasse data.table.
 #' Wurden mehrere Dateipfade angegeben, so enthaelt der Output angepasste Gewichte, 
@@ -360,8 +360,8 @@ IndivImportDataQ <- function(inFile, inFile_bw, multipleFiles=FALSE, nrMultipleF
     if(curr_fileType=="sav"){
       dat <- data.table(spss.get(grep(inFile,list.files(dirname(inFile),full.names=TRUE),value=TRUE,fixed=TRUE),use.value.labels=FALSE,allow=FALSE)) 
       #if(!is.null(whichVar)){
-        dat <- dat[,whichVar,with=F]
-     # }
+      dat <- dat[,whichVar,with=F]
+      # }
     }else if(curr_fileType=="csv"){
       # kann man evt weglassen, read_csv2(gzfile()) kriegt das auch hin
       dat <- data.table(read_csv2(inFile,n_max=30))  
@@ -449,14 +449,6 @@ IndivImportDataQ <- function(inFile, inFile_bw, multipleFiles=FALSE, nrMultipleF
   setkeyv(dat_bw,mergeBy)
   dat <- merge(dat,dat_bw,by=mergeBy,all.x=TRUE)
   
-  # if(multipleFiles){
-  #   q_gew_all <- names(dat)[grep("gew1",names(dat))] ## will ja auch die bw mitteln
-  #   if(is.null(weightDecimals)){
-  #     dat <- dat[,(q_gew_all):=lapply(.SD,function(x){x/nrMultipleFiles}), .SDcols=q_gew_all]
-  #   }else{
-  #     dat <- dat[,(q_gew_all):=lapply(.SD,function(x){round(x/nrMultipleFiles,digits=weightDecimals)}), .SDcols=q_gew_all]
-  #   }
-  # }
   
   if(is.null(weightDecimals)){
     if(multipleFiles){
@@ -466,9 +458,9 @@ IndivImportDataQ <- function(inFile, inFile_bw, multipleFiles=FALSE, nrMultipleF
   }else{
     q_gew_all <- names(dat)[grep("gew1",names(dat))] ## will ja auch die bw mitteln/runden
     if(multipleFiles){
-      dat <- dat[,(q_gew_all):=lapply(.SD,function(x){round(x/nrMultipleFiles,digits=weightDecimals)}), .SDcols=q_gew_all]
+      dat <- dat[,(q_gew_all):=lapply(.SD,function(x){round.spss(round.spss(x,digits=weightDecimals)/nrMultipleFiles,digits=weightDecimals)}), .SDcols=q_gew_all]
     }else{
-      dat <- dat[,(q_gew_all):=lapply(.SD,function(x){round(x,digits=weightDecimals)}), .SDcols=q_gew_all]
+      dat <- dat[,(q_gew_all):=lapply(.SD,function(x){round.spss(x,digits=weightDecimals)}), .SDcols=q_gew_all]
     }
   }
   

@@ -52,8 +52,8 @@ ist die Variablenbezeichnung der Bootstrapgewichte \code{"gew1_1"}, \code{"gew1_
 
 \item{weightName}{Character: Name des Gewichtsvektors der eingelesenen Daten, default ist \code{weightName="gew1"}.}
 
-\item{weightDecimals}{Numerischer Wert oder NULL. Anzahl der Nachkommastellen der Stichprobengewichte. 
-Falls NULL, werden die Gewichte so uebernommen wie sie in den eingelesenen Daten enthalten sind.}
+\item{weightDecimals}{Numerischer Wert oder NULL. Anzahl der Nachkommastellen der Stichprobengewichte, gerundet nach SPSS RND Logik (0.5 bwz. -0.5 wird dabei immer "weg von 0" gerundet). 
+Falls NULL, werden die Gewichte so uebernommen wie sie in den eingelesenen Daten enthalten sind, diese Variante ist schneller.}
 }
 \value{
 Output ist eine Liste mit einem oder zwei Elementen, je nachdem ob

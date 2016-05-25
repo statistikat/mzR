@@ -1,13 +1,15 @@
-#require("Hmisc")
-#require("data.table")
-#require("readr")
-# jahr <- 2013
-# quartal <- 4
-# comp_diff_lag=NULL; hh=FALSE; families=FALSE; whichVar=NULL
-
-## To Do: asbper zu whichVar hinzufuegen 
 
 # Helper Functions
+# Die RND Funktion in SPSS rundet bei 5 immer weg von 0 (also bei positiven Zahlen immer auf, bei negativen Zahlen immer ab)
+round.spss = function(x, digits=0) {
+  posneg = sign(x)
+  z = abs(x)*10^digits
+  z = z + 0.5
+  z = trunc(as.numeric(as.character(z))) # as.numeric(as.character(z)) wegen floating-point numbers
+  z = z/10^digits
+  z*posneg
+}
+
 # vollstaendige Quartale (inkl. Bootstrap-Gewichten)
 vorhQuartaleUndPfade <- function() {
   # Pfade
@@ -87,8 +89,9 @@ vorhQuartaleUndPfade <- function() {
 #' @param nbw Numerischer Wert oder NULL. Falls ungleich NULL, Anzahl an Bootstrap-Gewichten die eingelesen
 #' werden soll. Default ist NULL, dabei werden alle verfuegbaren
 #' Bootstrap-Gewichte eingelesen.
-#' @param weightDecimals Numerischer Wert oder NULL. Anzahl der Nachkommastellen der Stichprobengewichte. 
-#' Falls NULL, werden die Gewichte so uebernommen wie sie in den eingelesenen Daten enthalten sind.
+#' @param weightDecimals Numerischer Wert oder NULL. Anzahl der Nachkommastellen der Stichprobengewichte, 
+#' gerundet nach SPSS RND Logik (0.5 bwz. -0.5 wird dabei immer "weg von 0" gerundet). 
+#' Falls NULL, werden die Gewichte so uebernommen wie sie in den eingelesenen Daten enthalten sind, diese Variante ist schneller.
 #' @return Output ist eine Liste mit einem oder zwei Elementen, je nachdem ob
 #' \code{comp_diff_lag=NULL} oder nicht. Die Listenelemente sind Objekte der Klasse data.table.
 #' @seealso
@@ -176,8 +179,9 @@ ImportData <- function(year=NULL, quarter=NULL, comp_diff_lag=NULL, from=NULL, t
       q_gew <- names(indatzr[j][[1]])[grep("gew1",names(indatzr[j][[1]]))]
       if(is.null(weightDecimals)){
         indatzr[j][[1]] <- indatzr[j][[1]][,(q_gew):=lapply(.SD,function(x){x/length(sequence)}), .SDcols=q_gew]
-      }else{
-        indatzr[j][[1]] <- indatzr[j][[1]][,(q_gew):=lapply(.SD,function(x){round(x/length(sequence),digits=weightDecimals)}), .SDcols=q_gew]
+      }else{#bei STAT-Veroeffentlichungen werden ja Gewichte quasi 2 Mal gerundet. Einmal das gew1 und dann das darauf aufgauende gewjahr nochmal.
+        # Quartalsgewichte werden aber in diesen Fall schon bei ImportDataQ bzw dann ImportDataJQ gerundet.
+        indatzr[j][[1]] <- indatzr[j][[1]][,(q_gew):=lapply(.SD,function(x){round.spss(x/length(sequence),digits=weightDecimals)}), .SDcols=q_gew]
       }
       names(indatzr)[j] <- paste0("dat_",paste0(from,collapse="q"),"_to_",paste0(to,collapse="q"))
     }
@@ -240,16 +244,6 @@ ImportDataQ <- function(j, q, comp_jahresgew=FALSE, whichVar=whichVar, hh=hh, fa
     dat <- merge(dat,lfshrb,by=c("asbhh"),all=TRUE)  
   }    
   
-  # if(comp_jahresgew){
-  #   q_gew <- names(dat)[grep("gew1",names(dat))] ## will ja auch die bw mitteln/runden
-  #   if(is.null(weightDecimals)){
-  #     dat <- dat[,(q_gew):=lapply(.SD,function(x){x/4}), .SDcols=q_gew]
-  #   }else{
-  #     dat <- dat[,(q_gew):=lapply(.SD,function(x){round(x/4,digits=weightDecimals)}), .SDcols=q_gew]
-  #   }
-  #   rm(q_gew);gc()
-  # }
-  
   if(is.null(weightDecimals)){
     if(comp_jahresgew){
       q_gew <- names(dat)[grep("gew1",names(dat))] ## will ja auch die bw mitteln/runden
@@ -258,9 +252,9 @@ ImportDataQ <- function(j, q, comp_jahresgew=FALSE, whichVar=whichVar, hh=hh, fa
   }else{
     q_gew <- names(dat)[grep("gew1",names(dat))] ## will ja auch die bw mitteln/runden
     if(comp_jahresgew){
-      dat <- dat[,(q_gew):=lapply(.SD,function(x){round(x/4,digits=weightDecimals)}), .SDcols=q_gew]
+      dat <- dat[,(q_gew):=lapply(.SD,function(x){round.spss(round.spss(x,digits=weightDecimals)/4,digits=weightDecimals)}), .SDcols=q_gew]
     }else{
-      dat <- dat[,(q_gew):=lapply(.SD,function(x){round(x,digits=weightDecimals)}), .SDcols=q_gew]
+      dat <- dat[,(q_gew):=lapply(.SD,function(x){round.spss(x,digits=weightDecimals)}), .SDcols=q_gew]
     }
   }
   
