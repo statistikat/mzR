@@ -91,7 +91,7 @@ vorhQuartaleUndPfade <- function() {
 #' Bootstrap-Gewichte eingelesen.
 #' @param weightDecimals Numerischer Wert oder NULL. Anzahl der Nachkommastellen der Stichprobengewichte, 
 #' gerundet nach SPSS RND Logik (0.5 bwz. -0.5 wird dabei immer "weg von 0" gerundet). 
-#' Falls NULL, werden die Gewichte so uebernommen wie sie in den eingelesenen Daten enthalten sind, diese Variante ist schneller.
+#' Falls NULL, werden die Gewichte nicht gerundet.
 #' @return Output ist eine Liste mit einem oder zwei Elementen, je nachdem ob
 #' \code{comp_diff_lag=NULL} oder nicht. Die Listenelemente sind Objekte der Klasse data.table.
 #' @seealso
@@ -176,12 +176,14 @@ ImportData <- function(year=NULL, quarter=NULL, comp_diff_lag=NULL, from=NULL, t
       rm(indat);gc()
     }
     for(j in 1:length(indatzr)){ 
-      q_gew <- names(indatzr[j][[1]])[grep("gew1",names(indatzr[j][[1]]))]
       if(is.null(weightDecimals)){
+        q_gew <- names(indatzr[j][[1]])[grep("gew1",names(indatzr[j][[1]]))] # will auch bw mitteln
         indatzr[j][[1]] <- indatzr[j][[1]][,(q_gew):=lapply(.SD,function(x){x/length(sequence)}), .SDcols=q_gew]
       }else{#bei STAT-Veroeffentlichungen werden ja Gewichte quasi 2 Mal gerundet. Einmal das gew1 und dann das darauf aufgauende gewjahr nochmal.
         # Quartalsgewichte werden aber in diesen Fall schon bei ImportDataQ bzw dann ImportDataJQ gerundet.
-        indatzr[j][[1]] <- indatzr[j][[1]][,(q_gew):=lapply(.SD,function(x){round.spss(x/length(sequence),digits=weightDecimals)}), .SDcols=q_gew]
+        q_gew <- names(indatzr[j][[1]])[grep("gew1_",names(indatzr[j][[1]]))] ## will bw nicht runden, nur mitteln
+        indatzr[j][[1]] <- indatzr[j][[1]][,("gew1"):=lapply(.SD,function(x){round.spss(x/length(sequence),digits=weightDecimals)}), .SDcols="gew1"]
+        indatzr[j][[1]] <- indatzr[j][[1]][,(q_gew):=lapply(.SD,function(x){x/length(sequence)}), .SDcols=q_gew]
       }
       names(indatzr)[j] <- paste0("dat_",paste0(from,collapse="q"),"_to_",paste0(to,collapse="q"))
     }
@@ -246,15 +248,17 @@ ImportDataQ <- function(j, q, comp_jahresgew=FALSE, whichVar=whichVar, hh=hh, fa
   
   if(is.null(weightDecimals)){
     if(comp_jahresgew){
-      q_gew <- names(dat)[grep("gew1",names(dat))] ## will ja auch die bw mitteln/runden
+      q_gew <- names(dat)[grep("gew1",names(dat))] ## will ja auch die bw mitteln
       dat <- dat[,(q_gew):=lapply(.SD,function(x){x/4}), .SDcols=q_gew]
     }
   }else{
-    q_gew <- names(dat)[grep("gew1",names(dat))] ## will ja auch die bw mitteln/runden
+    #q_gew <- names(dat)[grep("gew1",names(dat))] ## will ja auch die bw mitteln und runden
+    q_gew <- names(dat)[grep("gew1_",names(dat))] ## will bw NICHT runden
     if(comp_jahresgew){
-      dat <- dat[,(q_gew):=lapply(.SD,function(x){round.spss(round.spss(x,digits=weightDecimals)/4,digits=weightDecimals)}), .SDcols=q_gew]
+      dat <- dat[,("gew1"):=lapply(.SD,function(x){round.spss(round.spss(x,digits=weightDecimals)/4,digits=weightDecimals)}), .SDcols="gew1"]
+      dat <- dat[,(q_gew):=lapply(.SD,function(x){x/4}), .SDcols=q_gew]
     }else{
-      dat <- dat[,(q_gew):=lapply(.SD,function(x){round.spss(x,digits=weightDecimals)}), .SDcols=q_gew]
+      dat <- dat[,("gew1"):=lapply(.SD,function(x){round.spss(x,digits=weightDecimals)}), .SDcols="gew1"]
     }
   }
   

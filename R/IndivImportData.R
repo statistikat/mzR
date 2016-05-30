@@ -42,8 +42,9 @@
 #' in \code{curr_inFile_bw} bzw. \code{prev_inFile_bw}. Default ist NULL, dabei
 #' ist die Variablenbezeichnung der Bootstrapgewichte \code{"gew1_1"}, \code{"gew1_2"}, \code{"gew1_3"}, \ldots wie beim Mikrozensus ueblich.
 #' @param weightName Character: Name des Gewichtsvektors der eingelesenen Daten, default ist \code{weightName="gew1"}.
-#' @param weightDecimals Numerischer Wert oder NULL. Anzahl der Nachkommastellen der Stichprobengewichte, gerundet nach SPSS RND Logik (0.5 bwz. -0.5 wird dabei immer "weg von 0" gerundet). 
-#' Falls NULL, werden die Gewichte so uebernommen wie sie in den eingelesenen Daten enthalten sind, diese Variante ist schneller.
+#' @param weightDecimals Numerischer Wert oder NULL. Anzahl der Nachkommastellen der (angepassten) Stichprobengewichte, 
+#' gerundet nach SPSS RND Logik (0.5 bwz. -0.5 wird dabei immer "weg von 0" gerundet). 
+#' Falls NULL, werden die Gewichte nicht gerundet.
 #' @return Output ist eine Liste mit einem oder zwei Elementen, je nachdem ob
 #' \code{prev_inFile=NULL} oder nicht. Die Listenelemente sind Objekte der Klasse data.table.
 #' Wurden mehrere Dateipfade angegeben, so enthaelt der Output angepasste Gewichte, 
@@ -456,11 +457,12 @@ IndivImportDataQ <- function(inFile, inFile_bw, multipleFiles=FALSE, nrMultipleF
       dat <- dat[,(q_gew_all):=lapply(.SD,function(x){x/nrMultipleFiles}), .SDcols=q_gew_all]
     }
   }else{
-    q_gew_all <- names(dat)[grep("gew1",names(dat))] ## will ja auch die bw mitteln/runden
     if(multipleFiles){
-      dat <- dat[,(q_gew_all):=lapply(.SD,function(x){round.spss(round.spss(x,digits=weightDecimals)/nrMultipleFiles,digits=weightDecimals)}), .SDcols=q_gew_all]
+      q_gew_all <- names(dat)[grep("gew1_",names(dat))] ## will die bw nur mitteln, nicht runden
+      dat <- dat[,("gew1"):=lapply(.SD,function(x){round.spss(round.spss(x,digits=weightDecimals)/nrMultipleFiles,digits=weightDecimals)}), .SDcols="gew1"]
+      dat <- dat[,(q_gew_all):=lapply(.SD,function(x){x/nrMultipleFiles}), .SDcols=q_gew_all]
     }else{
-      dat <- dat[,(q_gew_all):=lapply(.SD,function(x){round.spss(x,digits=weightDecimals)}), .SDcols=q_gew_all]
+      dat <- dat[,("gew1"):=lapply(.SD,function(x){round.spss(x,digits=weightDecimals)}), .SDcols="gew1"]
     }
   }
   
