@@ -55,7 +55,8 @@ mzTestData <- AddVariable(x=mzTestData, functionName=stdrec_fun, newVar="stdrec"
 # Beispiel 3:
 age_pub_fun <- function(balt){
   x <- balt
-  x <- car::recode(x, "-3= -3; 0:14=0; 15:19=1; 20:24=2; 25:34=3; 35:44=4; 45:54=5; 55:59=6; 60:64=7; 65:200=8")
+  x <- car::recode(x, "-3= -3; 0:14=0; 15:19=1; 20:24=2; 
+  25:34=3; 35:44=4; 45:54=5; 55:59=6; 60:64=7; 65:200=8")
   return(x)
 }
 mzTestData <- AddVariable(x=mzTestData, functionName=age_pub_fun, newVar="age_pub")

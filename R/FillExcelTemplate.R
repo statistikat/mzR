@@ -177,7 +177,9 @@ FillExcelTemplate <- function(tab1,tab2=NULL,startingPoints,nrEmptyRows,f_in,she
         else
           setSheetPos(wb,paste0(prefixTSN,sheets[sheet]),1)
       }else{
-        setSheetPos(wb,sheets[sheet],getSheetPos(wb,paste0(prefixTSN,sheets[sheet]))+1 ) 
+        newPosition <- getSheetPos(wb,paste0(prefixTSN,sheets[sheet]))+1
+        setSheetPos(wb,sheets[sheet],newPosition) 
+        sheet <- newPosition
       }
       sheets <- getSheets(wb)
     }
