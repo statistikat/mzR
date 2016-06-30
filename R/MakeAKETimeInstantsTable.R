@@ -140,6 +140,8 @@ MakeAKETimeInstantsTable <- function(col,row=NULL,timeInstant,nbw=NULL,
   
   timeInstants_jahr <- c(vvjq_jahr,jahr_seq)
   timeInstants_quartal <- c(vvjq_quartal,quartal_seq)
+  # brauche das jew. vierte Element dieser timeInstants_jahr und timeInstants_quartal Vektoren eigentlich nicht weil das ueber comp_diff_lag abgedeckt wird
+  # verwende es aber spaeter noch fuer was andres, lass es also erst mal drinnen
   
   res <- list()
   for(i in 1:length(timeInstants_jahr)){
@@ -162,13 +164,14 @@ MakeAKETimeInstantsTable <- function(col,row=NULL,timeInstant,nbw=NULL,
       names(res)[length(res)] <- paste0(vjq_quartal,". Quartal ", vjq_jahr)
       res[[length(res)+1]] <- MakeTable(dat,col=col,row=row, estimator="absChange", error="cv", lim1=lim1,lim2=lim2)
       names(res)[length(res)] <- paste0(quartal,". Quartal ", jahr," Diffvjq")
+      rm(dat);gc()
     }else if(!identical(c(jahr,quartal),c(jahr_seq[length(jahr_seq)-1] ,quartal_seq[length(quartal_seq)-1]))){
       ### Rest
       dat <- ImportData(year=jahr,quarter=quartal,nbw=nbw)
       res[[length(res)+1]] <- MakeTable(dat,col=col,row=row, error="cv", lim1=lim1,lim2=lim2)
       names(res)[length(res)] <- paste0(quartal,". Quartal ", jahr)
+      rm(dat);gc()
     }
-    rm(dat);gc()
   }
   ## res umsortieren:
   res <- res[c(paste0(vvjq_quartal,". Quartal ", vvjq_jahr),paste0(vjq_quartal,". Quartal ", vjq_jahr),
