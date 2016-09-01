@@ -131,12 +131,12 @@ MakeAKETimeInstantsTable <- function(col,row=NULL,timeInstant,nbw=NULL,
   vvjq <- lag(ts(end=ende,frequency=4),4)
   vjq_jahr <- as.numeric(sapply(strsplit(format(time(vvjq)), ".",fixed=TRUE),function(x)x[1]))
   vjq_quartal <-  as.numeric(mapvalues(format(sapply(strsplit(format(time(vvjq)), ".",fixed=TRUE),function(x)x[2])),
-                                       from=c("00","25","50","75"),to=c(1:4),warn_missing = FALSE))
+                                       from=c("NA","00","25","50","75"),to=c(1,1:4),warn_missing = FALSE))
   
   vvjq <- lag(ts(end=ende,frequency=4),8)
   vvjq_jahr <- as.numeric(sapply(strsplit(format(time(vvjq)), ".",fixed=TRUE),function(x)x[1]))
   vvjq_quartal <-  as.numeric(mapvalues(format(sapply(strsplit(format(time(vvjq)), ".",fixed=TRUE),function(x)x[2])),
-                                        from=c("00","25","50","75"),to=c(1:4),warn_missing = FALSE))
+                                        from=c("NA","00","25","50","75"),to=c(1,1:4),warn_missing = FALSE))
   
   timeInstants_jahr <- c(vvjq_jahr,jahr_seq)
   timeInstants_quartal <- c(vvjq_quartal,quartal_seq)
