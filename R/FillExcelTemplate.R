@@ -62,6 +62,12 @@ Tabelle_bearbeiten <- function(table,ersteZeile,startingPoints,nrEmptyRows){
 #' @param nrEmptyRows numerischer Vektor: Anzahl an Leerzeilen die vor
 #' \code{startingPoints} kommen sollen; eigentlich immer 1 ausser vor grossen
 #' Bloecken.
+#' @param firstCol character Vektor: enthaelt die Eintraege der ersten Tabellenspalte - falls diese 
+#' nicht aus dem Original-Excel-File uebernommen werden sollen. 
+#' Derzeit (kein Bedarf) wird hier ein Character Vektor ohne Missings uebergeben, die ueber \code{startingPoints} 
+#' und \code{nrEmptyRows} definierten Leerzeilen werden also einfach uebernommen.
+#' @param footnote character: Fussnote (derzeit fix 1-te Zelle der 2-ten Zeile nach Tabellenende), falls sie nicht aus dem Original-Excel-File ubernommen werden soll.
+#' Formatierung der Zelle der die Fussnote zugewiesen wird bleibt allerdings wie im Original-Excel-File.
 #' @param f_in File Name inklusive Pfad und File-Endungen des eingelesenen
 #' Original-Excel-Files.
 #' @param sheet Index oder Name des Excel-Sheets oder des zugehoerigen Template-Excel-Sheets.
@@ -89,7 +95,7 @@ Tabelle_bearbeiten <- function(table,ersteZeile,startingPoints,nrEmptyRows){
 #' ###
 #' }
 #' 
-FillExcelTemplate <- function(tab1,tab2=NULL,startingPoints,nrEmptyRows,f_in,sheet=1,prefixTSN="_",
+FillExcelTemplate <- function(tab1,tab2=NULL,startingPoints,nrEmptyRows,firstCol=NULL,footnote=NULL,f_in,sheet=1,prefixTSN="_",
                               removeTemplateSheet=FALSE,removeAllTemplates=FALSE,interactive=TRUE,
                               showFinalTab=FALSE,showSplitTab=FALSE){
   if(!removeAllTemplates){
@@ -234,6 +240,23 @@ FillExcelTemplate <- function(tab1,tab2=NULL,startingPoints,nrEmptyRows,f_in,she
     
     ## erg mit beruecksichtigten limits
     erg <- as.data.table(erg)
+    
+    # Ueber firstCol-Parameter vordefinierte erste Spalte einfuegen.
+    # Leerzeilen von Tabelle beruecksichtigen und einfach fuer erste Spalte uebernehmen.
+    if(!is.null(firstCol)){
+      if(length(zeilen_mit_inhalt)==length(firstCol)){
+        for(i in 1:length(zeilen_mit_inhalt)){
+          writeWorksheet (wb, firstCol[i], sheet=sheets[sheet], startRow=zeilen_mit_inhalt[i], startCol=1 ,header=FALSE )
+        }
+      }else{
+        stop("length(firstCol)!=length(zeilen_mit_inhalt)! Derzeit sind die Leerzeilen fix vorgegeben ueber startingPoints und nrEmptyRows. Bitte in firstCol-Parameter beruecksichtigen.\n")
+      }
+    }
+    
+    if(!is.null(footnote)){
+      writeWorksheet (wb, footnote, sheet=sheets[sheet], startRow=nrow(erg)+2, startCol=1 ,header=FALSE )
+    }
+    
     colnames(erg) <- LETTERS[2:(ncol(erg)+1)]# 1. Spalte im OUtput-Excel-File sind ja die Labels (ist eigentlich unnoetiges Tamtam, stoert aber auch nicht wirklich)
     ## erg ohne beruecksichtigten limits
     erg2 <- as.data.table(erg2)
@@ -253,6 +276,8 @@ FillExcelTemplate <- function(tab1,tab2=NULL,startingPoints,nrEmptyRows,f_in,she
       }
       writeWorksheet (wb, outlist[[i]], sheet=sheets[sheet], startRow=startingPoints[i], startCol=2 ,header=FALSE )
     }
+    
+    
     
     
     # Koennten ein Format setzen fuer ausgeklammerte Werte:

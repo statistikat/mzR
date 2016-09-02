@@ -4,10 +4,10 @@
 \alias{FillExcelTemplate}
 \title{Funktion befuellt ein Excel Template.}
 \usage{
-FillExcelTemplate(tab1, tab2 = NULL, startingPoints, nrEmptyRows, f_in,
-  sheet = 1, prefixTSN = "_", removeTemplateSheet = FALSE,
-  removeAllTemplates = FALSE, interactive = TRUE, showFinalTab = FALSE,
-  showSplitTab = FALSE)
+FillExcelTemplate(tab1, tab2 = NULL, startingPoints, nrEmptyRows,
+  firstCol = NULL, footnote = NULL, f_in, sheet = 1, prefixTSN = "_",
+  removeTemplateSheet = FALSE, removeAllTemplates = FALSE,
+  interactive = TRUE, showFinalTab = FALSE, showSplitTab = FALSE)
 }
 \arguments{
 \item{tab1}{eine mit \code{MakeTable()} bzw.
@@ -27,6 +27,14 @@ Zeilen nach Leerzeilen im Original-Excel-File.}
 \item{nrEmptyRows}{numerischer Vektor: Anzahl an Leerzeilen die vor
 \code{startingPoints} kommen sollen; eigentlich immer 1 ausser vor grossen
 Bloecken.}
+
+\item{firstCol}{character Vektor: enthaelt die Eintraege der ersten Tabellenspalte - falls diese 
+nicht aus dem Original-Excel-File uebernommen werden sollen. 
+Derzeit (kein Bedarf) wird hier ein Character Vektor ohne Missings uebergeben, die ueber \code{startingPoints} 
+und \code{nrEmptyRows} definierten Leerzeilen werden also einfach uebernommen.}
+
+\item{footnote}{character: Fussnote (derzeit fix 1-te Zelle der 2-ten Zeile nach Tabellenende), falls sie nicht aus dem Original-Excel-File ubernommen werden soll.
+Formatierung der Zelle der die Fussnote zugewiesen wird bleibt allerdings wie im Original-Excel-File.}
 
 \item{f_in}{File Name inklusive Pfad und File-Endungen des eingelesenen
 Original-Excel-Files.}
