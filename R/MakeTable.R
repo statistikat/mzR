@@ -95,26 +95,30 @@ makeEachVar <- function(x){
 #' @param row Listenobjekt oder NULL um Zeilen zu definieren, siehe Details.
 #' @param block Listenobjekt oder NULL um Block-Output definieren, siehe
 #' Details.
-#' @param estimator character um festzulegen welcher Schaetzer in die Tabelle
+#' @param estimator character um festzulegen, welcher Schaetzer in die Tabelle
 #' kommen soll. Auwahlmoeglichkeiten sind \code{"est"}, \code{"estPrev"},
 #' \code{"absChange"} und \code{"relChange"}.
-#' @param error character um festzulegen auf welchen Genauigkeitsschaetzer sich
-#' \code{lim1} bzw. \code{lim2} beziehen soll. Derzeit nur \code{"cv"} sinnvoll
-#' implementiert.
+#' @param error character um festzulegen, welcher Genauigkeitsschaetzer zur Markierung von Zellen verwendet werden soll. 
+#' Auswahlmoeglichkeiten sind \code{"cv"} (Variationskoeffizient) und \code{"ci"} (Konfidenzintervall). 
+#' Sollte \code{error="cv"} gewaehlt werden, so sind die Parameter \code{lim1} bzw. \code{lim2} gegebenenfalls zu spezifizieren. 
+#' Falls jedoch \code{error="ci"} gewaehlt wird, so sind diese Limits nicht notwendig da in diesem Fall geschaut wird, ob der jeweilige 
+#' Schaetzer \code{estimator} innerhalb des Konfidenzintervalls liegt. Man kann jedoch \code{markLeft1}, \code{markRight1} und \code{markValue1}
+#' spezifizieren falls die signifikanten Zellen anders als durch die Defaulteinstellung 
+#' \code{markLeft1 = "("}, \code{markRight1 = ")"} und \code{markValue1 = NULL} markiert werden sollen.
 #' @param lim1 numerischer Wert: falls \code{lim1}>\code{error}, wird der
 #' entsprechende Wert von \code{estimator} in der Tabelle durch
-#' \code{markLeft1}, \code{markValue1} und \code{markRight1} ersetzt.
+#' \code{markLeft1}, \code{markValue1} und \code{markRight1} ersetzt. Ist nur relevant falls code{error="cv"}.
 #' @param markValue1 character oder NULL: falls NULL, wird der jeweilige Wert
 #' von \code{estimator} nicht ueberschrieben.
 #' @param markLeft1 character: wird links zu \code{markValue1} hinzugefuegt.
 #' @param markRight1 character: wird rechts zu \code{markValue1} hinzugefuegt.
 #' @param lim2 numerischer Wert: falls \code{lim2}>\code{error}, wird der
 #' entsprechende Wert von \code{estimator} in der Tabelle durch
-#' \code{markLeft2}, \code{markValue2} und \code{markRight2} ersetzt.
+#' \code{markLeft2}, \code{markValue2} und \code{markRight2} ersetzt. Ist nur relevant falls code{error="cv"}.
 #' @param markValue2 character oder NULL: falls NULL, wird der jeweilige Wert
-#' von \code{estimator} nicht ueberschrieben.
-#' @param markLeft2 character: wird links zu \code{markValue2} hinzugefuegt.
-#' @param markRight2 character: wird rechts zu \code{markValue2} hinzugefuegt.
+#' von \code{estimator} nicht ueberschrieben. Ist nur relevant falls code{error="cv"}.
+#' @param markLeft2 character: wird links zu \code{markValue2} hinzugefuegt. Ist nur relevant falls code{error="cv"}.
+#' @param markRight2 character: wird rechts zu \code{markValue2} hinzugefuegt. Ist nur relevant falls code{error="cv"}.
 #' @param rowPriority TRUE/FALSE ob bei der Berechnung von Raten die Zeilenlogik vor der Spaltenlogik gelten soll.
 #' @param returnCommands TRUE/FALSE ob statt einer Tabelle die Befehle
 #' ausgegeben werden sollen die zur Erstellung der Tabelle ausgefuehrt werden
@@ -176,6 +180,13 @@ MakeTable  <- function(dat,col,row=NULL,block=NULL,estimator="est",error="cv",
   parameterSpellCheck(row)
   parameterSpellCheck(col)
   
+  # Bei Veraenderungen wollen wir ein weniger strenges Mass als den Variationskoeffizienten.
+  # Es wird also nur geschaut, ob der geschaetzte Wert innerhalb des Konfidenzintervalls liegt.
+  if(error=="ci"){
+    error <- "cil"
+    lim1 <- 1
+    lim2 <- Inf
+  }
   if(estimator=="absChange"){
     error <- paste0(error,toupper(substr(estimator,1,1)), substr(estimator,start=2,stop=nchar(estimator)))
   }else if(estimator=="relChange"){
@@ -512,6 +523,10 @@ MakeTable  <- function(dat,col,row=NULL,block=NULL,estimator="est",error="cv",
           c(sapply(y,function(z)z[[estimator]]))
         }
       }))
+      
+      
+      if(!grepl("cil",error,fixed=TRUE)){
+        # 1. Fall error=cv
       outErrorval <- lapply(out,function(x)lapply(x,function(y){
         if(estimator%in%names(y)){
           return(c(y[[error]]))
@@ -519,6 +534,27 @@ MakeTable  <- function(dat,col,row=NULL,block=NULL,estimator="est",error="cv",
           c(sapply(y,function(z)z[[error]]))
         }
       }))
+      }else{
+        # 2. Fall error=cil und ciu
+        error2 <- gsub("cil","ciu",error,fixed=TRUE)
+        outErrorval <- lapply(out,function(x)lapply(x,function(y){
+          if(estimator%in%names(y)){
+            if(c(y[[estimator]])>=c(y[[error]]) && c(y[[estimator]])<=c(y[[error2]])){
+              return(0)
+            }else{
+              return(2)
+            }
+          }else{
+            c(sapply(y,function(z){
+              if(z[[estimator]]>=z[[error]] && z[[estimator]]<=z[[error2]]){
+                return(0)
+              }else{
+                return(2)
+              }
+            }))
+          }
+        }))
+      }
       
       # }
       
@@ -616,7 +652,7 @@ MakeTable  <- function(dat,col,row=NULL,block=NULL,estimator="est",error="cv",
         }
       }else{
         if(lim1>lim2)
-        warning("\n Achtung: lim1<lim2 ist nicht erfuellt! Falls Absicht, diese Warnung bitte ignorieren.\n")
+          warning("\n Achtung: lim1<lim2 ist nicht erfuellt! Falls Absicht, diese Warnung bitte ignorieren.\n")
         
         if(any(out3)){
           if(is.null(markValue2))

@@ -265,6 +265,7 @@ FillExcelTemplate <- function(tab1,tab2=NULL,startingPoints,nrEmptyRows,firstCol
     # wir suchen die ausgeklammerten Zellenwerte usw.
     ausgeklammertes <- apply(erg,2,function(x)grep("(",x,fixed=TRUE)) # alle, d.h. (Wert) und (x)
     ausgeklammertes_x <- apply(erg,2,function(x)grep("(x)",x,fixed=TRUE)) # (x)
+    ausgeklammertes_stern <- apply(erg,2,function(x)grep("*",x,fixed=TRUE)) # (x)
     zelle_leer <- apply(erg,2,function(x){which(is.na(x))[which(which(is.na(x))%in%zeilen_mit_inhalt)]}) 
     wert_null <- apply(erg2,2,function(x)which(abs(x) < .Machine$double.eps)) # Zellenwert 0
     notanumber <- apply(erg,2,function(x)grep("NaN",x,fixed=TRUE)) # NaN
@@ -283,12 +284,14 @@ FillExcelTemplate <- function(tab1,tab2=NULL,startingPoints,nrEmptyRows,firstCol
     # Koennten ein Format setzen fuer ausgeklammerte Werte:
     klammern <- createCellStyle(wb)
     klammern_x <- createCellStyle(wb)
+    stern <- createCellStyle(wb)
     kein_eintrag <- createCellStyle(wb)
     null_mit_klammern <- createCellStyle(wb)
     
     #setDataFormat(klammern, format = "(#.##0,0);(-#.##0,0);@")# deutsches Excel -> macht das daraus:(#,##00);(-#,##00);@
     setDataFormat(klammern, format = "(#,##0.0);(-#,##0.0);@")# englisches Excel
     setDataFormat(klammern_x, format = "(x);(x)")
+    setDataFormat(stern, format = "#,##0.0\"*\"")
     setDataFormat(kein_eintrag, format = "0.0") #Zellen ohne Eintrag sollen "." enthalten. 
     setDataFormat(null_mit_klammern, format = "\"[\"0\"]\";\"[\"0\"]\"") #Zellen sollen Format [0] bekommen. 
     
@@ -312,21 +315,33 @@ FillExcelTemplate <- function(tab1,tab2=NULL,startingPoints,nrEmptyRows,firstCol
             wert <- gsub("(","",wert,fixed=TRUE)
             wert <- gsub(")","",wert,fixed=TRUE)
             if(!is.na(suppressWarnings(as.numeric(wert)))){
-              ## Unser Format hardcoded:
-              #wert <- paste0("(",formatC(as.numeric(wert),format="f",digits=2,decimal.mark=",",drop0trailing=FALSE),")")
-              #wert <- round(as.numeric(wert),digits=1)
               wert <- as.numeric(wert)
-              
               writeWorksheet (wb, wert, sheet=sheets[sheet], startRow=as.numeric(unlist(ausgeklammertes[i])[j])+(ersteZeile-1), startCol=grep(names(ausgeklammertes)[i],LETTERS) ,header=FALSE )
               setCellStyle(wb, sheet=sheets[sheet], row=as.numeric(unlist(ausgeklammertes[i])[j])+(ersteZeile-1), col=grep(names(ausgeklammertes)[i],LETTERS), cellstyle=klammern)
             }
-            #       else{## (x) hardcoded
-            #         writeWorksheet (wb, wert.orig, sheet=sheets[sheet], startRow=as.numeric(unlist(ausgeklammertes[i])[j])+(ersteZeile-1), startCol=grep(names(ausgeklammertes)[i],LETTERS) ,header=FALSE )
-            #       }
           }
         }
       }
     }
+    if(length(ausgeklammertes_stern)>0){
+      if(is.null(tab2)){
+        stop("\ntab2 muss angegeben werden da fuer tab1 ein Limit gesetzt wurde und gewisse Zellen keinen numerischen Wert enthalten!\n")
+      }
+      for( i in 1:length(ausgeklammertes_stern)){
+        if(length(unlist(ausgeklammertes_stern[i]))>0){
+          for(j in 1:length(unlist(ausgeklammertes_stern[i]))){
+            wert.orig <- wert <- as.character(erg[suppressWarnings(as.numeric(unlist(ausgeklammertes_stern[i])[j])),names(ausgeklammertes_stern)[i],with=F])
+            wert <- gsub("*","",wert,fixed=TRUE)
+            if(!is.na(suppressWarnings(as.numeric(wert)))){
+              wert <- as.numeric(wert)
+              writeWorksheet (wb, wert, sheet=sheets[sheet], startRow=as.numeric(unlist(ausgeklammertes_stern[i])[j])+(ersteZeile-1), startCol=grep(names(ausgeklammertes_stern)[i],LETTERS) ,header=FALSE )
+              setCellStyle(wb, sheet=sheets[sheet], row=as.numeric(unlist(ausgeklammertes_stern[i])[j])+(ersteZeile-1), col=grep(names(ausgeklammertes_stern)[i],LETTERS), cellstyle=stern)
+            }
+          }
+        }
+      }
+    }
+    
     ### (x) nur als label darueberlegen
     if(length(ausgeklammertes_x)>0){
       if(is.null(tab2)){

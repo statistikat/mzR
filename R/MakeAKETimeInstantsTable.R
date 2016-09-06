@@ -156,13 +156,22 @@ MakeAKETimeInstantsTable <- function(col,row=NULL,timeInstant,nbw=NULL,
       ### Vorquartal
       res[[length(res)+1]] <- MakeTable(dat,col=col,row=row, estimator="estPrev",error="cv", lim1=lim1,lim2=lim2)
       names(res)[length(res)] <- paste0(quartal_seq[length(quartal_seq)-1],". Quartal ", jahr_seq[length(jahr_seq)-1])
-      res[[length(res)+1]] <- MakeTable(dat,col=col,row=row, estimator="absChange",error="cv", lim1=lim1,lim2=lim2)
+      if(lim1==Inf && lim2==Inf){
+        res[[length(res)+1]] <- MakeTable(dat,col=col,row=row, estimator="absChange",error="cv", lim1=lim1,lim2=lim2)
+      }else{
+        res[[length(res)+1]] <- MakeTable(dat,col=col,row=row, estimator="absChange",error="ci",markLeft1 = "", markRight1 = "*")
+      }
       names(res)[length(res)] <- paste0(quartal,". Quartal ", jahr," Diffvq")
+      
       ### Vorjahresquartal
       dat <- ImportData(year=jahr,quarter=quartal,comp_diff_lag=4,nbw=nbw)
       res[[length(res)+1]] <- MakeTable(dat,col=col,row=row, estimator="estPrev", error="cv", lim1=lim1,lim2=lim2)
       names(res)[length(res)] <- paste0(vjq_quartal,". Quartal ", vjq_jahr)
-      res[[length(res)+1]] <- MakeTable(dat,col=col,row=row, estimator="absChange", error="cv", lim1=lim1,lim2=lim2)
+      if(lim1==Inf && lim2==Inf){
+      res[[length(res)+1]] <- MakeTable(dat,col=col,row=row, estimator="absChange", error="cv",lim1=lim1,lim2=lim2)
+      }else{
+        res[[length(res)+1]] <- MakeTable(dat,col=col,row=row, estimator="absChange", error="ci",markLeft1 = "", markRight1 = "*")
+      }
       names(res)[length(res)] <- paste0(quartal,". Quartal ", jahr," Diffvjq")
       rm(dat);gc()
     }else if(!identical(c(jahr,quartal),c(jahr_seq[length(jahr_seq)-1] ,quartal_seq[length(quartal_seq)-1]))){

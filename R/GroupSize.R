@@ -10,7 +10,7 @@ makeEachVar <- function(x){
   return(out)
 }
 GroupSizeX <- function(x,TFstring){
-  gew1 <- NULL
+  gew1 <- sd <- NULL
 
   if(length(x)==1){
     date <- gsub("dat_","",names(x))
@@ -55,7 +55,7 @@ GroupSizeX <- function(x,TFstring){
   }
 }
 GroupRateX <- function(x,TFstring,TFstring2=NULL){
-  gew1 <- NULL
+  gew1 <- sd <- NULL
   if(length(x)==1){
     date <- gsub("dat_","",names(x))
     x <- x[[1]]

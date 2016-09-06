@@ -19,17 +19,21 @@ MakeTable(dat, col, row = NULL, block = NULL, estimator = "est",
 \item{block}{Listenobjekt oder NULL um Block-Output definieren, siehe
 Details.}
 
-\item{estimator}{character um festzulegen welcher Schaetzer in die Tabelle
+\item{estimator}{character um festzulegen, welcher Schaetzer in die Tabelle
 kommen soll. Auwahlmoeglichkeiten sind \code{"est"}, \code{"estPrev"},
 \code{"absChange"} und \code{"relChange"}.}
 
-\item{error}{character um festzulegen auf welchen Genauigkeitsschaetzer sich
-\code{lim1} bzw. \code{lim2} beziehen soll. Derzeit nur \code{"cv"} sinnvoll
-implementiert.}
+\item{error}{character um festzulegen, welcher Genauigkeitsschaetzer zur Markierung von Zellen verwendet werden soll. 
+Auswahlmoeglichkeiten sind \code{"cv"} (Variationskoeffizient) und \code{"ci"} (Konfidenzintervall). 
+Sollte \code{error="cv"} gewaehlt werden, so sind die Parameter \code{lim1} bzw. \code{lim2} gegebenenfalls zu spezifizieren. 
+Falls jedoch \code{error="ci"} gewaehlt wird, so sind diese Limits nicht notwendig da in diesem Fall geschaut wird, ob der jeweilige 
+Schaetzer \code{estimator} innerhalb des Konfidenzintervalls liegt. Man kann jedoch \code{markLeft1}, \code{markRight1} und \code{markValue1}
+spezifizieren falls die signifikanten Zellen anders als durch die Defaulteinstellung 
+\code{markLeft1 = "("}, \code{markRight1 = ")"} und \code{markValue1 = NULL} markiert werden sollen.}
 
 \item{lim1}{numerischer Wert: falls \code{lim1}>\code{error}, wird der
 entsprechende Wert von \code{estimator} in der Tabelle durch
-\code{markLeft1}, \code{markValue1} und \code{markRight1} ersetzt.}
+\code{markLeft1}, \code{markValue1} und \code{markRight1} ersetzt. Ist nur relevant falls code{error="cv"}.}
 
 \item{markLeft1}{character: wird links zu \code{markValue1} hinzugefuegt.}
 
@@ -40,14 +44,14 @@ von \code{estimator} nicht ueberschrieben.}
 
 \item{lim2}{numerischer Wert: falls \code{lim2}>\code{error}, wird der
 entsprechende Wert von \code{estimator} in der Tabelle durch
-\code{markLeft2}, \code{markValue2} und \code{markRight2} ersetzt.}
+\code{markLeft2}, \code{markValue2} und \code{markRight2} ersetzt. Ist nur relevant falls code{error="cv"}.}
 
-\item{markLeft2}{character: wird links zu \code{markValue2} hinzugefuegt.}
+\item{markLeft2}{character: wird links zu \code{markValue2} hinzugefuegt. Ist nur relevant falls code{error="cv"}.}
 
-\item{markRight2}{character: wird rechts zu \code{markValue2} hinzugefuegt.}
+\item{markRight2}{character: wird rechts zu \code{markValue2} hinzugefuegt. Ist nur relevant falls code{error="cv"}.}
 
 \item{markValue2}{character oder NULL: falls NULL, wird der jeweilige Wert
-von \code{estimator} nicht ueberschrieben.}
+von \code{estimator} nicht ueberschrieben. Ist nur relevant falls code{error="cv"}.}
 
 \item{rowPriority}{TRUE/FALSE ob bei der Berechnung von Raten die Zeilenlogik vor der Spaltenlogik gelten soll.}
 
