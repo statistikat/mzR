@@ -67,6 +67,8 @@ Output ist eine Tabelle in Matrix-Form mit durch \code{col},
 Erstellt eine Tabelle in Matrix-Form.
 }
 \details{
+\strong{col}
+
 Die Syntax fuer Spalten, Zeilen und Block Listen \code{col} ist eine aus
 Sublisten bestehende Liste. Jede Subliste steht fuer eine eigene Spalte der
 zu erstellenden Tabelle in Matrix-Form und gibt an, was fuer die
@@ -81,6 +83,8 @@ Skalierungsfaktor der auf die jeweilige Spalte angewendet werden soll, also
 z.B. \code{scaleF="/1000"} gibt an, dass die Ergebnisse der entsprechenden
 Spalte durch 1000 dividiert werden sollen, er ist als character zu
 uebergeben.
+
+\strong{row}
 
 \code{row} ist eine 'list', 'named list' oder 'partly named list' die
 Sublisten enthalten kann aber nicht muss. Sublisten werden eigentlich nur
@@ -103,6 +107,8 @@ falls in \code{row} Raten berechnet werden sollen \code{scaleF="*1"}
 setzen). Falls \code{GroupRate}, \code{Mean} oder \code{Total} sowohl in 
 \code{row} als auch \code{col} gesetzt wurden wird fuer die jeweilige Zelle 
 im Output kein Ergebnis ausgegeben.
+
+\strong{block}
 
 \code{block} ist eine Liste, die gewisse Einschraenkungen (oder \code{NULL},
 falls keine Einschraenkung gemacht werden soll) enthaelt, welche jeweils
@@ -149,7 +155,7 @@ block <- list(NULL, "bsex==1", "bsex==2")
 ### Tabelle mit Limits (Variationskoeffizient)
 tab1 <- MakeTable(dat,col=col,row=row, block=block,error="cv", 
   lim1=0.17,lim2=0.25)
-### Tabelle ohne Limits (Variationscoeffizient)
+### Tabelle ohne Limits (Variationskoeffizient)
 tab2 <- MakeTable(dat,col=col,row=row, block=block,error="cv") 
 
 ### Commands ansehen fuer tab1

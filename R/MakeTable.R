@@ -33,13 +33,12 @@ makeEachVar <- function(x){
   return(res)
 }
 
-# estimator: est,estPrev,absChange,relChange
-
-
-
+# estimator: est,estPrev,absChange,relChan
 #' Funktion zur Erstellung von Tabellen in Matrix-Form.
 #' 
 #' Erstellt eine Tabelle in Matrix-Form.
+#' 
+#' \strong{col}
 #' 
 #' Die Syntax fuer Spalten, Zeilen und Block Listen \code{col} ist eine aus
 #' Sublisten bestehende Liste. Jede Subliste steht fuer eine eigene Spalte der
@@ -55,6 +54,8 @@ makeEachVar <- function(x){
 #' z.B. \code{scaleF="/1000"} gibt an, dass die Ergebnisse der entsprechenden
 #' Spalte durch 1000 dividiert werden sollen, er ist als character zu
 #' uebergeben.
+#' 
+#' \strong{row}
 #' 
 #' \code{row} ist eine 'list', 'named list' oder 'partly named list' die
 #' Sublisten enthalten kann aber nicht muss. Sublisten werden eigentlich nur
@@ -77,6 +78,8 @@ makeEachVar <- function(x){
 #' setzen). Falls \code{GroupRate}, \code{Mean} oder \code{Total} sowohl in 
 #' \code{row} als auch \code{col} gesetzt wurden wird fuer die jeweilige Zelle 
 #' im Output kein Ergebnis ausgegeben.
+#' 
+#' \strong{block}
 #' 
 #' \code{block} ist eine Liste, die gewisse Einschraenkungen (oder \code{NULL},
 #' falls keine Einschraenkung gemacht werden soll) enthaelt, welche jeweils
@@ -161,7 +164,7 @@ makeEachVar <- function(x){
 #' ### Tabelle mit Limits (Variationskoeffizient)
 #' tab1 <- MakeTable(dat,col=col,row=row, block=block,error="cv", 
 #'   lim1=0.17,lim2=0.25)
-#' ### Tabelle ohne Limits (Variationscoeffizient)
+#' ### Tabelle ohne Limits 
 #' tab2 <- MakeTable(dat,col=col,row=row, block=block,error="cv") 
 #' 
 #' ### Commands ansehen fuer tab1
@@ -197,13 +200,6 @@ MakeTable  <- function(dat,col,row=NULL,block=NULL,estimator="est",error="cv",
   if(any(unlist(lapply(col,function(x)is.null(x$fun)))))
     stop("col in MakeTable() muss immer einen Parameter 'fun' enthalten!")
   
-  if(!is.null(block)){
-    save.dat <- copy(dat)  
-    outlist <- list()
-    outcmd_list <- list()
-  }
-  
-  leBlock <- ifelse(length(block)>0,length(block),1)
   
   ##eigentlich brauch ich diese each-Aufspragelung nur wenn GroupRates oder sowas berechnet werden sollen...
   if((any(grepl("each",row)) || any(grepl("each",names(row))))){# && rowPriority){
@@ -270,6 +266,16 @@ MakeTable  <- function(dat,col,row=NULL,block=NULL,estimator="est",error="cv",
       row <- append(row,eachlist,after=eachind-1)
     }
   }
+  
+  
+  if(!is.null(block)){
+    save.dat <- copy(dat)  
+    outlist <- list()
+    outcmd_list <- list()
+  }
+  
+  leBlock <- ifelse(length(block)>0,length(block),1)
+  
   
   for(i in 1:leBlock){
     
@@ -527,31 +533,32 @@ MakeTable  <- function(dat,col,row=NULL,block=NULL,estimator="est",error="cv",
       
       if(!grepl("cil",error,fixed=TRUE)){
         # 1. Fall error=cv
-      outErrorval <- lapply(out,function(x)lapply(x,function(y){
-        if(estimator%in%names(y)){
-          return(c(y[[error]]))
-        }else{
-          c(sapply(y,function(z)z[[error]]))
-        }
-      }))
+        outErrorval <- lapply(out,function(x)lapply(x,function(y){
+          if(estimator%in%names(y)){
+            return(c(y[[error]]))
+          }else{
+            #gibt es diesen Fall hier ueberhaupt noch? War das nicht fuer each frueher oder so?
+            #c(sapply(y,function(z)z[[error]]))
+            stop("Extrawurst-Fall bei MakeTable() gibt es noch! Bei Angelika melden bitte!\n")
+          }
+        }))
       }else{
         # 2. Fall error=cil und ciu
         error2 <- gsub("cil","ciu",error,fixed=TRUE)
         outErrorval <- lapply(out,function(x)lapply(x,function(y){
           if(estimator%in%names(y)){
-            if(c(y[[estimator]])>=c(y[[error]]) && c(y[[estimator]])<=c(y[[error2]])){
-              return(0)
+            if(is.na(y[[error]]) | is.na(y[[error2]])){
+              return(NA)
             }else{
-              return(2)
-            }
-          }else{
-            c(sapply(y,function(z){
-              if(z[[estimator]]>=z[[error]] && z[[estimator]]<=z[[error2]]){
+              if(c(y[[estimator]])>=c(y[[error]]) && c(y[[estimator]])<=c(y[[error2]])){
                 return(0)
               }else{
                 return(2)
               }
-            }))
+            }
+          }else{
+            #gibt es diesen Fall hier ueberhaupt noch? War das nicht fuer each frueher oder so?
+            stop("Extrawurst-Fall bei MakeTable() gibt es noch! Bei Angelika melden bitte!\n")
           }
         }))
       }
