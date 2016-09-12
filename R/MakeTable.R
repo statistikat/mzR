@@ -104,9 +104,10 @@ makeEachVar <- function(x){
 #' @param error character um festzulegen, welcher Genauigkeitsschaetzer zur Markierung von Zellen verwendet werden soll. 
 #' Auswahlmoeglichkeiten sind \code{"cv"} (Variationskoeffizient) und \code{"ci"} (Konfidenzintervall). 
 #' Sollte \code{error="cv"} gewaehlt werden, so sind die Parameter \code{lim1} bzw. \code{lim2} gegebenenfalls zu spezifizieren. 
-#' Falls jedoch \code{error="ci"} gewaehlt wird, so sind diese Limits nicht notwendig da in diesem Fall geschaut wird, ob der jeweilige 
-#' Schaetzer \code{estimator} innerhalb des Konfidenzintervalls liegt. Man kann jedoch \code{markLeft1}, \code{markRight1} und \code{markValue1}
-#' spezifizieren falls die signifikanten Zellen anders als durch die Defaulteinstellung 
+#' Falls jedoch \code{error="ci"} gewaehlt wird, so sind diese Limits nicht notwendig, da in diesem Fall untersucht wird, 
+#' ob der Schaetzer nicht-signifikant ist, ob also das jeweilige Konfidenzintervall den Wert 0 enthaelt. 
+#' Man kann jedoch \code{markLeft1}, \code{markRight1} und \code{markValue1}
+#' spezifizieren, falls die nicht-signifikanten Zellen anders als durch die Defaulteinstellung 
 #' \code{markLeft1 = "("}, \code{markRight1 = ")"} und \code{markValue1 = NULL} markiert werden sollen.
 #' @param lim1 numerischer Wert: falls \code{lim1}>\code{error}, wird der
 #' entsprechende Wert von \code{estimator} in der Tabelle durch
@@ -132,40 +133,52 @@ makeEachVar <- function(x){
 #' \code{\link{FillExcelTemplate},\link{MakeAKETimeInstantsTable},\link{ImportData},\link{IndivImportData}}
 #' @export
 #' @examples
-#' \dontrun{
-#' dat <- ImportData(year=2014,quarter=4)
+#' \dontrun{dat <- ImportData(year=2014,quarter=4,comp_diff_lag = 1)
 #' ### Spalten definieren
-#' col <- list()
-#' col[[length(col)+1]] <- list(fun="GroupSize",TFstring="balt>=15&balt<=74",
-#'   digits=0, scaleF="/1000")
-#' col[[length(col)+1]] <- list(fun="GroupSize",TFstring="balt>=15&balt<=25",
-#'   digits=0, scaleF="/1000")
-#' col[[length(col)+1]] <- list(fun="GroupRate",TFstring="balt>=15&balt<=25", 
-#'   TFstring2="balt>=15&balt<=74",digits=1)
-#' col[[length(col)+1]] <- list(fun="GroupRate",
-#'   TFstring="xerwstat==1&balt>=15&balt<=74", 
-#'   TFstring2="xerwstat%in%c(1,2)&balt>=15&balt<=74",digits=1)
-#' col[[length(col)+1]] <- list(fun="Total",
-#'   TFstring="xerwstat==1&balt>=15&balt<=74",var="dtstd",
-#'   digits=2, scaleF="/24/365")
-#' ### Zeilen definieren
-#' row <- list(
-#'   NULL,
-#'   each="xnuts2",
-#'   list(TFstring="bpras!=1 & balt>=15 & balt<=64",scaleF="*1"),
-#'   each="bsex+xnuts2",
-#'   TFstring="balt>=15&balt<=25"
-#' )
-#' 
-#' ### Bloecke definieren
-#' block <- list(NULL, "bsex==1", "bsex==2")
-#' 
-#' ### Erstellen 2 Tabellen fuer FillExcelTemplate(), einmal mit und einmal ohne Limits.  
-#' ### Tabelle mit Limits (Variationskoeffizient)
-#' tab1 <- MakeTable(dat,col=col,row=row, block=block,error="cv", 
-#'   lim1=0.17,lim2=0.25)
-#' ### Tabelle ohne Limits 
-#' tab2 <- MakeTable(dat,col=col,row=row, block=block,error="cv") 
+#'col <- list()
+#'col[[length(col)+1]] <- list(fun="GroupSize",TFstring="balt>=15&balt<=74",
+#'                             digits=3, scaleF="/1000")
+#'col[[length(col)+1]] <- list(fun="GroupSize",TFstring="balt>=15&balt<=25",
+#'                             digits=3, scaleF="/1000")
+#'col[[length(col)+1]] <- list(fun="GroupRate",TFstring="balt>=15&balt<=25", 
+#'                             TFstring2="balt>=15&balt<=74", digits=3)
+#'col[[length(col)+1]] <- list(fun="GroupRate",
+#'                             TFstring="xerwstat==1&balt>=15&balt<=74", 
+#'                             TFstring2="xerwstat%in%c(1,2)&balt>=15&balt<=74", digits=3)
+#'col[[length(col)+1]] <- list(fun="Total",
+#'                             TFstring="xerwstat==1&balt>=15&balt<=74",var="dtstd",
+#'                             digits=3, scaleF="/24/365")
+#'### Zeilen definieren
+#'row <- list(
+#'  NULL,
+#'  each="xnuts2",
+#'  list(TFstring="bpras!=1 & balt>=15 & balt<=64", scaleF="*1"),
+#'  each="rbpkin+xbstaat",
+#'  TFstring="balt>=15&balt<=25"
+#')
+#'
+#'### Bloecke definieren
+#'block <- list(NULL, "bsex==1", "bsex==2")
+#'
+#'### Erstellen 3 Tabellen fuer FillExcelTemplate(), jeweils mit verschiedenen Regeln 
+#'##  zur Kennzeichnung von bestimmten Werten
+#'##  Achtung: kann durchaus laenger dauern!
+#'
+#'### 1. Tabelle mit Limits (bezogen auf Variationskoeffizient)
+#'tab1 <- MakeTable(dat, col=col, row=row, block=block, error="cv", 
+#'                  lim1=0.17, lim2=0.25)
+#'### 2. Tabelle ohne Limits und Default-Error-Einstellung liefert unmarkierte Zellen-Werte
+#'tab2 <- MakeTable(dat, col=col, row=row, block=block) 
+#'
+#'### 3. Tabelle der relativen Veraenderungen vom 3. Quartal 2014 aufs 4. Quartal 2014 
+#'##  Nicht-signifikante Schaetzwerte (Konfidenzintervall enthaelt den Wert 0) 
+#'##  werden durch * markiert.
+#'##  Achtung: bei einigen col-Listenelementen wurde scaleF spezifiziert. 
+#'##  Das macht hier fuer Veraenderungen keinen Sinn, wird aber der Einfachheit halber 
+#'##  fuer dieses Beispiel so belassen.
+#'tab3 <- MakeTable(dat, col=col, row=row, block=block, estimator="relChange", error="ci",
+#'                  markLeft1="",markRight1="*",markValue1=NULL) 
+#'
 #' 
 #' ### Commands ansehen fuer tab1
 #' tab1_commands <- MakeTable(dat,col=col,row=row, block=block,error="cv", 
@@ -550,10 +563,10 @@ MakeTable  <- function(dat,col,row=NULL,block=NULL,estimator="est",error="cv",
             if(is.na(y[[error]]) | is.na(y[[error2]])){
               return(NA)
             }else{
-              if(c(y[[estimator]])>=c(y[[error]]) && c(y[[estimator]])<=c(y[[error2]])){
-                return(0)
+              if(c(y[[error]])<=0 && c(y[[error2]])>=0){#abfragen ob 0 im KI liegt
+                return(2)#falls ja, mit markLeft1 und markLeft2 markieren
               }else{
-                return(2)
+                return(0)
               }
             }
           }else{
