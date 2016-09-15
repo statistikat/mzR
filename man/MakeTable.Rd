@@ -181,6 +181,6 @@ tab1_commands[[1]][[3]][[4]]
 
 }
 \seealso{
-\code{\link{FillExcelTemplate},\link{MakeAKETimeInstantsTable},\link{ImportData},\link{IndivImportData}}
+\code{\link{FillExcelTemplate},\link{MakeQT},\link{ImportDatalistQT},\link{ImportData},\link{IndivImportData},\link{ImportAndMerge}}
 }
 

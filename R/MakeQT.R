@@ -1,14 +1,15 @@
-## Nur fuer Hausinterne Tabellen die ueber ImportData funktionieren; nicht IndivImportData.
-# TO DO: alle lim Parameter von MakeTable hier auch als Parameter dazugeben
-
-
 #' Sehr spezifische Funktion zur Erstellung von Tabellen im
-#' MZ-Quartalsbericht-Format basierend auf MZ-Quartalsdaten die automatisch eingelesen werden.
+#' MZ-Quartalsbericht-Format.
 #' 
 #' Funktion erstellt Tabellen in einem Format das im
-#' Mikrozensus-Quartalsbericht ueblich ist. Die zugehoerigen MZ-Daten werden 
-#' dabei automatisch dem STAT-Filemanagement entsprechend eingelesen, d.h. diese 
-#' Funktion funktioniert nur STAT-intern
+#' Mikrozensus-Quartalsbericht ueblich ist, also mit Ergebnissen fuer verschiedene Zeitpunkte. 
+#' Die zugehoerigen MZ-Daten muessen dabei vorher mit der Funktion \link{ImportDataListQT} 
+#' eingelesen werden.
+#' 
+#' Die zur Erstellung der Quartalsberichts-Tabellen benoetigten Daten muessen zuvor mit
+#' der Funktion \link{ImportDataListQT} eingelesen werden.
+#' 
+#' \strong{col}
 #' 
 #' \code{col} ist eine aus Sublisten bestehende Liste. Jede Subliste steht fuer
 #' eine eigene Spalte der zu erstellenden Tabelle in Matrix-Form und gibt an,
@@ -24,6 +25,11 @@
 #' Ergebnisse der entsprechenden Spalte durch 1000 dividiert werden sollen, er
 #' ist als character zu uebergeben.
 #' 
+#' \strong{row}
+#' 
+#' \code{row} entspricht in dieser Funktion im Prinzip dem 
+#' \code{block}-Parameter von \link{MakeTable}.
+#' 
 #' \code{row} ist eine 'list', 'named list' oder 'partly named list' die
 #' Sublisten enthalten kann aber nicht muss. Sublisten werden eigentlich nur
 #' uebergeben wenn einem Element aus \code{row} mehr als ein Parameter
@@ -36,19 +42,17 @@
 #' falls in \code{row} Raten berechnet werden sollen \code{scaleF="*1"}
 #' setzen). Dasselbe gilt weitgehend auch fuer \code{fun}, solange es Sinn
 #' macht - hier kann es zu Faellen kommen wo kein Ergebnis ausgegeben werden
-#' kann.
+#' kann. 
 #' 
-#' Info: \code{returnCommands} wie in \code{MakeTable()} ist hier (noch) nicht
-#' implementiert, da diese Funktion eigentlich nur als Beispiel dienen
-#' sollte... Kann aber bei Bedarf gemacht werden.
+#' Info: \code{returnCommands} wie in \code{MakeTable()} ist hier (noch?) nicht
+#' implementiert.
 #' 
+#' @param datalist Output-Objekt der Funktion ImportDataListQT()
 #' @param col Listenobjekt um Spalten zu definieren, siehe Details.
 #' @param row Listenobjekt oder NULL um Zeilen zu definieren, siehe Details.
 #' @param timeInstant numerischer Vektor mit 2 Elementen: c(jahr, quartal).
 #' Hier gibt man den Zeitpunkt an auf den sich alle Ergebnisse im weitesten
 #' Sinn beziehen sollen, also i.d.R. das aktuellste Quartal.
-#' @param nbw numerischer Wert: Anzahl an Bootstrap-Gewichten die eingelesen
-#' werden soll (z.B. um Rechenzeit beim Aufsetzen der Tabellen zu verkuerzen).
 #' @param lim1 numerischer Wert: falls \code{lim1}>\code{error}, wird der
 #' entsprechende Wert von \code{estimator} in der Tabelle durch
 #' \code{markLeft1}, \code{markValue1} und \code{markRight1} ersetzt.
@@ -67,10 +71,16 @@
 #' meisten Tabellen im MZ-Quartalsbericht - mit durch \code{col} und \code{row}
 #' definierten Spalten und Zeilen fuer bestimmte Zeitpunkte und Veraenderungen.
 #' @seealso
-#' \code{\link{MakeTable},\link{FillExcelTemplate},\link{ImportData},\link{IndivImportData}}
+#' \code{\link{MakeTable},\link{FillExcelTemplate},\link{ImportDataListQT},\link{ImportData},\link{IndivImportData},\link{ImportAndMerge}}
 #' @export
 #' @examples
 #' \dontrun{
+#' ### Daten einlesen (wie im Beispiel zur Funktion ImportDataListQT)
+#' 
+#' datalist <- ImportDataListQT(timeInstant=c(2014,4), nbw=5, whichVar=c("rbpkin"))
+#' 
+#' ### Tabelle A1 im Quartalsbericht:
+#' 
 #' ### Spalten
 #' col <- list()
 #' col[[length(col)+1]] <- list(fun="GroupSize",
@@ -110,20 +120,26 @@
 #' row <- list(NULL,each="bsex")  
 #' 
 #' ### Erstellen 2 Tabellen fuer FillExcelTemplate();
-#' ### einmal mit und einmal ohne Limits 
+#' ### einmal mit und einmal ohne Limits (enthaelt gegebenenfalls characters)
 #' # Tabelle 1: Mit Limits
-#' tab1 <- MakeTimeInstantsTable(col=col,row=row,timeInstant=c(2014,4),
-#'   nbw=5, lim1=0.17,lim2=0.25)
-#' # Tabelle 2: Ohne Limits
-#' tab2 <- MakeTimeInstantsTable(col=col,row=row,timeInstant=c(2014,4),nbw=5)
+#' tab1 <- MakeQT(datalist,col=col,row=row,timeInstant=c(2014,4),
+#'   lim1=0.17,lim2=0.25)
+#' # Tabelle 2: Ohne Limits (enthaelt nur numerische Werte)
+#' tab2 <- MakeQT(datalist,col=col,row=row,timeInstant=c(2014,4))
 #' }
 #' 
-MakeAKETimeInstantsTable <- function(col,row=NULL,timeInstant,nbw=NULL,
-                                  lim1=Inf,markLeft1="(",markRight1=")",markValue1=NULL,
-                                  lim2=Inf,markLeft2="(",markRight2=")",markValue2="x"){
+
+
+
+#saveRDS(datalist,"//DatenB/B_MZ/AKE Neu ab 2004/06 Ergebnisse/Quartalsberichte Produktion/datalist_qt.Rds")
+
+MakeQT <- function(datalist,col,row=NULL,timeInstant,
+                   lim1=Inf,markLeft1="(",markRight1=")",markValue1=NULL,
+                   lim2=Inf,markLeft2="(",markRight2=")",markValue2="x"){
+  
+  
   ende <- timeInstant  
-  # ende <- c(2014,4) ### JAHR und QUARTAL eingeben:
-  # nbw=5  
+  
   tInterval <- format(time(ts(start=start(lag(ts(end=ende,frequency=4),3)),end=ende,frequency=4)))
   jahr_seq <- as.numeric(sapply(strsplit(tInterval, ".",fixed=TRUE),function(x)x[1]))
   quartal_seq <- as.numeric(mapvalues(format(sapply(strsplit(tInterval, ".",fixed=TRUE),function(x)x[2])), 
@@ -150,7 +166,7 @@ MakeAKETimeInstantsTable <- function(col,row=NULL,timeInstant,nbw=NULL,
     
     if(jahr==ende[1]&&quartal==ende[2]){
       ### Aktuelles Quartal
-      dat <- ImportData(year=jahr,quarter=quartal,comp_diff_lag=1,nbw=nbw)
+      dat <- datalist[[paste0("dat_",jahr,"q",quartal,"vq")]]
       res[[length(res)+1]] <- MakeTable(dat,col=col,row=row, error="cv", lim1=lim1,lim2=lim2)
       names(res)[length(res)] <- paste0(quartal,". Quartal ", jahr)
       ### Vorquartal
@@ -165,11 +181,11 @@ MakeAKETimeInstantsTable <- function(col,row=NULL,timeInstant,nbw=NULL,
       rm(dat);gc()
       
       ### Vorjahresquartal
-      dat <- ImportData(year=jahr,quarter=quartal,comp_diff_lag=4,nbw=nbw)
+      dat <- datalist[[paste0("dat_",jahr,"q",quartal,"vjq")]]
       res[[length(res)+1]] <- MakeTable(dat,col=col,row=row, estimator="estPrev", error="cv", lim1=lim1,lim2=lim2)
       names(res)[length(res)] <- paste0(vjq_quartal,". Quartal ", vjq_jahr)
       if(lim1==Inf && lim2==Inf){
-      res[[length(res)+1]] <- MakeTable(dat,col=col,row=row, estimator="absChange", error="cv",lim1=lim1,lim2=lim2)
+        res[[length(res)+1]] <- MakeTable(dat,col=col,row=row, estimator="absChange", error="cv",lim1=lim1,lim2=lim2)
       }else{
         res[[length(res)+1]] <- MakeTable(dat,col=col,row=row, estimator="absChange", error="ci",markLeft1 = "", markRight1 = "*")
       }
@@ -177,7 +193,7 @@ MakeAKETimeInstantsTable <- function(col,row=NULL,timeInstant,nbw=NULL,
       rm(dat);gc()
     }else if(!identical(c(jahr,quartal),c(jahr_seq[length(jahr_seq)-1] ,quartal_seq[length(quartal_seq)-1]))){
       ### Rest
-      dat <- ImportData(year=jahr,quarter=quartal,nbw=nbw)
+      dat <- datalist[[paste0("dat_",jahr,"q",quartal)]]
       res[[length(res)+1]] <- MakeTable(dat,col=col,row=row, error="cv", lim1=lim1,lim2=lim2)
       names(res)[length(res)] <- paste0(quartal,". Quartal ", jahr)
       rm(dat);gc()
@@ -191,26 +207,12 @@ MakeAKETimeInstantsTable <- function(col,row=NULL,timeInstant,nbw=NULL,
   nbloecke <- nrow(na.omit(res[[1]]))
   bloecke <- list()
   
-  # if(emptyRows){
-  #   ## neue Bloecke formen:
-  #   for(i in 1:nbloecke){
-  #     bla <- do.call(rbind,lapply(res,function(x)na.omit(x)[i,]))
-  #     
-  #     zeile <- as.data.frame(matrix(rep(NA,(ncol(bla))),nrow=1))
-  #     #row.names(zeile) <- rownames(na.omit(res[[1]]))[i]
-  #     row.names(zeile) <- ""
-  #     bla <- rbind(bla[1:(which(rownames(bla)==paste0(quartal,". Quartal ", jahr," Diffvjq")))-1,], zeile, 
-  #                  bla[(which(rownames(bla)==paste0(quartal,". Quartal ", jahr," Diffvjq"))):nrow(bla),])
-  #     bloecke[[length(bloecke)+1]] <- rbind(zeile,zeile,bla)
-  #     #bloecke[[length(bloecke)+1]] <- do.call(rbind,lapply(res,function(x)na.omit(x)[i,]))
-  #     names(bloecke)[length(bloecke)] <-rownames(na.omit(res[[1]]))[i]
-  #   }
-  # }else{
-    ## neue Bloecke formen:
-    for(i in 1:nbloecke){
-      bloecke[[length(bloecke)+1]] <- do.call(rbind,lapply(res,function(x)na.omit(x)[i,]))
-    }
-  # } 
+  
+  ## neue Bloecke formen:
+  for(i in 1:nbloecke){
+    bloecke[[length(bloecke)+1]] <- do.call(rbind,lapply(res,function(x)na.omit(x)[i,]))
+  }
+  
   
   (ergebnis <- do.call(rbind,bloecke))  
   

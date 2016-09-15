@@ -8,7 +8,7 @@
 #' den aktuelleren der beiden Zeitpunkte falls prev_inFile ungleich NULL).
 #' Eingelesen werden koennen Files vom Typ .sav, .csv und .csv.gz.
 #' @param prev_inFile Falls ungleich NULL, Pfad der Datei die eingelesen werden
-#' soll (bezogen auf den weniger aktuellen Zeitpunkt).Eingelesen werden koennen
+#' soll (bezogen auf den weniger aktuellen Zeitpunkt). Eingelesen werden koennen
 #' Files vom Typ .sav, .csv und .csv.gz.
 #' @param mergeBy Character Vektor mit Variable(n) nach denen gemerged werden
 #' soll (default="asbper").
