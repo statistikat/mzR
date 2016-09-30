@@ -151,10 +151,24 @@ FillExcelTemplate <- function(tab1,tab2=NULL,startingPoints,nrEmptyRows,
     }
     
     if(!is.null(inheritTemplateColNr)){
-      if(any(inheritTemplateColNr>(ncol(tab1)+length(inheritTemplateColNr)+1))){#bzw +length(customColNr) - falls wir das mal aendern
+      if(any(inheritTemplateColNr>(ncol(tab1)+length(inheritTemplateColNr)+1))){
+        #bzw +length(customColNr) - falls wir das mal aendern
         warning("\n\n\nACHTUNG: inheritTemplateColNr ",
                 paste0(inheritTemplateColNr[which(inheritTemplateColNr>(ncol(tab1)+length(inheritTemplateColNr)+1))],collapse=", "),
-                " ist zu gross (ausserhalb der Tabelle) und kann evt zu Problemen fuehren!!!!\n\n")
+                " ist zu gross (ausserhalb der Tabelle) und wird aus inheritTemplateColNr entfernt!!!!\n\n")
+        
+        inheritTemplateColNr <- inheritTemplateColNr[-which(inheritTemplateColNr>(ncol(tab1)+length(inheritTemplateColNr)+1))]
+        
+        if(length(inheritTemplateColNr)==0){
+          inheritTemplateColNr <- NULL
+        }
+      }   
+      if(0%in%inheritTemplateColNr){
+        if(identical(customColNr,0)){
+          inheritTemplateColNr <- NULL
+        }else{
+          stop("inheritTemplateColNr enthaelt den Wert 0, das macht keinen Sinn :-( !\n")
+        }
       }
     }
     
@@ -163,16 +177,6 @@ FillExcelTemplate <- function(tab1,tab2=NULL,startingPoints,nrEmptyRows,
       tab1ColNr <- tab1ColNr[-c(inheritTemplateColNr,customColNr)]  
     }
     
-    # ## tab1ColNr,inheritTemplateColNr,customColNr sollen gemeinsam eine einzelne ununterbrochene Zahlenfolge mit Schrittweite 1 bilden.
-    # if(length(seqle(sort(c(tab1ColNr,inheritTemplateColNr,customColNr)))$lengths)>1 ||
-    #   all(!seqle(sort(c(tab1ColNr,inheritTemplateColNr,customColNr)))$lengths==length(c(tab1ColNr,inheritTemplateColNr,customColNr)))){
-    #   stop("\n\n Bitte Spezifizierung von tab1ColNr und/oder inheritTemplateColNr und/oder customColNr kontrollieren!\n",
-    #        " Gemeinsam sollen sie eine ununterbrochene Zahlenfolge mit Schrittweite 1 bilden, die den Spaltennummern der gewuenschten Tabelle im Ziel-Excel-Sheet entsprechen. ",
-    #        "Diese Zahlenfolge muss den Wert 1 enthalten.\n",
-    #        "Die hier uebergebene Zahlenfolge sieht folgendermassen aus:\n",
-    #        paste0(sort(c(tab1ColNr,inheritTemplateColNr,customColNr)),collapse=", "),
-    #        "\n")
-    # }
     
     ## Leerzeilen zu tab1 und tab2 hinzufuegen
     erg <- Tabelle_bearbeiten(tab1,startingPoints=startingPoints,nrEmptyRows=nrEmptyRows)
@@ -275,41 +279,9 @@ FillExcelTemplate <- function(tab1,tab2=NULL,startingPoints,nrEmptyRows,
     
     cat("\n",sheets[sheet], " wird bearbeitet.\n")
     
-    # # Befuellte Zeilen aus erg heraussuchen
-    # zeilen_mit_inhalt <- as.numeric(which(apply(erg,1,function(x)any(!is.na(x)))))
-    # #zeilen_mit_inhalt <- as.numeric(which(apply(erg,1,function(x)all(!is.na(x)))))
-    # outlist <- list()
-    # i_orig <- i <- 1
-    # 
-    # while(i<=length(zeilen_mit_inhalt)){
-    #   while((zeilen_mit_inhalt[i]+1)%in%zeilen_mit_inhalt){
-    #     i <- i+1
-    #   }
-    #   outlist[[length(outlist)+1]] <- erg[zeilen_mit_inhalt[i_orig]:zeilen_mit_inhalt[i],]  
-    #   i_orig <- i+1
-    #   i <- i+1
-    # }
-    # 
-    # if(showSplitTab){
-    #   return(outlist)
-    # }
-    # outlist.orig <- outlist
-    # # da Klammern und x-e in erg vorkommen, sind die Zellenwerte nicht numerisch. Das wollen wir wieder aendern.
-    # # durch as.numeric kommt es bei Zellen mit Characterwerten zu Missings -> nicht beunruhigend, die befuellen wir spaeter
-    # outlist <- lapply(outlist, function(x){
-    #   if(is.matrix(x))
-    #     suppressWarnings(apply(x,2,function(y) as.numeric(y)))
-    #   else if(is.vector(x))
-    #     suppressWarnings(as.numeric(x))
-    # })
-    # 
-    # ## erg mit beruecksichtigten limits
-    # erg <- as.data.table(erg)
-    # erg2 <- as.data.table(erg2)
     
-    
-    save.erg <- copy(erg)
-    save.erg2 <- copy(erg2)
+    # save.erg <- copy(erg)
+    # save.erg2 <- copy(erg2)
     
     
     if((!is.null(inheritTemplateColNr) && !any(inheritTemplateColNr==0)) || !is.null(customCol)){
@@ -337,24 +309,6 @@ FillExcelTemplate <- function(tab1,tab2=NULL,startingPoints,nrEmptyRows,
     
     # erg <- copy(save.erg)
     # erg2 <- copy(save.erg2)
-    
-    # if(!is.null(customCol)){
-    #   erg_customCol <- Tabelle_bearbeiten(customCol,startingPoints=startingPoints,nrEmptyRows=nrEmptyRows)
-    #   
-    #   if(customColNr>1){
-    #     erg <- cbind(erg[,1:(customColNr-1),with=FALSE],erg_customCol,erg[,customColNr:ncol(erg),with=FALSE])
-    #   }else if(customColNr==1){
-    #     erg <- cbind(erg_customCol,erg)
-    #   }  
-    #   # Fuer erg2 leere Spalte initialisieren
-    #   if(customColNr>1){
-    #     erg2 <- cbind(erg2[,1:(customColNr-1),with=FALSE],rep(NA,nrow(erg2)),erg2[,customColNr:ncol(erg2),with=FALSE])
-    #   }else if(customColNr==1){
-    #     erg2 <- cbind(rep(NA,nrow(erg2)),erg2)
-    #   }  
-    #   colnames(erg) <- LETTERS[1:ncol(erg)]
-    #   colnames(erg2) <- LETTERS[1:ncol(erg2)]
-    # }
     
     
     # Befuellte Zeilen aus erg heraussuchen
@@ -393,7 +347,7 @@ FillExcelTemplate <- function(tab1,tab2=NULL,startingPoints,nrEmptyRows,
     if(!is.null(footnote)){
       writeWorksheet (wb, footnote, sheet=sheets[sheet], startRow=nrow(erg)+2, startCol=1 ,header=FALSE )
     }
-    # tab1ColNr, customColNr, inheritTemplateColNr
+    
     
     # wir suchen die ausgeklammerten Zellenwerte usw. 
     ausgeklammertes <- apply(erg,2,function(x)grep("(",x,fixed=TRUE)) # alle, d.h. (Wert) und (x)
@@ -432,122 +386,6 @@ FillExcelTemplate <- function(tab1,tab2=NULL,startingPoints,nrEmptyRows,
       notanumber <- removeFlag(notanumber,colNr=inheritTemplateColNr)
     }
     
-    # Dann werden ab Startpunkten die Zeilen mit unseren outlist-Bloecken befuellt
-    # Ausserdem werden gegebenenfalls die Spalten definiert, die vom Original-Excel-File uebernommen werden sollen, also leer gelassen werden.
-    # Default ist die erste Spalte, also inheritTemplateColNr=1
-    
-    # ## Vielleicht hier doch eine zusaetzliche If-Abfrage mit der alten Schleife fuer den am haeufigsten vorkommenden Fall inheritTemplateColNr=1
-    # #inheritTemplateColNr_orig <- inheritTemplateColNr
-    # 
-    # if(!is.null(customCol)){
-    #    if(length(zeilen_mit_inhalt)==length(customCol)){
-    #     for(i in 1:length(zeilen_mit_inhalt)){ 
-    #       writeWorksheet (wb, customCol[i], sheet=sheets[sheet], startRow=zeilen_mit_inhalt[i], startCol=customColNr ,header=FALSE )
-    #     }
-    #   }else{
-    #     stop("length(customCol)!=length(zeilen_mit_inhalt)! Derzeit sind die Leerzeilen fix vorgegeben ueber startingPoints und nrEmptyRows. Bitte in customCol-Parameter beruecksichtigen.\n")
-    #   }
-    # }
-    # 
-    # 
-    # # seqle <- function(x,incr=1) { 
-    # #   if(!is.numeric(x)) x <- as.numeric(x) 
-    # #   n <- length(x)  
-    # #   y <- x[-1L] != x[-n] + incr 
-    # #   i <- c(which(y|is.na(y)),n) 
-    # #   list(lengths = diff(c(0L,i)),
-    # #        values = x[head(c(0L,i)+1L,-1L)]) 
-    # # } 
-    
-    
-    
-    # if(!is.null(inheritTemplateColNr) && !any(inheritTemplateColNr==0)){
-    #   
-    #   # customCol wird ja (derzeit?) extra rausgeschrieben
-    #   if(!is.null(customColNr)){
-    #     inheritTemplateColNr <- sort(c(inheritTemplateColNr,customColNr)) 
-    #   }
-    #   
-    #   sel_seq <- seqle(inheritTemplateColNr)
-    #   values <- sel_seq$values[which(sel_seq$lengths>1)]
-    #   lengths <- sel_seq$lengths[which(sel_seq$lengths>1)]
-    #   if(length(values)>0){
-    #     for(i in 1:length(values)){
-    #       # seq(values[i],length=lengths[i])[-1]
-    #       inheritTemplateColNr <- inheritTemplateColNr[-which(inheritTemplateColNr%in%seq(values[i],length=lengths[i])[-1])]
-    #     }
-    #   }
-    #   
-    #   if(max(inheritTemplateColNr)<=ncol(tab1)){
-    #   inheritTemplateColNr <- c(inheritTemplateColNr,ncol(tab1)+1)
-    #   }else{
-    #     inheritTemplateColNr <- c(inheritTemplateColNr,max(inheritTemplateColNr)+1)
-    #   }
-    #   
-    #   for(i in 1:length(startingPoints)){
-    #     
-    #     if(is.vector(outlist[[i]])){
-    #       dim(outlist[[i]]) <- c(1,length(outlist[[i]]))
-    #     }
-    #     
-    #     if(length(inheritTemplateColNr)>2 && inheritTemplateColNr[1]!=1){
-    #       # erster Schritt
-    #       write_to_excel <- outlist[[i]][,1:(inheritTemplateColNr[1]-1)]
-    #       if(is.vector(write_to_excel)){
-    #         dim(write_to_excel) <- c(1,length(write_to_excel))
-    #       }
-    #       writeWorksheet (wb, write_to_excel, sheet=sheets[sheet], startRow=startingPoints[i], startCol=1 ,header=FALSE )
-    #       # weitere Schritte
-    #       for(j in 2:(length(inheritTemplateColNr)-1)){
-    #         write_to_excel <-outlist[[i]][,inheritTemplateColNr[j]:(inheritTemplateColNr[j+1]-1)]
-    #         if(is.vector(write_to_excel)){
-    #           dim(write_to_excel) <- c(1,length(write_to_excel))
-    #         }
-    #         if(inheritTemplateColNr[j]%in%values){
-    #           startCol <- inheritTemplateColNr[j]+lengths[j]
-    #         }else{
-    #           startCol <- inheritTemplateColNr[j]+1
-    #         }
-    #         writeWorksheet (wb, write_to_excel, sheet=sheets[sheet], 
-    #                         startRow=startingPoints[i], startCol=startCol ,header=FALSE )
-    #       }
-    #     }else{
-    #       if(length(inheritTemplateColNr)==2 && inheritTemplateColNr[1]!=1){
-    #         write_to_excel <-outlist[[i]][,1:(inheritTemplateColNr[1]-1)]
-    #         if(is.vector(write_to_excel)){
-    #           dim(write_to_excel) <- c(1,length(write_to_excel))
-    #         }
-    #         writeWorksheet (wb, write_to_excel, sheet=sheets[sheet], startRow=startingPoints[i], startCol=1 ,header=FALSE )
-    #       }  
-    #       for(j in 1:(length(inheritTemplateColNr)-1)){
-    #        #write_to_excel <- outlist[[i]][,inheritTemplateColNr[j]:(inheritTemplateColNr[j+1]-1)]
-    #         write_to_excel <- outlist[[i]][,inheritTemplateColNr[j]:(inheritTemplateColNr[j+1]-1)]
-    #         if(is.vector(write_to_excel)){
-    #           dim(write_to_excel) <- c(1,length(write_to_excel))
-    #         }
-    #         if(inheritTemplateColNr[j]%in%values){
-    #           startCol <- inheritTemplateColNr[j]+lengths[j]
-    #         }else{
-    #           startCol <- inheritTemplateColNr[j]+1
-    #         }
-    #         writeWorksheet (wb, write_to_excel, sheet=sheets[sheet], 
-    #                         startRow=startingPoints[i], startCol=startCol ,header=FALSE )
-    #         
-    #       }
-    #     }
-    #   }
-    #   
-    #   #inheritTemplateColNr <- inheritTemplateColNr_orig
-    # }else if(is.null(inheritTemplateColNr) ||  (length(inheritTemplateColNr)==1 && inheritTemplateColNr==0)){
-    #   for(i in 1:length(startingPoints)){
-    #     
-    #     if(is.vector(outlist[[i]])){
-    #       dim(outlist[[i]]) <- c(1,length(outlist[[i]]))
-    #     }
-    #     
-    #     writeWorksheet (wb, outlist[[i]], sheet=sheets[sheet], startRow=startingPoints[i], startCol=1 ,header=FALSE )
-    #   }
-    # }
     
     writeColNr <- sort(c(tab1ColNr,customColNr))
     for(i in 1:length(startingPoints)){
