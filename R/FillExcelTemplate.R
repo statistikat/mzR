@@ -1,27 +1,47 @@
-Tabelle_bearbeiten <- function(table,ersteZeile,startingPoints,nrEmptyRows){
+Tabelle_bearbeiten <- function(table,startingPoints,nrEmptyRows){
   
   ## Leerzeilen hinzufuegen:
   for(i in 1:length(startingPoints)){
     #cat("i:",i,"\n") 
     
+    if(is.vector(table)){
+      table <- as.matrix(table,ncol = 1)
+    }
     leerzeile <- rep(NA,ncol(table))
+    
     if(nrEmptyRows[i]>1){
       leerzeile <-  matrix(rep(NA,ncol(table)*nrEmptyRows[i]),nrow=nrEmptyRows[i]) 
     }  
-    if(i==1)
+    if(i==1){
       startrow <- 0
-    else
+    }else{
       startrow=1
+    }
     
-    table <- rbind(table[startrow:(startingPoints[i]-nrEmptyRows[i]-1),],
-                   leerzeile, 
-                   table[(startingPoints[i]-nrEmptyRows[i]):nrow(table),])  
+    if(ncol(table)==1){
+      table <- rbind(as.matrix(table[startrow:(startingPoints[i]-nrEmptyRows[i]-1),]),
+                     leerzeile, 
+                     as.matrix(table[(startingPoints[i]-nrEmptyRows[i]):nrow(table),]))  
+    }else{
+      table <- rbind(table[startrow:(startingPoints[i]-nrEmptyRows[i]-1),],
+                     leerzeile, 
+                     table[(startingPoints[i]-nrEmptyRows[i]):nrow(table),])  
+    }
     
   }
   rownames(table)[rownames(table)=="leerzeile"] <- ""
   return(table)
 }
+seqle <- function(x,incr=1) { 
+  if(!is.numeric(x)) x <- as.numeric(x) 
+  n <- length(x)  
+  y <- x[-1L] != x[-n] + incr 
+  i <- c(which(y|is.na(y)),n) 
+  list(lengths = diff(c(0L,i)),
+       values = x[head(c(0L,i)+1L,-1L)]) 
+} 
 
+#table <- customCol
 
 ###?? setMissingValue(wb, value = "missing")
 
@@ -62,8 +82,11 @@ Tabelle_bearbeiten <- function(table,ersteZeile,startingPoints,nrEmptyRows){
 #' @param nrEmptyRows numerischer Vektor: Anzahl an Leerzeilen die vor
 #' \code{startingPoints} kommen sollen; eigentlich immer 1 ausser vor grossen
 #' Bloecken.
-#' @param firstCol character Vektor: enthaelt die Eintraege der ersten Tabellenspalte - falls diese 
-#' nicht aus dem Original-Excel-File uebernommen werden sollen. 
+#' @param inheritTemplateColNr numerischer Vektor: Spaltennummer/n der Tabellenspalten die vom Original-Excel-File uebernommen werden sollen.
+#' Default ist die erste Spalte, also \code{inheritTemplateColNr=1}.
+#' @param customColNr numerischer Wert: Spaltennummer der Tabellenspalte die ueber \code{customCol} selbst definiert werden soll (derzeit nur EINE moeglich). 
+#' @param customCol character Vektor: enthaelt die Eintraege der durch \code{customColNr} definierten Tabellenspalte - falls diese 
+#' nicht aus dem Original-Excel-File uebernommen werden sollen und auch nicht durch \code{MakeTable()} generiert werden. 
 #' Derzeit (kein Bedarf) wird hier ein Character Vektor ohne Missings uebergeben, die ueber \code{startingPoints} 
 #' und \code{nrEmptyRows} definierten Leerzeilen werden also einfach uebernommen.
 #' @param footnote character: Fussnote (derzeit fix 1-te Zelle der 2-ten Zeile nach Tabellenende), falls sie nicht aus dem Original-Excel-File ubernommen werden soll.
@@ -95,15 +118,63 @@ Tabelle_bearbeiten <- function(table,ersteZeile,startingPoints,nrEmptyRows){
 #' ###
 #' }
 #' 
-FillExcelTemplate <- function(tab1,tab2=NULL,startingPoints,nrEmptyRows,firstCol=NULL,footnote=NULL,f_in,sheet=1,prefixTSN="_",
+FillExcelTemplate <- function(tab1,tab2=NULL,startingPoints,nrEmptyRows,
+                              inheritTemplateColNr=1,customColNr=NULL,customCol=NULL,
+                              footnote=NULL,f_in,sheet=1,prefixTSN="_",
                               removeTemplateSheet=FALSE,removeAllTemplates=FALSE,interactive=TRUE,
                               showFinalTab=FALSE,showSplitTab=FALSE){
   if(!removeAllTemplates){
     
+    ## Fehler abfangen
     if(!file.exists(f_in)){
-      stop("File '",f_in,"' existiert nicht und kann daher nicht eingelesen werden!\n")
+      stop("\n\nFile '",f_in,"' existiert nicht und kann daher nicht eingelesen werden!\n")
+    }
+    if(!is.null(customCol) && is.null(customColNr)){
+      stop("\n\nZu customCol muss eine customColNr spezifiziert werden. Siehe Help-File!\n")
+    }
+    if(!is.null(inheritTemplateColNr) && !is.null(customCol)){
+      if(customColNr %in% inheritTemplateColNr){
+        stop("\n\ncustomColNr darf nicht gleich inheritTemplateColNr sein!\n")
+      }
+    }
+    if(!is.null(customCol)){
+      if(length(customCol)!=nrow(tab1)){
+        stop("\n\nDer Vektor customCol muss gleich viele Elemente haben wie tab1 Zeilen hat!\n")
+      }
+      if(length(customColNr)>1){
+        stop("\n\nDerzeit kann nur EINE customColNr spezifiziert werden!\n")
+      }
+      if(identical(customColNr,0)){
+        customCol <- NULL
+        customColNr <- NULL
+      }
     }
     
+    if(!is.null(inheritTemplateColNr)){
+      if(any(inheritTemplateColNr>(ncol(tab1)+length(inheritTemplateColNr)+1))){#bzw +length(customColNr) - falls wir das mal aendern
+        warning("\n\n\nACHTUNG: inheritTemplateColNr ",
+                paste0(inheritTemplateColNr[which(inheritTemplateColNr>(ncol(tab1)+length(inheritTemplateColNr)+1))],collapse=", "),
+                " ist zu gross (ausserhalb der Tabelle) und kann evt zu Problemen fuehren!!!!\n\n")
+      }
+    }
+    
+    tab1ColNr <- seq(1:(ncol(tab1)+length(inheritTemplateColNr)+length(customColNr)))
+    if(!is.null(inheritTemplateColNr) || !is.null(customColNr)){
+      tab1ColNr <- tab1ColNr[-c(inheritTemplateColNr,customColNr)]  
+    }
+    
+    # ## tab1ColNr,inheritTemplateColNr,customColNr sollen gemeinsam eine einzelne ununterbrochene Zahlenfolge mit Schrittweite 1 bilden.
+    # if(length(seqle(sort(c(tab1ColNr,inheritTemplateColNr,customColNr)))$lengths)>1 ||
+    #   all(!seqle(sort(c(tab1ColNr,inheritTemplateColNr,customColNr)))$lengths==length(c(tab1ColNr,inheritTemplateColNr,customColNr)))){
+    #   stop("\n\n Bitte Spezifizierung von tab1ColNr und/oder inheritTemplateColNr und/oder customColNr kontrollieren!\n",
+    #        " Gemeinsam sollen sie eine ununterbrochene Zahlenfolge mit Schrittweite 1 bilden, die den Spaltennummern der gewuenschten Tabelle im Ziel-Excel-Sheet entsprechen. ",
+    #        "Diese Zahlenfolge muss den Wert 1 enthalten.\n",
+    #        "Die hier uebergebene Zahlenfolge sieht folgendermassen aus:\n",
+    #        paste0(sort(c(tab1ColNr,inheritTemplateColNr,customColNr)),collapse=", "),
+    #        "\n")
+    # }
+    
+    ## Leerzeilen zu tab1 und tab2 hinzufuegen
     erg <- Tabelle_bearbeiten(tab1,startingPoints=startingPoints,nrEmptyRows=nrEmptyRows)
     if(is.null(tab2)){
       erg2 <- copy(erg)
@@ -114,6 +185,7 @@ FillExcelTemplate <- function(tab1,tab2=NULL,startingPoints,nrEmptyRows,firstCol
     if(showFinalTab){
       return(erg)
     }
+    
     ######################################################################
     ##    3. Excel-File inklusive dort vorgegebener Formate einlesen   ##
     ######################################################################
@@ -203,6 +275,88 @@ FillExcelTemplate <- function(tab1,tab2=NULL,startingPoints,nrEmptyRows,firstCol
     
     cat("\n",sheets[sheet], " wird bearbeitet.\n")
     
+    # # Befuellte Zeilen aus erg heraussuchen
+    # zeilen_mit_inhalt <- as.numeric(which(apply(erg,1,function(x)any(!is.na(x)))))
+    # #zeilen_mit_inhalt <- as.numeric(which(apply(erg,1,function(x)all(!is.na(x)))))
+    # outlist <- list()
+    # i_orig <- i <- 1
+    # 
+    # while(i<=length(zeilen_mit_inhalt)){
+    #   while((zeilen_mit_inhalt[i]+1)%in%zeilen_mit_inhalt){
+    #     i <- i+1
+    #   }
+    #   outlist[[length(outlist)+1]] <- erg[zeilen_mit_inhalt[i_orig]:zeilen_mit_inhalt[i],]  
+    #   i_orig <- i+1
+    #   i <- i+1
+    # }
+    # 
+    # if(showSplitTab){
+    #   return(outlist)
+    # }
+    # outlist.orig <- outlist
+    # # da Klammern und x-e in erg vorkommen, sind die Zellenwerte nicht numerisch. Das wollen wir wieder aendern.
+    # # durch as.numeric kommt es bei Zellen mit Characterwerten zu Missings -> nicht beunruhigend, die befuellen wir spaeter
+    # outlist <- lapply(outlist, function(x){
+    #   if(is.matrix(x))
+    #     suppressWarnings(apply(x,2,function(y) as.numeric(y)))
+    #   else if(is.vector(x))
+    #     suppressWarnings(as.numeric(x))
+    # })
+    # 
+    # ## erg mit beruecksichtigten limits
+    # erg <- as.data.table(erg)
+    # erg2 <- as.data.table(erg2)
+    
+    
+    save.erg <- copy(erg)
+    save.erg2 <- copy(erg2)
+    
+    
+    if((!is.null(inheritTemplateColNr) && !any(inheritTemplateColNr==0)) || !is.null(customCol)){
+      prepare_out_dt <- function(dt,inheritTemplateColNr, customCol, tab1ColNr){
+        
+        ncol_newdt <- length(c(inheritTemplateColNr, customColNr, tab1ColNr))
+        newdt <- data.table(matrix(nrow=nrow(dt),ncol=ncol_newdt))
+        #newdt[,(colnames(newdt)):=lapply(.SD, as.character),.SDcols=colnames(newdt)]
+        newdt[,tab1ColNr] <- data.table(dt)
+        if(!is.null(customCol) && identical(dt,erg)){
+          newdt[,customColNr]  <- Tabelle_bearbeiten(customCol,startingPoints=startingPoints,nrEmptyRows=nrEmptyRows)
+        }
+        colnames(newdt) <- LETTERS[1:ncol(newdt)]
+        return(newdt)
+        
+      }
+      erg <- prepare_out_dt(erg,inheritTemplateColNr,customCol,tab1ColNr)   
+      erg2 <- prepare_out_dt(erg2,inheritTemplateColNr,customCol,tab1ColNr)  
+    }else{
+      colnames(erg) <- LETTERS[1:ncol(erg)]
+      colnames(erg2) <- LETTERS[1:ncol(erg2)]
+      erg <- as.data.table(erg)
+      erg2 <- as.data.table(erg2)
+    }
+    
+    # erg <- copy(save.erg)
+    # erg2 <- copy(save.erg2)
+    
+    # if(!is.null(customCol)){
+    #   erg_customCol <- Tabelle_bearbeiten(customCol,startingPoints=startingPoints,nrEmptyRows=nrEmptyRows)
+    #   
+    #   if(customColNr>1){
+    #     erg <- cbind(erg[,1:(customColNr-1),with=FALSE],erg_customCol,erg[,customColNr:ncol(erg),with=FALSE])
+    #   }else if(customColNr==1){
+    #     erg <- cbind(erg_customCol,erg)
+    #   }  
+    #   # Fuer erg2 leere Spalte initialisieren
+    #   if(customColNr>1){
+    #     erg2 <- cbind(erg2[,1:(customColNr-1),with=FALSE],rep(NA,nrow(erg2)),erg2[,customColNr:ncol(erg2),with=FALSE])
+    #   }else if(customColNr==1){
+    #     erg2 <- cbind(rep(NA,nrow(erg2)),erg2)
+    #   }  
+    #   colnames(erg) <- LETTERS[1:ncol(erg)]
+    #   colnames(erg2) <- LETTERS[1:ncol(erg2)]
+    # }
+    
+    
     # Befuellte Zeilen aus erg heraussuchen
     zeilen_mit_inhalt <- as.numeric(which(apply(erg,1,function(x)any(!is.na(x)))))
     #zeilen_mit_inhalt <- as.numeric(which(apply(erg,1,function(x)all(!is.na(x)))))
@@ -222,64 +376,188 @@ FillExcelTemplate <- function(tab1,tab2=NULL,startingPoints,nrEmptyRows,firstCol
       return(outlist)
     }
     outlist.orig <- outlist
+    
+    
     # da Klammern und x-e in erg vorkommen, sind die Zellenwerte nicht numerisch. Das wollen wir wieder aendern.
     # durch as.numeric kommt es bei Zellen mit Characterwerten zu Missings -> nicht beunruhigend, die befuellen wir spaeter
+    # Output hier ist uebrigens eine Liste mit data.table-Elementen
     outlist <- lapply(outlist, function(x){
-      if(is.matrix(x))
-        suppressWarnings(apply(x,2,function(y) as.numeric(y)))
-      else if(is.vector(x))
-        suppressWarnings(as.numeric(x))
-    })
-    # # jetzt Runden wir unsere Zellenwerte (wollen wir ja nicht, das soll ein Format in Excel uebernehmen)
-    # outlist <- lapply(outlist, function(x){
-    #   if(is.matrix(x)) 
-    #   apply(x,2,function(y) round(y,digits=1))
-    #   else if(is.vector(x))
-    #   round(x,digits=1)
-    #   })
-    
-    ## erg mit beruecksichtigten limits
-    erg <- as.data.table(erg)
-    
-    # Ueber firstCol-Parameter vordefinierte erste Spalte einfuegen.
-    # Leerzeilen von Tabelle beruecksichtigen und einfach fuer erste Spalte uebernehmen.
-    if(!is.null(firstCol)){
-      if(length(zeilen_mit_inhalt)==length(firstCol)){
-        for(i in 1:length(zeilen_mit_inhalt)){
-          writeWorksheet (wb, firstCol[i], sheet=sheets[sheet], startRow=zeilen_mit_inhalt[i], startCol=1 ,header=FALSE )
-        }
-      }else{
-        stop("length(firstCol)!=length(zeilen_mit_inhalt)! Derzeit sind die Leerzeilen fix vorgegeben ueber startingPoints und nrEmptyRows. Bitte in firstCol-Parameter beruecksichtigen.\n")
+      if(nrow(x)>1){
+        x[ ,(colnames(x)[-customColNr]):=lapply(.SD,function(y) suppressWarnings(as.numeric(y))), .SDcols=(colnames(x)[-customColNr])] 
+      }else if(nrow(x)==1){
+        x[ ,(colnames(x)[-customColNr]):=lapply(.SD,function(y) suppressWarnings(as.numeric(y))), .SDcols=(colnames(x)[-customColNr])] 
       }
-    }
+    })
+    
     
     if(!is.null(footnote)){
       writeWorksheet (wb, footnote, sheet=sheets[sheet], startRow=nrow(erg)+2, startCol=1 ,header=FALSE )
     }
+    # tab1ColNr, customColNr, inheritTemplateColNr
     
-    colnames(erg) <- LETTERS[2:(ncol(erg)+1)]# 1. Spalte im OUtput-Excel-File sind ja die Labels (ist eigentlich unnoetiges Tamtam, stoert aber auch nicht wirklich)
-    ## erg ohne beruecksichtigten limits
-    erg2 <- as.data.table(erg2)
-    colnames(erg2) <- LETTERS[2:(ncol(erg)+1)]# 1. Spalte im OUtput-Excel-File sind ja die Labels
-    
-    # wir suchen die ausgeklammerten Zellenwerte usw.
+    # wir suchen die ausgeklammerten Zellenwerte usw. 
     ausgeklammertes <- apply(erg,2,function(x)grep("(",x,fixed=TRUE)) # alle, d.h. (Wert) und (x)
     ausgeklammertes_x <- apply(erg,2,function(x)grep("(x)",x,fixed=TRUE)) # (x)
     ausgeklammertes_stern <- apply(erg,2,function(x)grep("*",x,fixed=TRUE)) # (x)
     zelle_leer <- apply(erg,2,function(x){which(is.na(x))[which(which(is.na(x))%in%zeilen_mit_inhalt)]}) 
     wert_null <- apply(erg2,2,function(x)which(abs(x) < .Machine$double.eps)) # Zellenwert 0
     notanumber <- apply(erg,2,function(x)grep("NaN",x,fixed=TRUE)) # NaN
+    #c(ausgeklammertes,ausgeklammertes_x,ausgeklammertes_stern,zelle_leer,wert_null,wert_null)
     
-    # Dann werden ab Startpunkten die Zeilen mit unseren outlist-Bloecken befuellt
-    for(i in 1:length(startingPoints)){
-      if(is.vector(outlist[[i]])){
-        dim(outlist[[i]]) <- c(1,length(outlist[[i]]))
+    removeFlag <- function(x,colNr){
+      for(i in 1:length(colNr)){
+        if(length(x)>0){
+          x[[colNr[i]]] <- grep("kreizbirnbaumhollastaudn","bla")
+        }
       }
-      writeWorksheet (wb, outlist[[i]], sheet=sheets[sheet], startRow=startingPoints[i], startCol=2 ,header=FALSE )
+      return(x)
     }
     
+    if(!is.null(customCol)){
+      # Spezielle Zellenmarkierungen sollen fuer customCol NICHT gelten. Entfernen also alle eventuell unabsichtlich auftretenden Markierungen.
+      ausgeklammertes <- removeFlag(ausgeklammertes,colNr=customColNr)
+      ausgeklammertes_x <- removeFlag(ausgeklammertes_x,colNr=customColNr)
+      ausgeklammertes_stern <- removeFlag(ausgeklammertes_stern,colNr=customColNr)
+      zelle_leer <- removeFlag(zelle_leer,colNr=customColNr)
+      wert_null <- removeFlag(wert_null,colNr=customColNr)
+      notanumber <- removeFlag(notanumber,colNr=customColNr)
+    }
+    if(!is.null(inheritTemplateColNr) && !any(inheritTemplateColNr==0)){
+      # Spezielle Zellenmarkierungen sollen fuer inheritTemplateColNr NICHT gelten. Entfernen also alle eventuell unabsichtlich auftretenden Markierungen.
+      ausgeklammertes <- removeFlag(ausgeklammertes,colNr=inheritTemplateColNr)
+      ausgeklammertes_x <- removeFlag(ausgeklammertes_x,colNr=inheritTemplateColNr)
+      ausgeklammertes_stern <- removeFlag(ausgeklammertes_stern,colNr=inheritTemplateColNr)
+      zelle_leer <- removeFlag(zelle_leer,colNr=inheritTemplateColNr)
+      wert_null <- removeFlag(wert_null,colNr=inheritTemplateColNr)
+      notanumber <- removeFlag(notanumber,colNr=inheritTemplateColNr)
+    }
+    
+    # Dann werden ab Startpunkten die Zeilen mit unseren outlist-Bloecken befuellt
+    # Ausserdem werden gegebenenfalls die Spalten definiert, die vom Original-Excel-File uebernommen werden sollen, also leer gelassen werden.
+    # Default ist die erste Spalte, also inheritTemplateColNr=1
+    
+    # ## Vielleicht hier doch eine zusaetzliche If-Abfrage mit der alten Schleife fuer den am haeufigsten vorkommenden Fall inheritTemplateColNr=1
+    # #inheritTemplateColNr_orig <- inheritTemplateColNr
+    # 
+    # if(!is.null(customCol)){
+    #    if(length(zeilen_mit_inhalt)==length(customCol)){
+    #     for(i in 1:length(zeilen_mit_inhalt)){ 
+    #       writeWorksheet (wb, customCol[i], sheet=sheets[sheet], startRow=zeilen_mit_inhalt[i], startCol=customColNr ,header=FALSE )
+    #     }
+    #   }else{
+    #     stop("length(customCol)!=length(zeilen_mit_inhalt)! Derzeit sind die Leerzeilen fix vorgegeben ueber startingPoints und nrEmptyRows. Bitte in customCol-Parameter beruecksichtigen.\n")
+    #   }
+    # }
+    # 
+    # 
+    # # seqle <- function(x,incr=1) { 
+    # #   if(!is.numeric(x)) x <- as.numeric(x) 
+    # #   n <- length(x)  
+    # #   y <- x[-1L] != x[-n] + incr 
+    # #   i <- c(which(y|is.na(y)),n) 
+    # #   list(lengths = diff(c(0L,i)),
+    # #        values = x[head(c(0L,i)+1L,-1L)]) 
+    # # } 
     
     
+    
+    # if(!is.null(inheritTemplateColNr) && !any(inheritTemplateColNr==0)){
+    #   
+    #   # customCol wird ja (derzeit?) extra rausgeschrieben
+    #   if(!is.null(customColNr)){
+    #     inheritTemplateColNr <- sort(c(inheritTemplateColNr,customColNr)) 
+    #   }
+    #   
+    #   sel_seq <- seqle(inheritTemplateColNr)
+    #   values <- sel_seq$values[which(sel_seq$lengths>1)]
+    #   lengths <- sel_seq$lengths[which(sel_seq$lengths>1)]
+    #   if(length(values)>0){
+    #     for(i in 1:length(values)){
+    #       # seq(values[i],length=lengths[i])[-1]
+    #       inheritTemplateColNr <- inheritTemplateColNr[-which(inheritTemplateColNr%in%seq(values[i],length=lengths[i])[-1])]
+    #     }
+    #   }
+    #   
+    #   if(max(inheritTemplateColNr)<=ncol(tab1)){
+    #   inheritTemplateColNr <- c(inheritTemplateColNr,ncol(tab1)+1)
+    #   }else{
+    #     inheritTemplateColNr <- c(inheritTemplateColNr,max(inheritTemplateColNr)+1)
+    #   }
+    #   
+    #   for(i in 1:length(startingPoints)){
+    #     
+    #     if(is.vector(outlist[[i]])){
+    #       dim(outlist[[i]]) <- c(1,length(outlist[[i]]))
+    #     }
+    #     
+    #     if(length(inheritTemplateColNr)>2 && inheritTemplateColNr[1]!=1){
+    #       # erster Schritt
+    #       write_to_excel <- outlist[[i]][,1:(inheritTemplateColNr[1]-1)]
+    #       if(is.vector(write_to_excel)){
+    #         dim(write_to_excel) <- c(1,length(write_to_excel))
+    #       }
+    #       writeWorksheet (wb, write_to_excel, sheet=sheets[sheet], startRow=startingPoints[i], startCol=1 ,header=FALSE )
+    #       # weitere Schritte
+    #       for(j in 2:(length(inheritTemplateColNr)-1)){
+    #         write_to_excel <-outlist[[i]][,inheritTemplateColNr[j]:(inheritTemplateColNr[j+1]-1)]
+    #         if(is.vector(write_to_excel)){
+    #           dim(write_to_excel) <- c(1,length(write_to_excel))
+    #         }
+    #         if(inheritTemplateColNr[j]%in%values){
+    #           startCol <- inheritTemplateColNr[j]+lengths[j]
+    #         }else{
+    #           startCol <- inheritTemplateColNr[j]+1
+    #         }
+    #         writeWorksheet (wb, write_to_excel, sheet=sheets[sheet], 
+    #                         startRow=startingPoints[i], startCol=startCol ,header=FALSE )
+    #       }
+    #     }else{
+    #       if(length(inheritTemplateColNr)==2 && inheritTemplateColNr[1]!=1){
+    #         write_to_excel <-outlist[[i]][,1:(inheritTemplateColNr[1]-1)]
+    #         if(is.vector(write_to_excel)){
+    #           dim(write_to_excel) <- c(1,length(write_to_excel))
+    #         }
+    #         writeWorksheet (wb, write_to_excel, sheet=sheets[sheet], startRow=startingPoints[i], startCol=1 ,header=FALSE )
+    #       }  
+    #       for(j in 1:(length(inheritTemplateColNr)-1)){
+    #        #write_to_excel <- outlist[[i]][,inheritTemplateColNr[j]:(inheritTemplateColNr[j+1]-1)]
+    #         write_to_excel <- outlist[[i]][,inheritTemplateColNr[j]:(inheritTemplateColNr[j+1]-1)]
+    #         if(is.vector(write_to_excel)){
+    #           dim(write_to_excel) <- c(1,length(write_to_excel))
+    #         }
+    #         if(inheritTemplateColNr[j]%in%values){
+    #           startCol <- inheritTemplateColNr[j]+lengths[j]
+    #         }else{
+    #           startCol <- inheritTemplateColNr[j]+1
+    #         }
+    #         writeWorksheet (wb, write_to_excel, sheet=sheets[sheet], 
+    #                         startRow=startingPoints[i], startCol=startCol ,header=FALSE )
+    #         
+    #       }
+    #     }
+    #   }
+    #   
+    #   #inheritTemplateColNr <- inheritTemplateColNr_orig
+    # }else if(is.null(inheritTemplateColNr) ||  (length(inheritTemplateColNr)==1 && inheritTemplateColNr==0)){
+    #   for(i in 1:length(startingPoints)){
+    #     
+    #     if(is.vector(outlist[[i]])){
+    #       dim(outlist[[i]]) <- c(1,length(outlist[[i]]))
+    #     }
+    #     
+    #     writeWorksheet (wb, outlist[[i]], sheet=sheets[sheet], startRow=startingPoints[i], startCol=1 ,header=FALSE )
+    #   }
+    # }
+    
+    writeColNr <- sort(c(tab1ColNr,customColNr))
+    for(i in 1:length(startingPoints)){
+      # sel_seq <- seqle(writeColNr)
+      # values <- sel_seq$values[which(sel_seq$lengths>1)]
+      # lengths <- sel_seq$lengths[which(sel_seq$lengths>1)]
+      for(j in writeColNr){
+        writeWorksheet (wb, outlist[[i]][,j,with=FALSE], sheet=sheets[sheet], startRow=startingPoints[i], startCol=j ,header=FALSE )
+      }
+    }
     
     # Koennten ein Format setzen fuer ausgeklammerte Werte:
     klammern <- createCellStyle(wb)
