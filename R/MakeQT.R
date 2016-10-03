@@ -75,9 +75,9 @@
 #' @export
 #' @examples
 #' \dontrun{
-#' ### Daten einlesen (wie im Beispiel zur Funktion ImportDataListQT)
+#' ### Daten einlesen
 #' 
-#' datalist <- ImportDataListQT(timeInstant=c(2014,4), nbw=5, whichVar=c("rbpkin"))
+#' datalist <- ImportDataListQT(timeInstant=c(2014,4),whichVar=c("rbpkin"))
 #' 
 #' ### Tabelle A1 im Quartalsbericht:
 #' 

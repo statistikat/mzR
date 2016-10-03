@@ -130,7 +130,7 @@ makeEachVar <- function(x){
 #' @return Output ist eine Tabelle in Matrix-Form mit durch \code{col},
 #' \code{row} und \code{block} definierten Spalten und Zeilen.
 #' @seealso
-#' \code{\link{FillExcelTemplate},\link{MakeQT},\link{ImportDatalistQT},\link{ImportData},\link{IndivImportData},\link{ImportAndMerge}}
+#' \code{\link{FillExcelTemplate},\link{MakeQT},\link{ImportDataListQT},\link{ImportData},\link{IndivImportData},\link{ImportAndMerge}}
 #' @export
 #' @examples
 #' \dontrun{dat <- ImportData(year=2014,quarter=4,comp_diff_lag = 1)

@@ -84,10 +84,10 @@ seqle <- function(x,incr=1) {
 #' Bloecken.
 #' @param inheritTemplateColNr numerischer Vektor: Spaltennummer/n der Tabellenspalten die vom Original-Excel-File uebernommen werden sollen.
 #' Default ist die erste Spalte, also \code{inheritTemplateColNr=1}.
-#' @param customColNr numerischer Wert: Spaltennummer der Tabellenspalte die ueber \code{customCol} selbst definiert werden soll (derzeit nur EINE moeglich). 
+#' @param customColNr numerischer Wert: Spaltennummer der Tabellenspalte die ueber \code{customCol} individuell definiert werden soll (derzeit nur EINE moeglich). 
 #' @param customCol character Vektor: enthaelt die Eintraege der durch \code{customColNr} definierten Tabellenspalte - falls diese 
 #' nicht aus dem Original-Excel-File uebernommen werden sollen und auch nicht durch \code{MakeTable()} generiert werden. 
-#' Derzeit (kein Bedarf) wird hier ein Character Vektor ohne Missings uebergeben, die ueber \code{startingPoints} 
+#' Derzeit (kein Bedarf) wird hier ein Character Vektor OHNE Missings uebergeben, die ueber \code{startingPoints} 
 #' und \code{nrEmptyRows} definierten Leerzeilen werden also einfach uebernommen.
 #' @param footnote character: Fussnote (derzeit fix 1-te Zelle der 2-ten Zeile nach Tabellenende), falls sie nicht aus dem Original-Excel-File ubernommen werden soll.
 #' Formatierung der Zelle der die Fussnote zugewiesen wird bleibt allerdings wie im Original-Excel-File.
@@ -149,7 +149,6 @@ FillExcelTemplate <- function(tab1,tab2=NULL,startingPoints,nrEmptyRows,
         customColNr <- NULL
       }
     }
-    
     if(!is.null(inheritTemplateColNr)){
       if(any(inheritTemplateColNr>(ncol(tab1)+length(inheritTemplateColNr)+1))){
         #bzw +length(customColNr) - falls wir das mal aendern
@@ -335,11 +334,17 @@ FillExcelTemplate <- function(tab1,tab2=NULL,startingPoints,nrEmptyRows,
     # da Klammern und x-e in erg vorkommen, sind die Zellenwerte nicht numerisch. Das wollen wir wieder aendern.
     # durch as.numeric kommt es bei Zellen mit Characterwerten zu Missings -> nicht beunruhigend, die befuellen wir spaeter
     # Output hier ist uebrigens eine Liste mit data.table-Elementen
+    if(!is.null(customColNr)){
+      whichcols <- colnames(outlist[[1]])[-customColNr]
+    }else{
+      whichcols <- colnames(outlist[[1]])
+    }
+    
     outlist <- lapply(outlist, function(x){
       if(nrow(x)>1){
-        x[ ,(colnames(x)[-customColNr]):=lapply(.SD,function(y) suppressWarnings(as.numeric(y))), .SDcols=(colnames(x)[-customColNr])] 
+        x[ ,(whichcols):=lapply(.SD,function(y) suppressWarnings(as.numeric(y))), .SDcols=whichcols] 
       }else if(nrow(x)==1){
-        x[ ,(colnames(x)[-customColNr]):=lapply(.SD,function(y) suppressWarnings(as.numeric(y))), .SDcols=(colnames(x)[-customColNr])] 
+        x[ ,(whichcols):=lapply(.SD,function(y) suppressWarnings(as.numeric(y))), .SDcols=whichcols] 
       }
     })
     

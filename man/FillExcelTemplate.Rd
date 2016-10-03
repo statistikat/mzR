@@ -5,7 +5,8 @@
 \title{Funktion befuellt ein Excel Template.}
 \usage{
 FillExcelTemplate(tab1, tab2 = NULL, startingPoints, nrEmptyRows,
-  firstCol = NULL, footnote = NULL, f_in, sheet = 1, prefixTSN = "_",
+  inheritTemplateColNr = 1, customColNr = NULL, customCol = NULL,
+  footnote = NULL, f_in, sheet = 1, prefixTSN = "_",
   removeTemplateSheet = FALSE, removeAllTemplates = FALSE,
   interactive = TRUE, showFinalTab = FALSE, showSplitTab = FALSE)
 }
@@ -28,9 +29,14 @@ Zeilen nach Leerzeilen im Original-Excel-File.}
 \code{startingPoints} kommen sollen; eigentlich immer 1 ausser vor grossen
 Bloecken.}
 
-\item{firstCol}{character Vektor: enthaelt die Eintraege der ersten Tabellenspalte - falls diese 
-nicht aus dem Original-Excel-File uebernommen werden sollen. 
-Derzeit (kein Bedarf) wird hier ein Character Vektor ohne Missings uebergeben, die ueber \code{startingPoints} 
+\item{inheritTemplateColNr}{numerischer Vektor: Spaltennummer/n der Tabellenspalten die vom Original-Excel-File uebernommen werden sollen.
+Default ist die erste Spalte, also \code{inheritTemplateColNr=1}.}
+
+\item{customColNr}{numerischer Wert: Spaltennummer der Tabellenspalte die ueber \code{customCol} individuell definiert werden soll (derzeit nur EINE moeglich).}
+
+\item{customCol}{character Vektor: enthaelt die Eintraege der durch \code{customColNr} definierten Tabellenspalte - falls diese 
+nicht aus dem Original-Excel-File uebernommen werden sollen und auch nicht durch \code{MakeTable()} generiert werden. 
+Derzeit (kein Bedarf) wird hier ein Character Vektor OHNE Missings uebergeben, die ueber \code{startingPoints} 
 und \code{nrEmptyRows} definierten Leerzeilen werden also einfach uebernommen.}
 
 \item{footnote}{character: Fussnote (derzeit fix 1-te Zelle der 2-ten Zeile nach Tabellenende), falls sie nicht aus dem Original-Excel-File ubernommen werden soll.

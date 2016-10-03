@@ -41,7 +41,7 @@
 #' soll (default=c("asbper","ajahr","amonat")).
 #' 
 #' @return Output ist eine Liste deren Elemente jeweils MZ-Daten enthalten 
-#' die die selbe Grundstruktur haben wie der Output aus der Fimltopm \link{ImportData}.
+#' die die selbe Grundstruktur haben wie der Output aus der Funktion \link{ImportData}.
 
 #' @seealso
 #' \code{\link{MakeQT},\link{MakeTable},\link{FillExcelTemplate},\link{ImportData},\link{ImportAndMerge}}
@@ -52,7 +52,7 @@
 #' # Fuer Testzwecke (um Rechenzeit zu sparen) schraenken wir die 
 #' # Anzahl der Bootstrapgewichte ein auf 5.
 #' # Ausserdem wollen wir aus den Original-MZ-Daten (dg7) nur die 
-#' # Variable \emph{rbpkin} behalten.#' 
+#' # Variable rbpkin behalten.
 #' 
 #' datalist <- ImportDataListQT(timeInstant=c(2014,4), nbw=5, whichVar=c("rbpkin"))
 #' 
