@@ -6,7 +6,7 @@
 \usage{
 FillExcelTemplate(tab1, tab2 = NULL, startingPoints, nrEmptyRows,
   inheritTemplateColNr = 1, customColNr = NULL, customCol = NULL,
-  footnote = NULL, f_in, sheet = 1, prefixTSN = "_",
+  customCellList = NULL, f_in, sheet = 1, prefixTSN = "_",
   removeTemplateSheet = FALSE, removeAllTemplates = FALSE,
   interactive = TRUE, showFinalTab = FALSE, showSplitTab = FALSE)
 }
@@ -29,18 +29,40 @@ Zeilen nach Leerzeilen im Original-Excel-File.}
 \code{startingPoints} kommen sollen; eigentlich immer 1 ausser vor grossen
 Bloecken.}
 
-\item{inheritTemplateColNr}{numerischer Vektor: Spaltennummer/n der Tabellenspalten die vom Original-Excel-File uebernommen werden sollen.
+\item{inheritTemplateColNr}{numerischer Vektor oder NULL: Spaltennummer/n der Tabellenspalten die vom Original-Excel-File uebernommen werden sollen.
 Default ist die erste Spalte, also \code{inheritTemplateColNr=1}.}
 
-\item{customColNr}{numerischer Wert: Spaltennummer der Tabellenspalte die ueber \code{customCol} individuell definiert werden soll (derzeit nur EINE moeglich).}
+\item{customColNr}{numerischer Wert: Spaltennummer der Tabellenspalte (derzeit nur EINE moeglich) die ueber 
+\code{customCol} individuell definiert werden soll und bei der die Leerzeilen 
+im Gegensatz zum Parameter \code{customCellList}
+aus \code{startingPoints}  und \code{nrEmptyRows} uebernommen werden sollen. 
+Die Aufteilung von \code{tab1} auf die Spalten der Excel-Tabelle wird dann automatisch angepasst, 
+\code{tab1} bzw. \code{inheritTemplateColNr} wird also nicht ueberschrieben.}
 
-\item{customCol}{character Vektor: enthaelt die Eintraege der durch \code{customColNr} definierten Tabellenspalte - falls diese 
-nicht aus dem Original-Excel-File uebernommen werden sollen und auch nicht durch \code{MakeTable()} generiert werden. 
-Derzeit (kein Bedarf) wird hier ein Character Vektor OHNE Missings uebergeben, die ueber \code{startingPoints} 
-und \code{nrEmptyRows} definierten Leerzeilen werden also einfach uebernommen.}
+\item{customCol}{character Vektor: Enthaelt die Eintraege der durch \code{customColNr} 
+definierten Tabellenspalte - falls diese nicht aus dem Original-Excel-File uebernommen werden sollen 
+und auch nicht durch \code{MakeTable()} generiert werden. 
+Im Gegensatz zum Parameter \code{customCellList} wird hier ein Character Vektor OHNE Missings uebergeben, 
+d.h. die ueber die Parameter \code{startingPoints} und \code{nrEmptyRows} definierten Leerzeilen 
+werden einfach uebernommen und muessen nicht extra beruecksichtigt werden.
+Die Aufteilung von \code{tab1} auf die Spalten der Excel-Tabelle wird dann automatisch angepasst,
+\code{tab1} bzw. \code{inheritTemplateColNr} wird also nicht ueberschrieben.}
 
-\item{footnote}{character: Fussnote (derzeit fix 1-te Zelle der 2-ten Zeile nach Tabellenende), falls sie nicht aus dem Original-Excel-File ubernommen werden soll.
-Formatierung der Zelle der die Fussnote zugewiesen wird bleibt allerdings wie im Original-Excel-File.}
+\item{customCellList}{Listenobjekt: eine Liste (bzw. falls mehrere Zellen ueberschrieben werden sollen, eine Liste mit Sublisten) mit den Listenelementen 
+\code{row} (numeric), \code{col} (numeric) und \code{entry} (character). 
+Diese Listenelemente legen fest, welcher Zeile (row) und Spalte (col) die jeweilige Zelle entspricht 
+und was dort eingetragen werden soll (entry). 
+Um genau zu sein, legen \code{row} und \code{col} die jeweilige Start-Zeile und Start-Spalte in der Excel-Tabelle fest.
+Somit koennen auch ganze Tabellenzeilen/-spalten auf einmal ueberschrieben werden, 
+dazu muss in \code{entry} lediglich ein Vektor der richtigen Laenge uebergeben werden. Siehe Examples.
+
+Dieser Parameter ist anzuwenden falls eine (oder mehrere) Zellen individuell angepasst werden sollen, 
+z.B. um eine Fussnote einzufuegen oder um die Eintraege einer bestimmten Tabellenspalte mit bestimmten Inhalten zu ueberschreiben.
+
+Zu beachten ist hier, dass die entsprechenden Zellen einfach nur ueberschrieben werden und die Aufteilung von \code{tab1}
+auf die Spalten der Excel-Tabelle in keiner Weise angepasst wird. 
+Sollte man ZUSAETZLICH zu \code{tab1} (und evt. auch zusaetzlich zu \code{inheritTemplateColNr}) eine neue Spalte hinzufuegen wollen 
+so sind die Parameter \code{customColNr} bzw. \code{customCol} anzuwenden.}
 
 \item{f_in}{File Name inklusive Pfad und File-Endungen des eingelesenen
 Original-Excel-Files.}
@@ -96,10 +118,26 @@ Derzeit funktioniert diese Funktion nur fuer die Default-Werte von
 ###
 Kommt wahrscheinlich ins mitgelieferte Bsp-File - samt Excel-Rohling.
 ###
+
+### Beispiel einer customCellList:
+# 1. die 1. Spalte der Tabelle soll ab der 1. Zeile der Tabelle die Eintraege 
+# Category 1, Category 2 und Category 3 haben mit einer Leerzeile nach Category 1
+# 2. wir wollen nur eine einzelne Zelle ansprechen und dort die Fussnote einfuegen 
+# -> die 1. Spalte der Tabelle soll in Zeile 5 die Fussnote enthalten 
+customCellList=list(
+list(row=1,col=1,entry=c("Category 1", NA, "Category 2","Category 3")), 
+list(row=5,col=1,entry="FussnoteBlaBlaText")
+)
+# bzw dasselbe in anderer Schreibweise:
+customCellList <- list()
+customCellList[[length(customCellList)+1]] <- 
+list(row=1,col=1,entry=c("Category 1", NA, "Category 2","Category 3"))
+customCellList[[length(customCellList)+1]] <- 
+list(row=5,col=1,entry="FussnoteBlaBlaText")
 }
 
 }
 \seealso{
-\code{\link{MakeTable},\link{MakeAKETimeInstantsTable},\link{ImportData},\link{IndivImportData}}
+\code{\link{MakeTable},\link{MakeQT},\link{ImportData},\link{IndivImportData},\link{ImportDataListQT}}
 }
 
