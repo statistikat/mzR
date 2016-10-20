@@ -400,7 +400,7 @@ MakeTable  <- function(dat,col,row=NULL,block=NULL,estimator="est",error="cv",
             cellcommands[[length(cellcommands)+1]] <- paste0(c(rowcommands[["TFstring"]],colcommands[["TFstring"]]),collapse=" & ")
             names(cellcommands)[length(cellcommands)] <- "TFstring"
             
-            cellcommands[[length(cellcommands)+1]] <- paste0(c(rowcommands[["TFstring"]],rowcommands[["TFstring2"]]),collapse=" & ")
+            cellcommands[[length(cellcommands)+1]] <- paste0(c(colcommands[["TFstring"]],rowcommands[["TFstring2"]]),collapse=" & ")
             names(cellcommands)[length(cellcommands)] <- "TFstring2"
           }else{
             cellcommands[[length(cellcommands)+1]] <- paste0(c(rowcommands[["TFstring"]]),colcommands[["TFstring"]],collapse=" & ")#,rowcommands[["TFstring2"]]#braucht man eh nicht, sollte eigentlich in colcommands[["TFstring"]] drinstecken
