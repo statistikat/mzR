@@ -122,24 +122,23 @@ MakeAKETimeInstantsTable <- function(col,row=NULL,timeInstant,nbw=NULL,
                                   lim1=Inf,markLeft1="(",markRight1=")",markValue1=NULL,
                                   lim2=Inf,markLeft2="(",markRight2=")",markValue2="x"){
   ende <- timeInstant  
-  # ende <- c(2014,4) ### JAHR und QUARTAL eingeben:
-  # nbw=5  
-  tInterval <- format(time(ts(start=start(lag(ts(end=ende,frequency=4),3)),end=ende,frequency=4)))
-  jahr_seq <- as.numeric(sapply(strsplit(tInterval, ".",fixed=TRUE),function(x)x[1]))
-  quartal_seq <- as.numeric(mapvalues(format(sapply(strsplit(tInterval, ".",fixed=TRUE),function(x)x[2])), 
-                                      from=c("00","25","50","75"),to=c(1:4),warn_missing = FALSE))
-  vvjq <- lag(ts(end=ende,frequency=4),4)
-  vjq_jahr <- as.numeric(sapply(strsplit(format(time(vvjq)), ".",fixed=TRUE),function(x)x[1]))
-  vjq_quartal <-  as.numeric(mapvalues(format(sapply(strsplit(format(time(vvjq)), ".",fixed=TRUE),function(x)x[2])),
-                                       from=c("NA","00","25","50","75"),to=c(1,1:4),warn_missing = FALSE))
+
+  tInterval <- date_decimal(as.numeric(time(ts(start=start(lag(ts(end=ende,frequency=4),3)),end=ende,frequency=4))))
+  jahr_seq <- year(tInterval)
+  quartal_seq <- quarter(tInterval)
   
-  vvjq <- lag(ts(end=ende,frequency=4),8)
-  vvjq_jahr <- as.numeric(sapply(strsplit(format(time(vvjq)), ".",fixed=TRUE),function(x)x[1]))
-  vvjq_quartal <-  as.numeric(mapvalues(format(sapply(strsplit(format(time(vvjq)), ".",fixed=TRUE),function(x)x[2])),
-                                        from=c("NA","00","25","50","75"),to=c(1,1:4),warn_missing = FALSE))
+  vjq <- date_decimal(as.numeric(time(lag(ts(end=ende,frequency=4),4))))
+  vjq_jahr <- year(vjq)
+  vjq_quartal <-  quarter(vjq)
+  
+  vvjq <- date_decimal(as.numeric(time(lag(ts(end=ende,frequency=4),8))))
+  vvjq_jahr <- year(vvjq)
+  vvjq_quartal <-  quarter(vvjq)
   
   timeInstants_jahr <- c(vvjq_jahr,jahr_seq)
   timeInstants_quartal <- c(vvjq_quartal,quartal_seq)
+  
+  
   # brauche das jew. vierte Element dieser timeInstants_jahr und timeInstants_quartal Vektoren eigentlich nicht weil das ueber comp_diff_lag abgedeckt wird
   # verwende es aber spaeter noch fuer was andres, lass es also erst mal drinnen
   

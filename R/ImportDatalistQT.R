@@ -88,10 +88,10 @@ ImportDataListQT <- function(timeInstant, nbw=NULL, whichVar=NULL, weightDecimal
   }
   
   datalist <- list()
-  if(Sys.info()[1]=="Windows"){
-    
-  }else{
-  }
+  # if(Sys.info()[1]=="Windows"){
+  #   
+  # }else{
+  # }
   
   if(ImportAndMerge && !is.null(curr_inFile)){
     qt_spss_path_curr <- curr_inFile
@@ -112,19 +112,23 @@ ImportDataListQT <- function(timeInstant, nbw=NULL, whichVar=NULL, weightDecimal
   
   ende <- timeInstant  
   
-  tInterval <- format(time(ts(start=start(lag(ts(end=ende,frequency=4),3)),end=ende,frequency=4)))
-  jahr_seq <- as.numeric(sapply(strsplit(tInterval, ".",fixed=TRUE),function(x)x[1]))
-  quartal_seq <- as.numeric(mapvalues(format(sapply(strsplit(tInterval, ".",fixed=TRUE),function(x)x[2])), 
-                                      from=c("00","25","50","75"),to=c(1:4),warn_missing = FALSE))
-  vvjq <- lag(ts(end=ende,frequency=4),4)
-  vjq_jahr <- as.numeric(sapply(strsplit(format(time(vvjq)), ".",fixed=TRUE),function(x)x[1]))
-  vjq_quartal <-  as.numeric(mapvalues(format(sapply(strsplit(format(time(vvjq)), ".",fixed=TRUE),function(x)x[2])),
-                                       from=c("NA","00","25","50","75"),to=c(1,1:4),warn_missing = FALSE))
+  tInterval <- as.numeric(time(ts(start=start(lag(ts(end=ende,frequency=4),3)),end=ende,frequency=4)))
+  tInterval <- date_decimal(tInterval)
+  jahr_seq <- year(tInterval)
+  quartal_seq <- quarter(tInterval)
   
+  ## 'POSIXct, POSIXt' object
+  # vjq <- lag(ts(end=ende,frequency=4),4)
+  # vjq <- as.numeric(time(vjq))
+  # vjq <- date_decimal(vjq)
+  # vjq_jahr <- year(vjq)
+  # vjq_quartal <- quarter(vjq)
+
   vvjq <- lag(ts(end=ende,frequency=4),8)
-  vvjq_jahr <- as.numeric(sapply(strsplit(format(time(vvjq)), ".",fixed=TRUE),function(x)x[1]))
-  vvjq_quartal <-  as.numeric(mapvalues(format(sapply(strsplit(format(time(vvjq)), ".",fixed=TRUE),function(x)x[2])),
-                                        from=c("NA","00","25","50","75"),to=c(1,1:4),warn_missing = FALSE))
+  vvjq <- as.numeric(time(vvjq))
+  vvjq <- date_decimal(vvjq)
+  vvjq_jahr <- year(vvjq)
+  vvjq_quartal <- quarter(vvjq)
   
   timeInstants_jahr <- c(vvjq_jahr,jahr_seq)
   timeInstants_quartal <- c(vvjq_quartal,quartal_seq)
