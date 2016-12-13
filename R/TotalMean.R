@@ -21,7 +21,7 @@ TotalX <- function(xx,TFstring,var, negativeZero=TRUE){
       vars <- unlist(strsplit(vars,"\\)"))
       vars <- vars[vars!=""]
       for(v in vars){
-        x[eval(parse(text=v))<0,eval(parse(text=v)):=0]  
+        x[eval(parse(text=quote(v)))<0,eval(parse(text=quote(v))):=0]  
       }
     }
     x[,':='(varNumTmp=eval(parse(text=var)))]
@@ -66,7 +66,7 @@ TotalX <- function(xx,TFstring,var, negativeZero=TRUE){
         vars <- unlist(strsplit(vars,"\\)"))
         vars <- vars[vars!=""]
         for(v in vars){
-          y[eval(parse(text=v))<0,eval(parse(text=v)):=0]  
+          y[eval(parse(text=quote(v)))<0,eval(parse(text=quote(v))):=0]  
         }
       }
       y[,':='(varNumTmp=eval(parse(text=var)))]
@@ -133,7 +133,7 @@ MeanX <- function(xx,TFstring,var, negativeZero=TRUE){
       vars <- unlist(strsplit(vars,"\\)"))
       vars <- vars[vars!=""]
       for(v in vars){
-        x[eval(parse(text=v))<0,eval(parse(text=v)):=0]  
+        x[eval(parse(text=quote(v)))<0,eval(parse(text=quote(v))):=0]  
       }
     }
     x[,':='(varNumTmp=eval(parse(text=var)))]
@@ -177,7 +177,7 @@ MeanX <- function(xx,TFstring,var, negativeZero=TRUE){
         vars <- unlist(strsplit(vars,"\\)"))
         vars <- vars[vars!=""]
         for(v in vars){
-          y[eval(parse(text=v))<0,eval(parse(text=v)):=0]  
+          y[eval(parse(text=quote(v)))<0,eval(parse(text=quote(v))):=0]  
         }
       }
       y[,':='(varNumTmp=eval(parse(text=var)))]
@@ -253,7 +253,7 @@ MedianX <- function(xx,TFstring,var, negativeZero=TRUE){
       vars <- unlist(strsplit(vars,"\\)"))
       vars <- vars[vars!=""]
       for(v in vars){
-        x[eval(parse(text=v))<0,eval(parse(text=v)):=0]  
+        x[eval(parse(text=quote(v)))<0,eval(parse(text=quote(v))):=0]  
       }
     }
     x[,':='(varNumTmp=eval(parse(text=var)))]
@@ -293,7 +293,7 @@ MedianX <- function(xx,TFstring,var, negativeZero=TRUE){
         vars <- unlist(strsplit(vars,"\\)"))
         vars <- vars[vars!=""]
         for(v in vars){
-          y[eval(parse(text=v))<0,eval(parse(text=v)):=0]  
+          y[eval(parse(text=quote(v)))<0,eval(parse(text=quote(v))):=0]  
         }
       }
       y[,':='(varNumTmp=eval(parse(text=var)))]
