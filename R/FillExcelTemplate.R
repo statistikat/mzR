@@ -441,14 +441,17 @@ FillExcelTemplate <- function(tab1,tab2=NULL,startingPoints,nrEmptyRows,
     klammern_x <- createCellStyle(wb)
     stern <- createCellStyle(wb)
     kein_eintrag <- createCellStyle(wb)
-    null_mit_klammern <- createCellStyle(wb)
+    #null_mit_klammern <- createCellStyle(wb)
+    strich_statt_null <- createCellStyle(wb)
+    
     
     #setDataFormat(klammern, format = "(#.##0,0);(-#.##0,0);@")# deutsches Excel -> macht das daraus:(#,##00);(-#,##00);@
     setDataFormat(klammern, format = "(#,##0.0);(-#,##0.0);@")# englisches Excel
     setDataFormat(klammern_x, format = "(x);(x)")
     setDataFormat(stern, format = "#,##0.0\"*\"")
     setDataFormat(kein_eintrag, format = "0.0") #Zellen ohne Eintrag sollen "." enthalten. 
-    setDataFormat(null_mit_klammern, format = "\"[\"0\"]\";\"[\"0\"]\"") #Zellen sollen Format [0] bekommen. 
+    #setDataFormat(null_mit_klammern, format = "\"[\"0\"]\";\"[\"0\"]\"") #Zellen sollen Format [0] bekommen. 
+    setDataFormat(strich_statt_null, format = "-;-")
     
     # Jetzt zur Extrawurst fuer die ausgeklammerten Werte
     ersteZeile <- 1
@@ -520,7 +523,7 @@ FillExcelTemplate <- function(tab1,tab2=NULL,startingPoints,nrEmptyRows,
           for(j in 1:length(unlist(wert_null[i]))){
             wert <- 0
             writeWorksheet (wb, wert, sheet=sheets[sheet], startRow=as.numeric(unlist(wert_null[i])[j])+(ersteZeile-1), startCol=grep(names(wert_null)[i],LETTERS) ,header=FALSE )
-            setCellStyle(wb, sheet=sheets[sheet], row=as.numeric(unlist(wert_null[i])[j])+(ersteZeile-1), col=grep(names(wert_null)[i],LETTERS), cellstyle=null_mit_klammern)
+            setCellStyle(wb, sheet=sheets[sheet], row=as.numeric(unlist(wert_null[i])[j])+(ersteZeile-1), col=grep(names(wert_null)[i],LETTERS), cellstyle=strich_statt_null)
           }
         }
       }
@@ -532,7 +535,7 @@ FillExcelTemplate <- function(tab1,tab2=NULL,startingPoints,nrEmptyRows,
           for(j in 1:length(unlist(notanumber[i]))){
             wert <- 0 #Im Hintergrund soll 0 stehen?
             writeWorksheet (wb, wert, sheet=sheets[sheet], startRow=as.numeric(unlist(notanumber[i])[j])+(ersteZeile-1), startCol=grep(names(notanumber)[i],LETTERS) ,header=FALSE )
-            setCellStyle(wb, sheet=sheets[sheet], row=as.numeric(unlist(notanumber[i])[j])+(ersteZeile-1), col=grep(names(notanumber)[i],LETTERS), cellstyle=null_mit_klammern)
+            setCellStyle(wb, sheet=sheets[sheet], row=as.numeric(unlist(notanumber[i])[j])+(ersteZeile-1), col=grep(names(notanumber)[i],LETTERS), cellstyle=strich_statt_null)
           }
         }
       }
