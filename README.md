@@ -1,10 +1,10 @@
 # mzR
 R package to compute estimates and their errors for Austrian Microcensus data.
 
-With the devtools package the mzR package can be installed directly with `devtools::install_github("statistikat/mzR",ref="1.0.0")`.
+With the devtools package the mzR package can be installed directly with `devtools::install_github("statistikat/mzR",ref="1.1.0")`.
 
 The package can also be installed with
-`install.packages("http://github.com/statistikat/mzR/releases/download/Windows/mzR_1.0.0.zip",repos=NULL,type="binary")`.
+`install.packages("http://github.com/statistikat/mzR/releases/download/v_1.1.0/mzR_1.1.0.zip",repos=NULL,type="binary")`.
 In this case, due to package dependencies, you might have to install some R packages which are necessary for mzR to run (see `help(install.packages)` for instructions).
 
 You can find examples for getting started with mzR with `help(package=mzR)` under "User guides, package vignettes and other documentation."

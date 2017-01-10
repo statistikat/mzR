@@ -1,6 +1,6 @@
 Package: mzR
-Version: 1.0.0
-Date: 2016-05-23
+Version: 1.1.0
+Date: 2017-01-10
 Title: mzR - To compute estimates and their errors for Austrian microcensus data
 Author: Alexander Kowarik <alexander.kowarik@statistik.gv.at>, Angelika Meraner
     <angelika.meraner@statistik.gv.at>
