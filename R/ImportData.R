@@ -126,10 +126,6 @@ ImportData <- function(year=NULL, quarter=NULL, comp_diff_lag=NULL, from=NULL, t
   jahr <- year
   quartal <- quarter
   
-  if(isTRUE(nbw==0)){
-    stop("nbw darf nicht 0 sein!")
-  }
-  
   if(!is.null(from) | !is.null(to)){
     if(!is.null(jahr) | !is.null(quartal)){
       cat("Parameter 'jahr' und 'quartal' werden nicht beruecksichtigt wenn 'from' und 'to' spezifiziert wurde.")
@@ -205,7 +201,10 @@ ImportDataQ <- function(j, q, comp_jahresgew=FALSE, whichVar=whichVar, hh=hh, fa
   }
   
   ##DG7 einlesen
-  dat <- data.table(suppressWarnings(spss.get(grep(paste0(dircurr,"/dg7.mz",name_teil,".sav"), list.files(path=dircurr,full.names=TRUE),value=TRUE, fixed=TRUE),use.value.labels=FALSE,allow=FALSE)))
+  sav_path <- paste0(dircurr,"/dg7.mz",name_teil,".sav")
+  
+  dat <- data.table(suppressWarnings(spss.get(grep(sav_path, list.files(path=dircurr,full.names=TRUE),value=TRUE, fixed=TRUE),use.value.labels=FALSE,allow=FALSE)))
+  cat(dQuote(sav_path), "wurde eingelesen.\n")
   if(!is.null(whichVar)){
     dat <- dat[,whichVar,with=F]  
   }
@@ -215,36 +214,40 @@ ImportDataQ <- function(j, q, comp_jahresgew=FALSE, whichVar=whichVar, hh=hh, fa
   if(families){
     dat <- dat[xfstell==1,]
   }
-  #Bootstrapgewichte einlesen
-  lfshrb <- data.table(read_csv2(gzfile(grep(paste0(dircurrb,"/mz2_",j,"q",q,"_bootweights.csv.gz"),list.files(path=dircurrb,full.names=TRUE),value=TRUE, fixed=TRUE)),n_max=1))      
-  ## Nur Quartalsgewichte, also gew1 einlesen 
-  
-  if(is.null(nbw) || isTRUE(length(grep("gew1_",names(lfshrb),value=TRUE))==nbw)){
-    col_sel_gew1 <- paste0("list(asbhh=col_integer(),",
-                           paste0(grep("gew1_",names(lfshrb),value=TRUE),"=col_double()",collapse=","),",",
-                           paste0(grep("gew2_",names(lfshrb),value=TRUE),"=col_skip()",collapse=","),")")
-  }else{
-    col_sel_gew1 <- paste0("list(asbhh=col_integer(),",
-                           paste0(grep("gew1_",names(lfshrb),value=TRUE)[1:nbw],"=col_double()",collapse=","),",",
-                           paste0(grep("gew1_",names(lfshrb),value=TRUE)[(nbw+1):length(grep("gew1_",names(lfshrb),value=TRUE))],"=col_skip()",collapse=","),",",
-                           paste0(grep("gew2_",names(lfshrb),value=TRUE),"=col_skip()",collapse=","),
-                           ")")
+  if (nbw > 0){
+    #Bootstrapgewichte einlesen
+    lfshrb <- data.table(read_csv2(gzfile(grep(paste0(dircurrb,"/mz2_",j,"q",q,"_bootweights.csv.gz"),list.files(path=dircurrb,full.names=TRUE),value=TRUE, fixed=TRUE)),n_max=1))      
+    ## Nur Quartalsgewichte, also gew1 einlesen 
+    
+    if(is.null(nbw) || isTRUE(length(grep("gew1_",names(lfshrb),value=TRUE))==nbw)){
+      col_sel_gew1 <- paste0("list(asbhh=col_integer(),",
+                             paste0(grep("gew1_",names(lfshrb),value=TRUE),"=col_double()",collapse=","),",",
+                             paste0(grep("gew2_",names(lfshrb),value=TRUE),"=col_skip()",collapse=","),")")
+    }else{
+      col_sel_gew1 <- paste0("list(asbhh=col_integer(),",
+                             paste0(grep("gew1_",names(lfshrb),value=TRUE)[1:nbw],"=col_double()",collapse=","),",",
+                             paste0(grep("gew1_",names(lfshrb),value=TRUE)[(nbw+1):length(grep("gew1_",names(lfshrb),value=TRUE))],"=col_skip()",collapse=","),",",
+                             paste0(grep("gew2_",names(lfshrb),value=TRUE),"=col_skip()",collapse=","),
+                             ")")
+    }
+    lfshrb <- data.table(read_csv2(gzfile(grep(paste0(dircurrb,"/mz2_",j,"q",q,"_bootweights.csv.gz"),
+                                               list.files(path=dircurrb,full.names=TRUE), value=TRUE, fixed=TRUE)),
+                                   col_types=eval(parse(text=col_sel_gew1)), locale=locale("de")))
+    
+    cat(paste0("'",dircurrb,"/mz2_",j,"q",q,"_bootweights.csv.gz'"), "wurde eingelesen.\n")    
+    
+    setkey(dat,asbhh)
+    setkey(lfshrb,asbhh)
+    
+    if(hh | families){
+      dat <- merge(dat,lfshrb,by=c("asbhh"),all.x=TRUE)
+    }else{
+      dat <- merge(dat,lfshrb,by=c("asbhh"),all=TRUE)  
+    }
+    
+    rm(lfshrb);
+    gc()
   }
-  lfshrb <- data.table(read_csv2(gzfile(grep(paste0(dircurrb,"/mz2_",j,"q",q,"_bootweights.csv.gz"),
-                                             list.files(path=dircurrb,full.names=TRUE), value=TRUE, fixed=TRUE)),
-                                 col_types=eval(parse(text=col_sel_gew1)), locale=locale("de")))
-  
-  cat(paste0("'",dircurr,"/dg7.mz",name_teil,".sav'"), "wurde eingelesen.\n")
-  cat(paste0("'",dircurrb,"/mz2_",j,"q",q,"_bootweights.csv.gz'"), "wurde eingelesen.\n")    
-  
-  setkey(dat,asbhh)
-  setkey(lfshrb,asbhh)
-  
-  if(hh | families){
-    dat <- merge(dat,lfshrb,by=c("asbhh"),all.x=TRUE)
-  }else{
-    dat <- merge(dat,lfshrb,by=c("asbhh"),all=TRUE)  
-  }    
   
   if(is.null(weightDecimals)){
     if(comp_jahresgew){
@@ -261,8 +264,6 @@ ImportDataQ <- function(j, q, comp_jahresgew=FALSE, whichVar=whichVar, hh=hh, fa
       dat <- dat[,("gew1"):=lapply(.SD,function(x){round.spss(x,digits=weightDecimals)}), .SDcols="gew1"]
     }
   }
-  
-  rm(lfshrb);gc()
   
   return(dat)
   
