@@ -63,36 +63,29 @@ ImportDataListQT <- function(timeInstant, nbw=NULL, whichVar=NULL, weightDecimal
                              ImportAndMerge=TRUE,curr_inFile=NULL,prev_inFile = NULL, 
                              mergeBy = c("asbper","ajahr","amonat")){
   
+  if(!require(mountSTAT))
+    stop("The STAT internal package mountSTAT is required to run this function.")
+  
   if(ImportAndMerge && is.null(curr_inFile)){
-    if(Sys.info()[1]=="Windows"){
-      if(file.exists(paste0("\\\\DatenB/B_MZ/AKE Neu ab 2004/06 Ergebnisse/Quartalsberichte fertig/Quartalsbericht ",timeInstant[1]," Q",timeInstant[2]))){
-        qt_spss_path_curr <- qt_spss_path_prev <- paste0("\\\\DatenB/B_MZ/AKE Neu ab 2004/06 Ergebnisse/Quartalsberichte fertig/",
-                                                         "Quartalsbericht ",timeInstant[1]," Q",timeInstant[2],"/Daten/Daten_ab2004_QuartPub.sav")
-        warning("\n\nACHTUNG: timeInstant=c(",timeInstant[1],",",timeInstant[2],") entspricht nicht dem aktuellsten Referenzzeitpunkt fuer MZ-Quartalstabellen!\n",
-                "Es wird also \n'",qt_spss_path_curr,
-                "' \n ueber ImportAndMerge eingelesen statt \n'\\\\DatenB/B_MZ/AKE Neu ab 2004/06 Ergebnisse/Quartalsberichte Produktion/Daten/Daten_ab2004_QuartPub.sav'\n\n")
-      }else{
-        qt_spss_path_curr <- qt_spss_path_prev <-"\\\\DatenB/B_MZ/AKE Neu ab 2004/06 Ergebnisse/Quartalsberichte Produktion/Daten/Daten_ab2004_QuartPub.sav"
-      }
+    mz <- mountWinShare(server = "DatenB", share = "B_MZ", mountpunkt = "mz", FALSE)
+    
+    if(file.exists(paste0(mz, "/AKE Neu ab 2004/06 Ergebnisse/Quartalsberichte fertig/Quartalsbericht ", timeInstant[1],
+                          " Q", timeInstant[2]))){
+      qt_spss_path_curr <- qt_spss_path_prev <- paste0("/mnt/mz/AKE Neu ab 2004/06 Ergebnisse/Quartalsberichte fertig/",
+                                                       "Quartalsbericht ",timeInstant[1]," Q",timeInstant[2],
+                                                       "/Daten/Daten_ab2004_QuartPub.sav")
+      warning("\n\nACHTUNG: timeInstant=c(",timeInstant[1],",",timeInstant[2],") entspricht nicht dem aktuellsten",
+              "Referenzzeitpunkt fuer MZ-Quartalstabellen!\n", "Es wird also \n'",qt_spss_path_curr,
+              "' \n ueber ImportAndMerge eingelesen statt \n'/mnt/mz/AKE Neu ab 2004/06 Ergebnisse/Quartalsberichte",
+              "Produktion/Daten/Daten_ab2004_QuartPub.sav'\n\n")
     }else{
-      if(file.exists(paste0("/mnt/mz/AKE Neu ab 2004/06 Ergebnisse/Quartalsberichte fertig/Quartalsbericht ",timeInstant[1]," Q",timeInstant[2]))){
-        qt_spss_path_curr <- qt_spss_path_prev <- paste0("/mnt/mz/AKE Neu ab 2004/06 Ergebnisse/Quartalsberichte fertig/",
-                                                         "Quartalsbericht ",timeInstant[1]," Q",timeInstant[2],"/Daten/Daten_ab2004_QuartPub.sav")
-        warning("\n\nACHTUNG: timeInstant=c(",timeInstant[1],",",timeInstant[2],") entspricht nicht dem aktuellsten Referenzzeitpunkt fuer MZ-Quartalstabellen!\n",
-                "Es wird also \n'",qt_spss_path_curr,
-                "' \n ueber ImportAndMerge eingelesen statt \n'/mnt/mz/AKE Neu ab 2004/06 Ergebnisse/Quartalsberichte Produktion/Daten/Daten_ab2004_QuartPub.sav'\n\n")
-      }else{
-        qt_spss_path_curr <- qt_spss_path_prev <-"/mnt/mz/AKE Neu ab 2004/06 Ergebnisse/Quartalsberichte Produktion/Daten/Daten_ab2004_QuartPub.sav"
-      }
+      qt_spss_path_curr <- qt_spss_path_prev <-paste0(mz, "/AKE Neu ab 2004/06 Ergebnisse/Quartalsberichte Produktion/",
+                                                      "Daten/Daten_ab2004_QuartPub.sav")
     }
   }
   
   datalist <- list()
-  # if(Sys.info()[1]=="Windows"){
-  #   
-  # }else{
-  # }
-  
+
   if(ImportAndMerge && !is.null(curr_inFile)){
     qt_spss_path_curr <- curr_inFile
     if(is.null(prev_inFile)){

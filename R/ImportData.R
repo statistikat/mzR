@@ -13,11 +13,8 @@ round.spss = function(x, digits=0) {
 # vollstaendige Quartale (inkl. Bootstrap-Gewichten)
 vorhQuartaleUndPfade <- function() {
   # Pfade
-  if ( Sys.info()[1]=="Windows" ) {
-    p1 <- "//DatenB/B_MZ2/20_MZ/MZ_intern/"
-  } else {
-    p1 <- "/mnt/mz2/20_MZ/MZ_intern/"
-  }
+  mz2 <- mountWinShare(server = "DatenB", share = "B_MZ2", mountpunkt = "mz2", FALSE)
+  p1 <- file.path(mz2, "20_MZ/MZ_intern/")
   dir_gew <- paste0(p1, "XXXX/XXXXqYY")
   
   ## alle moeglichen Jahre/Quartale herausfiltern
@@ -122,6 +119,8 @@ vorhQuartaleUndPfade <- function() {
 #' }
 #' 
 ImportData <- function(year=NULL, quarter=NULL, comp_diff_lag=NULL, from=NULL, to=NULL, hh=FALSE, families=FALSE, whichVar=NULL, nbw=NULL, weightDecimals=2){
+  if(!require(mountSTAT))
+    stop("The STAT internal package mountSTAT is required to run this function.")
   
   jahr <- year
   quartal <- quarter
@@ -194,16 +193,13 @@ ImportDataQ <- function(j, q, comp_jahresgew=FALSE, whichVar=whichVar, hh=hh, fa
   bstell <- xfstell <- asbhh <- NULL #Sonst kommt Fehlermeldung bei Paketbildung: no visible binding for global variable
   
   name_teil <- paste0(j,"q",q)
-  if(Sys.info()[1]=="Windows"){
-    dircurrb <- dircurr <- paste0("//DatenB/B_MZ2/20_MZ/MZ_intern/",j,"/",j,"q",q)
-  }else{
-    dircurrb <- dircurr <- paste0("/mnt/mz2/20_MZ/MZ_intern/",j,"/",j,"q",q)
-  }
+  mz2 <- mountWinShare(server = "DatenB", share = "B_MZ2", mountpunkt = "mz2", FALSE)
+  dircurrb <- dircurr <- paste0(mz2, "/20_MZ/MZ_intern/", j, "/", j, "q", q)
   
   ##DG7 einlesen
   sav_path <- paste0(dircurr,"/dg7.mz",name_teil,".sav")
   
-  dat <- data.table(suppressWarnings(spss.get(grep(sav_path, list.files(path=dircurr,full.names=TRUE),value=TRUE, fixed=TRUE),use.value.labels=FALSE,allow=FALSE)))
+  dat <- data.table(suppressWarnings(spss.get(sav_path, use.value.labels = FALSE, allow = FALSE)))
   cat(dQuote(sav_path), "wurde eingelesen.\n")
   if(!is.null(whichVar)){
     dat <- dat[,whichVar,with=F]  
@@ -214,9 +210,9 @@ ImportDataQ <- function(j, q, comp_jahresgew=FALSE, whichVar=whichVar, hh=hh, fa
   if(families){
     dat <- dat[xfstell==1,]
   }
-  if (nbw > 0){
+  if (is.null(nbw) || nbw > 0){
     #Bootstrapgewichte einlesen
-    lfshrb <- data.table(read_csv2(gzfile(grep(paste0(dircurrb,"/mz2_",j,"q",q,"_bootweights.csv.gz"),list.files(path=dircurrb,full.names=TRUE),value=TRUE, fixed=TRUE)),n_max=1))      
+    lfshrb <- data.table(read_csv2(gzfile(paste0(dircurrb, "/mz2_", j, "q", q, "_bootweights.csv.gz")), n_max = 1))      
     ## Nur Quartalsgewichte, also gew1 einlesen 
     
     if(is.null(nbw) || isTRUE(length(grep("gew1_",names(lfshrb),value=TRUE))==nbw)){
@@ -230,9 +226,8 @@ ImportDataQ <- function(j, q, comp_jahresgew=FALSE, whichVar=whichVar, hh=hh, fa
                              paste0(grep("gew2_",names(lfshrb),value=TRUE),"=col_skip()",collapse=","),
                              ")")
     }
-    lfshrb <- data.table(read_csv2(gzfile(grep(paste0(dircurrb,"/mz2_",j,"q",q,"_bootweights.csv.gz"),
-                                               list.files(path=dircurrb,full.names=TRUE), value=TRUE, fixed=TRUE)),
-                                   col_types=eval(parse(text=col_sel_gew1)), locale=locale("de")))
+    lfshrb <- data.table(read_csv2(gzfile(paste0(dircurrb, "/mz2_", j, "q", q, "_bootweights.csv.gz")),
+                                   col_types = eval(parse(text = col_sel_gew1)), locale = locale("de")))
     
     cat(paste0("'",dircurrb,"/mz2_",j,"q",q,"_bootweights.csv.gz'"), "wurde eingelesen.\n")    
     
