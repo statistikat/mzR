@@ -16,7 +16,7 @@
 
 parameterSpellCheck <- function(x){
   y <- unlist(x)
-  p <- c("TFstring","TFstring2","each","fun","var","Total","Mean","GroupSize","GroupRate","scaleF")
+  p <- c("TFstring","TFstring2","each","fun","var","Total","Mean", "Median", "GroupSize","GroupRate","scaleF")
   
   if(!all(sapply(p,function(q) identical(grep(q,names(y),ignore.case=FALSE),grep(q,names(y),ignore.case=TRUE))))){
     
@@ -46,8 +46,8 @@ makeEachVar <- function(x){
 #' entsprechende Spalte berechnet werden soll. Jede Subliste kann die Argumente
 #' \code{fun}, \code{TFstring}, \code{TFstring2}, \code{digits}, \code{var} und
 #' \code{scaleF} enthalten. \code{fun} muss dabei gesetzt werden und zwar auf
-#' eine der vier Funktionen \code{GroupSize}, \code{GroupRate}, \code{Mean} und
-#' \code{Total} aus dem mzR-Paket, die restlichen Parameter sind optional.
+#' eine der vier Funktionen \code{GroupSize}, \code{GroupRate}, \code{Mean},
+#' \code{Total} und \code{Median} aus dem mzR-Paket, die restlichen Parameter sind optional.
 #' \code{TFstring}, \code{TFstring2}, \code{digits} und \code{var} sind einfach
 #' die Parameter aus eben genannten Funktionen, \code{scaleF} ist der
 #' Skalierungsfaktor der auf die jeweilige Spalte angewendet werden soll, also
@@ -75,7 +75,7 @@ makeEachVar <- function(x){
 #' \code{scaleF} bei \code{row} gesetzt, so hat er den Vorzug vor \code{scaleF}
 #' bei \code{col} - sollte er dort gesetzt worden sein (hier nicht vergessen,
 #' falls in \code{row} Raten berechnet werden sollen \code{scaleF="*1"}
-#' setzen). Falls \code{GroupRate}, \code{Mean} oder \code{Total} sowohl in 
+#' setzen). Falls \code{GroupRate}, \code{Mean}, \code{Total} oder \code{Median} sowohl in 
 #' \code{row} als auch \code{col} gesetzt wurden wird fuer die jeweilige Zelle 
 #' im Output kein Ergebnis ausgegeben.
 #' 
@@ -133,51 +133,53 @@ makeEachVar <- function(x){
 #' \code{\link{FillExcelTemplate},\link{MakeQT},\link{ImportDataListQT},\link{ImportData},\link{IndivImportData},\link{ImportAndMerge}}
 #' @export
 #' @examples
-#' \dontrun{dat <- ImportData(year=2014,quarter=4,comp_diff_lag = 1)
+#' \dontrun{
+#' 
+#' dat <- ImportData(year=2014,quarter=4,comp_diff_lag = 1)
 #' ### Spalten definieren
-#'col <- list()
-#'col[[length(col)+1]] <- list(fun="GroupSize",TFstring="balt>=15&balt<=74",
+#' col <- list()
+#' col[[length(col)+1]] <- list(fun="GroupSize",TFstring="balt>=15&balt<=74",
+#'                              digits=3, scaleF="/1000")
+#' col[[length(col)+1]] <- list(fun="GroupSize",TFstring="balt>=15&balt<=25",
 #'                             digits=3, scaleF="/1000")
-#'col[[length(col)+1]] <- list(fun="GroupSize",TFstring="balt>=15&balt<=25",
-#'                             digits=3, scaleF="/1000")
-#'col[[length(col)+1]] <- list(fun="GroupRate",TFstring="balt>=15&balt<=25", 
-#'                             TFstring2="balt>=15&balt<=74", digits=3)
-#'col[[length(col)+1]] <- list(fun="GroupRate",
-#'                             TFstring="xerwstat==1&balt>=15&balt<=74", 
-#'                             TFstring2="xerwstat%in%c(1,2)&balt>=15&balt<=74", digits=3)
-#'col[[length(col)+1]] <- list(fun="Total",
-#'                             TFstring="xerwstat==1&balt>=15&balt<=74",var="dtstd",
-#'                             digits=3, scaleF="/24/365")
-#'### Zeilen definieren
-#'row <- list(
-#'  NULL,
-#'  each="xnuts2",
-#'  list(TFstring="bpras!=1 & balt>=15 & balt<=64", scaleF="*1"),
-#'  each="rbpkin+xbstaat",
-#'  TFstring="balt>=15&balt<=25"
-#')
+#' col[[length(col)+1]] <- list(fun="GroupRate",TFstring="balt>=15&balt<=25", 
+#'                              TFstring2="balt>=15&balt<=74", digits=3)
+#' col[[length(col)+1]] <- list(fun="GroupRate",
+#'                              TFstring="xerwstat==1&balt>=15&balt<=74", 
+#'                              TFstring2="xerwstat%in%c(1,2)&balt>=15&balt<=74", digits=3)
+#' col[[length(col)+1]] <- list(fun="Total",
+#'                              TFstring="xerwstat==1&balt>=15&balt<=74",var="dtstd",
+#'                              digits=3, scaleF="/24/365")
+#' ### Zeilen definieren
+#' row <- list(
+#'   NULL,
+#'   each="xnuts2",
+#'   list(TFstring="bpras!=1 & balt>=15 & balt<=64", scaleF="*1"),
+#'   each="rbpkin+xbstaat",
+#'   TFstring="balt>=15&balt<=25"
+#' )
 #'
-#'### Bloecke definieren
-#'block <- list(NULL, "bsex==1", "bsex==2")
+#' ### Bloecke definieren
+#' block <- list(NULL, "bsex==1", "bsex==2")
 #'
-#'### Erstellen 3 Tabellen fuer FillExcelTemplate(), jeweils mit verschiedenen Regeln 
-#'##  zur Kennzeichnung von bestimmten Werten
-#'##  Achtung: kann durchaus laenger dauern!
+#' ### Erstellen 3 Tabellen fuer FillExcelTemplate(), jeweils mit verschiedenen Regeln 
+#' ##  zur Kennzeichnung von bestimmten Werten
+#' ##  Achtung: kann durchaus laenger dauern!
 #'
-#'### 1. Tabelle mit Limits (bezogen auf Variationskoeffizient)
-#'tab1 <- MakeTable(dat, col=col, row=row, block=block, error="cv", 
+#' ### 1. Tabelle mit Limits (bezogen auf Variationskoeffizient)
+#' tab1 <- MakeTable(dat, col=col, row=row, block=block, error="cv", 
 #'                  lim1=0.17, lim2=0.25)
-#'### 2. Tabelle ohne Limits und Default-Error-Einstellung liefert unmarkierte Zellen-Werte
-#'tab2 <- MakeTable(dat, col=col, row=row, block=block) 
+#' ### 2. Tabelle ohne Limits und Default-Error-Einstellung liefert unmarkierte Zellen-Werte
+#' tab2 <- MakeTable(dat, col=col, row=row, block=block) 
 #'
-#'### 3. Tabelle der relativen Veraenderungen vom 3. Quartal 2014 aufs 4. Quartal 2014 
-#'##  Nicht-signifikante Schaetzwerte (Konfidenzintervall enthaelt den Wert 0) 
-#'##  werden durch * markiert.
-#'##  Achtung: bei einigen col-Listenelementen wurde scaleF spezifiziert. 
-#'##  Das macht hier fuer Veraenderungen keinen Sinn, wird aber der Einfachheit halber 
-#'##  fuer dieses Beispiel so belassen.
-#'tab3 <- MakeTable(dat, col=col, row=row, block=block, estimator="relChange", error="ci",
-#'                  markLeft1="",markRight1="*",markValue1=NULL) 
+#' ### 3. Tabelle der relativen Veraenderungen vom 3. Quartal 2014 aufs 4. Quartal 2014 
+#' ##  Nicht-signifikante Schaetzwerte (Konfidenzintervall enthaelt den Wert 0) 
+#' ##  werden durch * markiert.
+#' ##  Achtung: bei einigen col-Listenelementen wurde scaleF spezifiziert. 
+#' ##  Das macht hier fuer Veraenderungen keinen Sinn, wird aber der Einfachheit halber 
+#' ##  fuer dieses Beispiel so belassen.
+#' tab3 <- MakeTable(dat, col=col, row=row, block=block, estimator="relChange", error="ci",
+#'                   markLeft1="",markRight1="*",markValue1=NULL) 
 #'
 #' 
 #' ### Commands ansehen fuer tab1
@@ -187,7 +189,6 @@ makeEachVar <- function(x){
 #' tab1_commands[[1]][[3]][[4]]
 #' 
 #' }
-#' 
 MakeTable  <- function(dat,col,row=NULL,block=NULL,estimator="est",error="cv",
                        lim1=Inf,markLeft1="(",markRight1=")",markValue1=NULL,
                        lim2=Inf,markLeft2="(",markRight2=")",markValue2="x",
@@ -367,7 +368,9 @@ MakeTable  <- function(dat,col,row=NULL,block=NULL,estimator="est",error="cv",
         }  
         
         ## novaluelist befuellen (warnings fehlen noch)
-        if((row[[j]][["fun"]]%in%c("GroupRate","Total","Mean") && colx[["fun"]]%in%c("GroupRate","Total","Mean")) || (colx[["fun"]]%in%c("GroupRate","Total","Mean") && isTRUE(row[[j]][["fun"]]%in%c("GroupRate","Total","Mean")))){
+        estfuns <- c("GroupRate","Total","Mean", "Median")
+        if((row[[j]][["fun"]] %in% estfuns && colx[["fun"]] %in% estfuns) || 
+           (colx[["fun"]] %in% estfuns && isTRUE(row[[j]][["fun"]] %in% estfuns))){
           novaluelist[[length(novaluelist)+1]] <- c(row=j,col=whichcol)
         }
         
@@ -478,6 +481,8 @@ MakeTable  <- function(dat,col,row=NULL,block=NULL,estimator="est",error="cv",
           cmd <- paste0(cmd,";names(out)[j]<-","\"","MEAN","\"")
         }else if(row[[j]][["fun"]]=="Total"){
           cmd <- paste0(cmd,";names(out)[j]<-","\"","TOTAL","\"")
+        }else if(row[[j]][["fun"]]=="Median"){
+          cmd <- paste0(cmd,";names(out)[j]<-","\"","MEDIAN","\"")
         }
         
         

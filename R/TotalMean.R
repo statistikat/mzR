@@ -270,8 +270,7 @@ MedianX <- function(xx,TFstring,var, negativeZero=TRUE){
   #TODO: Schoener Loesung fuer die Generierung der Variablen
   for(i in seq_along(bw)){
     setnames(xtmp,bw[i],"bwTmp")
-    xtmp[,bwNum:=cumsum(bwTmp)]
-    estb[i] <- xtmp[bwNum<=xtmp[,sum(bwTmp)/2],tail(varNumTmp,1)]
+    estb[i] <- xtmp[ , laeken::weightedMedian(varNumTmp, bwTmp)]
     setnames(xtmp,"bwTmp",bw[i])
   }
   if(length(xx)>1){
@@ -308,10 +307,9 @@ MedianX <- function(xx,TFstring,var, negativeZero=TRUE){
     ytmp[,gew1Num:=cumsum(gew1)]
     est2 <- ytmp[gew1Num<=y[,sum(gew1)/2],tail(varNumTmp,1)]
     #TODO: Schoener Loesung fuer die Generierung der Variablen
-    for(i in seq_along(bwNum)){
+    for(i in seq_along(bw)){
       setnames(ytmp,bw[i],"bwTmp")
-      ytmp[, bwNum:=cumsum(bwTmp)]
-      estb2[i] <- ytmp[bwNum<=y[,sum(bwTmp)/2],tail(varNumTmp,1)]
+      estb2[i] <- xtmp[ , laeken::weightedMedian(varNumTmp, bwTmp)]
       setnames(ytmp,"bwTmp",bw[i])
     }
   }
@@ -333,11 +331,14 @@ MedianX <- function(xx,TFstring,var, negativeZero=TRUE){
     ))
   }
 }
+#' @export
+#' @describeIn TotalMean Median. Robuste alternative zu \code{Mean}
 Median <- function(x,TFstring=NULL,each=NULL,var, negativeZero=TRUE,thousands_separator=TRUE,digits=2){
   ComputeNum(x=x,TFstring=TFstring,each=each,var=var,negativeZero=negativeZero,thousands_separator=thousands_separator,digits=digits,method="MedianX")
 }
 
 #' @export
+#' @describeIn TotalMean Arithmetisches Mittel
 Mean <- function(x,TFstring=NULL,each=NULL,var, negativeZero=TRUE,thousands_separator=TRUE,digits=2){
   ComputeNum(x=x,TFstring=TFstring,each=each,var=var,negativeZero=negativeZero,thousands_separator=thousands_separator,digits=digits,method="MeanX")
 }
@@ -356,7 +357,7 @@ Mean <- function(x,TFstring=NULL,each=NULL,var, negativeZero=TRUE,thousands_sepa
 #' berechneten Schaetzwerte, \code{cil_2.5\%} und \code{ciu_97.5\%} sind die 
 #' entsprechenden 2.5\% und 97.5\% Quantile und \code{cv=sd/est}.
 #' 
-#' @aliases Total Mean
+#' @aliases Total Mean Median
 #' @param x MZ Daten - Output von Funktion \link{ImportData}.
 #' @param TFstring Character oder NULL: Logische Einschraenkung der Gruppe. Falls NULL, gilt keine Einschraenkung.
 #' @param each Character oder NULL: Name der Variable nach der getrennt berechnet werden soll. 

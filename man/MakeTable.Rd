@@ -76,8 +76,8 @@ zu erstellenden Tabelle in Matrix-Form und gibt an, was fuer die
 entsprechende Spalte berechnet werden soll. Jede Subliste kann die Argumente
 \code{fun}, \code{TFstring}, \code{TFstring2}, \code{digits}, \code{var} und
 \code{scaleF} enthalten. \code{fun} muss dabei gesetzt werden und zwar auf
-eine der vier Funktionen \code{GroupSize}, \code{GroupRate}, \code{Mean} und
-\code{Total} aus dem mzR-Paket, die restlichen Parameter sind optional.
+eine der vier Funktionen \code{GroupSize}, \code{GroupRate}, \code{Mean},
+\code{Total} und \code{Median} aus dem mzR-Paket, die restlichen Parameter sind optional.
 \code{TFstring}, \code{TFstring2}, \code{digits} und \code{var} sind einfach
 die Parameter aus eben genannten Funktionen, \code{scaleF} ist der
 Skalierungsfaktor der auf die jeweilige Spalte angewendet werden soll, also
@@ -105,7 +105,7 @@ Wird der Parameter
 \code{scaleF} bei \code{row} gesetzt, so hat er den Vorzug vor \code{scaleF}
 bei \code{col} - sollte er dort gesetzt worden sein (hier nicht vergessen,
 falls in \code{row} Raten berechnet werden sollen \code{scaleF="*1"}
-setzen). Falls \code{GroupRate}, \code{Mean} oder \code{Total} sowohl in 
+setzen). Falls \code{GroupRate}, \code{Mean}, \code{Total} oder \code{Median} sowohl in 
 \code{row} als auch \code{col} gesetzt wurden wird fuer die jeweilige Zelle 
 im Output kein Ergebnis ausgegeben.
 
@@ -124,28 +124,30 @@ keine \code{digits} bei \code{col} bei \code{MakeTable()} zu setzen da oft die v
 Excel-Formate das Runden uebernehmen.
 }
 \examples{
-\dontrun{dat <- ImportData(year=2014,quarter=4,comp_diff_lag = 1)
+\dontrun{
+
+dat <- ImportData(year=2014,quarter=4,comp_diff_lag = 1)
 ### Spalten definieren
 col <- list()
 col[[length(col)+1]] <- list(fun="GroupSize",TFstring="balt>=15&balt<=74",
-                            digits=3, scaleF="/1000")
+                             digits=3, scaleF="/1000")
 col[[length(col)+1]] <- list(fun="GroupSize",TFstring="balt>=15&balt<=25",
                             digits=3, scaleF="/1000")
 col[[length(col)+1]] <- list(fun="GroupRate",TFstring="balt>=15&balt<=25", 
-                            TFstring2="balt>=15&balt<=74", digits=3)
+                             TFstring2="balt>=15&balt<=74", digits=3)
 col[[length(col)+1]] <- list(fun="GroupRate",
-                            TFstring="xerwstat==1&balt>=15&balt<=74", 
-                            TFstring2="xerwstat\%in\%c(1,2)&balt>=15&balt<=74", digits=3)
+                             TFstring="xerwstat==1&balt>=15&balt<=74", 
+                             TFstring2="xerwstat\%in\%c(1,2)&balt>=15&balt<=74", digits=3)
 col[[length(col)+1]] <- list(fun="Total",
-                            TFstring="xerwstat==1&balt>=15&balt<=74",var="dtstd",
-                            digits=3, scaleF="/24/365")
+                             TFstring="xerwstat==1&balt>=15&balt<=74",var="dtstd",
+                             digits=3, scaleF="/24/365")
 ### Zeilen definieren
 row <- list(
- NULL,
- each="xnuts2",
- list(TFstring="bpras!=1 & balt>=15 & balt<=64", scaleF="*1"),
- each="rbpkin+xbstaat",
- TFstring="balt>=15&balt<=25"
+  NULL,
+  each="xnuts2",
+  list(TFstring="bpras!=1 & balt>=15 & balt<=64", scaleF="*1"),
+  each="rbpkin+xbstaat",
+  TFstring="balt>=15&balt<=25"
 )
 
 ### Bloecke definieren
@@ -168,7 +170,7 @@ tab2 <- MakeTable(dat, col=col, row=row, block=block)
 ##  Das macht hier fuer Veraenderungen keinen Sinn, wird aber der Einfachheit halber 
 ##  fuer dieses Beispiel so belassen.
 tab3 <- MakeTable(dat, col=col, row=row, block=block, estimator="relChange", error="ci",
-                 markLeft1="",markRight1="*",markValue1=NULL) 
+                  markLeft1="",markRight1="*",markValue1=NULL) 
 
 
 ### Commands ansehen fuer tab1
@@ -178,7 +180,6 @@ tab1_commands <- MakeTable(dat,col=col,row=row, block=block,error="cv",
 tab1_commands[[1]][[3]][[4]]
 
 }
-
 }
 \seealso{
 \code{\link{FillExcelTemplate},\link{MakeQT},\link{ImportDataListQT},\link{ImportData},\link{IndivImportData},\link{ImportAndMerge}}

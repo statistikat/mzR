@@ -9,7 +9,7 @@ Depends:
     R (>= 2.14.0),stats,utils,grDevices,data.table
 Imports:
     methods,survey,plyr,Hmisc,readr,XLConnect, lubridate
-Suggests: knitr, mountSTAT
+Suggests: knitr, mountSTAT, laeken
 Description: Data sets from Austrian Microcensus can be loaded and estimates
     with their respective errors can be computed.
 License: GPL (>= 2)
