@@ -3,6 +3,7 @@
 \name{export}
 \alias{export}
 \alias{export.mzR}
+\alias{export}
 \title{Export der Schaetz-und Fehlerrechnungsergebnisse.}
 \usage{
 export(x, outFilePath = getwd(), outFileName = NULL)
@@ -42,4 +43,3 @@ export(GroupSize(dat,each="xerwstat+xnuts2"))
 \seealso{
 \code{\link{ImportData},\link{IndivImportData},\link{GetLabels},\link{GroupSize},\link{GroupRate},\link{Total},\link{Mean}}
 }
-

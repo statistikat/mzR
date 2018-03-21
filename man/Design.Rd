@@ -29,4 +29,3 @@ des <- Design(dat)
 \seealso{
 \code{\link{ImportData},\link{IndivImportData}}
 }
-

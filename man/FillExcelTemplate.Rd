@@ -140,4 +140,3 @@ list(row=5,col=1,entry="FussnoteBlaBlaText")
 \seealso{
 \code{\link{MakeTable},\link{MakeQT},\link{ImportData},\link{IndivImportData},\link{ImportDataListQT}}
 }
-

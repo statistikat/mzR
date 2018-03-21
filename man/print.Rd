@@ -26,4 +26,3 @@ zurueck.
 \details{
 ...
 }
-

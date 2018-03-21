@@ -66,4 +66,3 @@ mzTestData <- AddVariable(x=mzTestData, functionName=age_pub_fun, newVar="age_pu
 \seealso{
 \code{\link{ImportData},\link{IndivImportData}}
 }
-

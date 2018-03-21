@@ -38,4 +38,3 @@ GetLabels(mzTestData,c("dtstd","xnuts2"))
 \seealso{
 \code{\link{ImportData},\link{IndivImportData},\link{ImportAndMerge}}
 }
-

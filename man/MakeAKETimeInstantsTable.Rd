@@ -140,4 +140,3 @@ tab2 <- MakeTimeInstantsTable(col=col,row=row,timeInstant=c(2014,4),nbw=5)
 \seealso{
 \code{\link{MakeTable},\link{FillExcelTemplate},\link{ImportData},\link{IndivImportData}}
 }
-

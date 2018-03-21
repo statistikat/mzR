@@ -183,4 +183,3 @@ tab1_commands[[1]][[3]][[4]]
 \seealso{
 \code{\link{FillExcelTemplate},\link{MakeQT},\link{ImportDataListQT},\link{ImportData},\link{IndivImportData},\link{ImportAndMerge}}
 }
-

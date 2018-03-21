@@ -3,6 +3,7 @@
 \name{GroupRate}
 \alias{GroupRate}
 \alias{GroupSize}
+\alias{GroupRate}
 \title{Schaetz- und Fehlerrechnungsfunktionen.}
 \usage{
 GroupRate(x, TFstring, TFstring2 = NULL, each = NULL, byeach = TRUE,
@@ -116,4 +117,3 @@ GroupSize(dat,TFstring="wrecht2\%in\%c(1:3)")
 \seealso{
 \code{\link{ImportData},\link{IndivImportData},\link{ImportAndMerge},\link{GetLabels},\link{Total},\link{Mean},\link{export}}
 }
-

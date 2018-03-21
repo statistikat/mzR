@@ -154,4 +154,3 @@ tab2 <- MakeQT(datalist,col=col,row=row,timeInstant=c(2014,4))
 \seealso{
 \code{\link{MakeTable},\link{FillExcelTemplate},\link{ImportDataListQT},\link{ImportData},\link{IndivImportData},\link{ImportAndMerge}}
 }
-

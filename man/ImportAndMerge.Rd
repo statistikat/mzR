@@ -81,4 +81,3 @@ dat_indiv <- ImportAndMerge(dat, curr_inFile=curr_inFile, mergeBy=c("asbper","am
 \seealso{
 \code{\link{ImportData}}
 }
-

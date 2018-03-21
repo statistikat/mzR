@@ -83,4 +83,3 @@ datzr <- ImportData(from=c(2012,1),to=c(2014,4),
 \seealso{
 \code{\link{IndivImportData},\link{GroupSize},\link{GroupRate},\link{Total},\link{Mean},\link{GetLabels},\link{ImportAndMerge},\link{export.mzR}}
 }
-

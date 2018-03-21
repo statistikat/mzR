@@ -116,4 +116,3 @@ dat <- IndivImportData(curr_inFile=curr_inFile, curr_inFile_bw=curr_inFile_bw,
 \seealso{
 \code{\link{ImportData},\link{GroupSize},\link{GroupRate},\link{Total},\link{Mean},\link{GetLabels},\link{ImportAndMerge},\link{export}}
 }
-

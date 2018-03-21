@@ -29,4 +29,3 @@ Each dataset consists of a selection of variables from a subset of the Austrian 
 including weights and five bootstrap weights.
 }
 \keyword{datasets}
-
