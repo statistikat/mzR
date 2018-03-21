@@ -12,7 +12,7 @@ Depends:
     R (>= 2.14.0),stats,utils,grDevices,data.table
 Imports:
     methods,survey,plyr,Hmisc,readr,XLConnect, lubridate
-Suggests: knitr, mountSTAT, laeken
+Suggests: knitr, mountSTAT, laeken, rmarkdown
 Description: Data sets from Austrian Microcensus can be loaded and estimates
     with their respective errors can be computed.
 URL: https://github.com/statistikat/mzR
