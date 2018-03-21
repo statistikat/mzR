@@ -2,8 +2,11 @@ Package: mzR
 Version: 1.1.0
 Date: 2017-01-10
 Title: mzR - To compute estimates and their errors for Austrian microcensus data
+Authors@R: c(person("Gregor", "de Cillia", role = c("aut", "cre")),
+             person("Alexander", "Kowarik", role = c("aut")),
+             person("Angelika", "Meraner", role = c("aut")))
 Author: Alexander Kowarik <alexander.kowarik@statistik.gv.at>, Angelika Meraner
-    <angelika.meraner@statistik.gv.at>
+    <angelika.meraner@statistik.gv.at>, Gregor de Cillia <Gregor.DeCillia@statistik.gv.at>
 Maintainer: Angelika Meraner <angelika.meraner@statistik.gv.at>
 Depends:
     R (>= 2.14.0),stats,utils,grDevices,data.table
@@ -12,6 +15,7 @@ Imports:
 Suggests: knitr, mountSTAT, laeken
 Description: Data sets from Austrian Microcensus can be loaded and estimates
     with their respective errors can be computed.
+URL: https://github.com/statistikat/mzR
 License: GPL (>= 2)
 LazyData: TRUE
 ByteCompile: TRUE
