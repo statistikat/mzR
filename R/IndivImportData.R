@@ -95,6 +95,10 @@
 #' 
 IndivImportData<- function(curr_inFile, curr_inFile_bw, prev_inFile=NULL, prev_inFile_bw=NULL, 
                            whichVar=NULL, mergeBy="asbhh", nbw=NULL, bwNames=NULL, weightName="gew1", weightDecimals=2){
+  curr_inFile <- path.expand(curr_inFile)
+  curr_inFile_bw <- path.expand(curr_inFile_bw)
+  prev_inFile <- path.expand(prev_inFile)
+  prev_inFile_bw <- path.expand(prev_inFile_bw)
   gc()  
   
   indat_prev <- indat <- list()
