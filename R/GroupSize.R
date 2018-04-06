@@ -269,13 +269,13 @@ GroupX <- function(x,TFstring,TFstring2=NULL,each=NULL,byeach=TRUE,thousands_sep
     eachv <- eachvar <- each
   }
   for(l in x[[1]][,sort(unique(eval(parse(text=eachvar))))]){
-    TFstringcur <- paste0(eachvar,"==",l,"&",TFstring)
+    TFstringcur <- paste0(eachvar,"==",l,"& (",TFstring, ")")
     if(method=="GroupSize"){
       res[[paste0(eachvar,"_",l)]] <- GroupSizeX(x,TFstringcur)
     }else{
       if(byeach){
         if(!is.null(TFstring2))
-          TFstringcur2 <- paste0(eachvar,"==",l,"&",TFstring2)
+          TFstringcur2 <- paste0(eachvar,"==",l,"& (",TFstring2, ")")
         else
           TFstringcur2 <- paste0(eachvar,"==",l)
       }else{
