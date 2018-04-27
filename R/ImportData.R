@@ -209,30 +209,21 @@ ImportDataQ <- function(j, q, comp_jahresgew=FALSE, whichVar=whichVar, hh=hh, fa
   if(families){
     dat <- dat[xfstell==1,]
   }
-  if (is.null(nbw) || nbw > 0){
-    #Bootstrapgewichte einlesen
-    lfshrb <- data.table(read_csv2(gzfile(paste0(dircurrb, "/mz2_", j, "q", q, "_bootweights.csv.gz")), n_max = 1))      
-    ## Nur Quartalsgewichte, also gew1 einlesen 
+  
+  ## TODO: Is it a good idea to hardcode the number of bootstrap replicates here?
+  if (is.null(nbw))
+    nbw = 500
+  
+  if (nbw > 0){
+    bootpath <- paste0(dircurrb, "/mz2_", j, "q", q, "_bootweights.csv.gz")
     
-    if(is.null(nbw) || isTRUE(length(grep("gew1_",names(lfshrb),value=TRUE))==nbw)){
-      col_sel_gew1 <- paste0("list(asbhh=col_integer(),",
-                             paste0(grep("gew1_",names(lfshrb),value=TRUE),"=col_double()",collapse=","),",",
-                             paste0(grep("gew2_",names(lfshrb),value=TRUE),"=col_skip()",collapse=","),")")
-    }else{
-      col_sel_gew1 <- paste0("list(asbhh=col_integer(),",
-                             paste0(grep("gew1_",names(lfshrb),value=TRUE)[1:nbw],"=col_double()",collapse=","),",",
-                             paste0(grep("gew1_",names(lfshrb),value=TRUE)[(nbw+1):length(grep("gew1_",names(lfshrb),value=TRUE))],"=col_skip()",collapse=","),",",
-                             paste0(grep("gew2_",names(lfshrb),value=TRUE),"=col_skip()",collapse=","),
-                             ")")
-    }
-    lfshrb <- data.table(read_csv2(gzfile(paste0(dircurrb, "/mz2_", j, "q", q, "_bootweights.csv.gz")),
-                                   col_types = eval(parse(text = col_sel_gew1)), locale = locale("de")))
+    lfshrb <- fread(input = paste0("zcat ", bootpath), dec = ",", 
+                    select = c("asbhh", paste0("gew1_", 1:nbw)), key = "asbhh")
     
-    cat(paste0("'",dircurrb,"/mz2_",j,"q",q,"_bootweights.csv.gz'"), "wurde eingelesen.\n")    
+    cat(shQuote(bootpath), " wurde eingelesen.\n")    
     
     setkey(dat,asbhh)
-    setkey(lfshrb,asbhh)
-    
+
     if(hh | families){
       dat <- merge(dat,lfshrb,by=c("asbhh"),all.x=TRUE)
     }else{
