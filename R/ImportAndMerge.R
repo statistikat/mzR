@@ -65,7 +65,8 @@
 #' 
 ImportAndMerge <- function(x, curr_inFile, prev_inFile=NULL, mergeBy="asbper", whichVar=NULL){
   curr_inFile <- path.expand(curr_inFile)
-  prev_inFile <- path.expand(prev_inFile)
+  if (!is.null(prev_inFile))
+    prev_inFile <- path.expand(prev_inFile)
   gc()
   
   if(length(x)>1 & is.null(prev_inFile)){
