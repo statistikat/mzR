@@ -1,3 +1,26 @@
+appendVarNumTmp <- function(x, var, negativeZero) {
+  if(length(grep("\\+",var))>0||length(grep("\\*",var))>0||length(grep("\\-",var))>0||length(grep("\\/",var))>0){
+    if(negativeZero){
+      vars <- unlist(strsplit(var,"\\+"))
+      vars <- unlist(strsplit(vars,"\\*"))
+      vars <- unlist(strsplit(vars,"\\-"))
+      vars <- unlist(strsplit(vars,"\\/"))
+      vars <- unlist(strsplit(vars,"\\("))
+      vars <- unlist(strsplit(vars,"\\)"))
+      vars <- vars[vars != ""]
+      for(v in vars){
+        x[eval(parse(text = quote(v))) < 0, eval(parse(text = quote(v))) := 0]  
+      }
+    }
+    x[,':='(varNumTmp = eval(parse(text=var)))]
+  }else{
+    x[,':='(varNumTmp = eval(parse(text=var)))]
+    if(negativeZero){
+      x[varNumTmp < 0, varNumTmp := 0]
+    }
+  }
+}
+
 TotalX <- function(xx,TFstring,var, negativeZero=TRUE){
   gew1Num <- varNumTmp <- bwTmp <- gew1 <- NULL
   bw <- colnames(xx[[1]])[grepl("gew1_",colnames(xx[[1]]))]
@@ -11,26 +34,9 @@ TotalX <- function(xx,TFstring,var, negativeZero=TRUE){
   if(!"gew1"%in%names(x)){
     stop("Es wurden keine Gewichte uebergeben! Moeglicherweise liegt es auch am Variablennamen der Gewichte, diese muessen 'gew1' heissen.\n") 
   }
-  if(length(grep("\\+",var))>0||length(grep("\\*",var))>0||length(grep("\\-",var))>0||length(grep("\\/",var))>0){
-    if(negativeZero){
-      vars <- unlist(strsplit(var,"\\+"))
-      vars <- unlist(strsplit(vars,"\\*"))
-      vars <- unlist(strsplit(vars,"\\-"))
-      vars <- unlist(strsplit(vars,"\\/"))
-      vars <- unlist(strsplit(vars,"\\("))
-      vars <- unlist(strsplit(vars,"\\)"))
-      vars <- vars[vars!=""]
-      for(v in vars){
-        x[eval(parse(text=quote(v)))<0,eval(parse(text=quote(v))):=0]  
-      }
-    }
-    x[,':='(varNumTmp=eval(parse(text=var)))]
-  }else{
-    x[,':='(varNumTmp=eval(parse(text=var)))]
-    if(negativeZero){
-      x[varNumTmp<0,varNumTmp:=0]
-    }
-  }
+  
+  appendVarNumTmp(x, var, negativeZero)
+  
   x[,gew1Num:=gew1*varNumTmp]
   x[, (bw) := lapply(.SD, function(y){y * x[['varNumTmp']]}), .SDcols = bw]
   setnames(x,old=bw,new=bwNum)
@@ -56,26 +62,8 @@ TotalX <- function(xx,TFstring,var, negativeZero=TRUE){
     if(!"gew1"%in%names(y)){
       stop("Es wurden keine Gewichte uebergeben! Moeglicherweise liegt es auch am Variablennamen der Gewichte, diese muessen 'gew1' heissen.\n") 
     }
-    if(length(grep("\\+",var))>0||length(grep("\\*",var))>0||length(grep("\\-",var))>0||length(grep("\\/",var))>0){
-      if(negativeZero){
-        vars <- unlist(strsplit(var,"\\+"))
-        vars <- unlist(strsplit(vars,"\\*"))
-        vars <- unlist(strsplit(vars,"\\-"))
-        vars <- unlist(strsplit(vars,"\\/"))
-        vars <- unlist(strsplit(vars,"\\("))
-        vars <- unlist(strsplit(vars,"\\)"))
-        vars <- vars[vars!=""]
-        for(v in vars){
-          y[eval(parse(text=quote(v)))<0,eval(parse(text=quote(v))):=0]  
-        }
-      }
-      y[,':='(varNumTmp=eval(parse(text=var)))]
-    }else{
-      y[,':='(varNumTmp=eval(parse(text=var)))]
-      if(negativeZero){
-        y[varNumTmp<0,varNumTmp:=0]
-      }
-    }
+    appendVarNumTmp(y, var, negativeZero)
+    
     y[,gew1Num:=gew1*varNumTmp]
     
     y[, (bw) := lapply(.SD, function(z){z * y[['varNumTmp']]}), .SDcols = bw]
@@ -112,26 +100,9 @@ MeanX <- function(xx,TFstring,var, negativeZero=TRUE){
   if(!"gew1"%in%names(x)){
     stop("Es wurden keine Gewichte uebergeben! Moeglicherweise liegt es auch am Variablennamen der Gewichte, diese muessen 'gew1' heissen.\n") 
   }
-  if(length(grep("\\+",var))>0||length(grep("\\*",var))>0||length(grep("\\-",var))>0||length(grep("\\/",var))>0){
-    if(negativeZero){
-      vars <- unlist(strsplit(var,"\\+"))
-      vars <- unlist(strsplit(vars,"\\*"))
-      vars <- unlist(strsplit(vars,"\\-"))
-      vars <- unlist(strsplit(vars,"\\/"))
-      vars <- unlist(strsplit(vars,"\\("))
-      vars <- unlist(strsplit(vars,"\\)"))
-      vars <- vars[vars!=""]
-      for(v in vars){
-        x[eval(parse(text=quote(v)))<0,eval(parse(text=quote(v))):=0]  
-      }
-    }
-    x[,':='(varNumTmp=eval(parse(text=var)))]
-  }else{
-    x[,':='(varNumTmp=eval(parse(text=var)))]
-    if(negativeZero){
-      x[varNumTmp<0,varNumTmp:=0]
-    }
-  }  
+  
+  appendVarNumTmp(x, var, negativeZero)
+  
   x[,gew1Num:=gew1*varNumTmp]
   x_bw <- copy(x)
   x[, (bw) := lapply(.SD, function(y){y * x[['varNumTmp']]}), .SDcols = bw]
@@ -156,26 +127,9 @@ MeanX <- function(xx,TFstring,var, negativeZero=TRUE){
     if(!"gew1"%in%names(y)){
       stop("Es wurden keine Gewichte uebergeben! Moeglicherweise liegt es auch am Variablennamen der Gewichte, diese muessen 'gew1' heissen.\n") 
     }
-    if(length(grep("\\+",var))>0||length(grep("\\*",var))>0||length(grep("\\-",var))>0||length(grep("\\/",var))>0){
-      if(negativeZero){
-        vars <- unlist(strsplit(var,"\\+"))
-        vars <- unlist(strsplit(vars,"\\*"))
-        vars <- unlist(strsplit(vars,"\\-"))
-        vars <- unlist(strsplit(vars,"\\/"))
-        vars <- unlist(strsplit(vars,"\\("))
-        vars <- unlist(strsplit(vars,"\\)"))
-        vars <- vars[vars!=""]
-        for(v in vars){
-          y[eval(parse(text=quote(v)))<0,eval(parse(text=quote(v))):=0]  
-        }
-      }
-      y[,':='(varNumTmp=eval(parse(text=var)))]
-    }else{
-      y[,':='(varNumTmp=eval(parse(text=var)))]
-      if(negativeZero){
-        y[varNumTmp<0,varNumTmp:=0]
-      }
-    }
+    
+    appendVarNumTmp(y, var, negativeZero)
+    
     y[,gew1Num:=gew1*varNumTmp]
     y_bw <- copy(y)
     y[, (bw) := lapply(.SD, function(z){z * y[['varNumTmp']]}), .SDcols = bw]
@@ -221,26 +175,8 @@ MedianX <- function(xx,TFstring,var, negativeZero=TRUE){
     stop("Es wurden keine Gewichte uebergeben! Moeglicherweise liegt es auch am Variablennamen der Gewichte, diese muessen 'gew1' heissen.\n") 
   }
   
-  if(length(grep("\\+",var))>0||length(grep("\\*",var))>0||length(grep("\\-",var))>0||length(grep("\\/",var))>0){
-    if(negativeZero){
-      vars <- unlist(strsplit(var,"\\+"))
-      vars <- unlist(strsplit(vars,"\\*"))
-      vars <- unlist(strsplit(vars,"\\-"))
-      vars <- unlist(strsplit(vars,"\\/"))
-      vars <- unlist(strsplit(vars,"\\("))
-      vars <- unlist(strsplit(vars,"\\)"))
-      vars <- vars[vars!=""]
-      for(v in vars){
-        x[eval(parse(text=quote(v)))<0,eval(parse(text=quote(v))):=0]  
-      }
-    }
-    x[,':='(varNumTmp=eval(parse(text=var)))]
-  }else{
-    x[,':='(varNumTmp=eval(parse(text=var)))]
-    if(negativeZero){
-      x[varNumTmp<0,varNumTmp:=0]
-    }
-  }
+  appendVarNumTmp(x, var, negativeZero)
+  
   xtmp <- x[eval(parse(text=TFstring))]
   setkey(xtmp,varNumTmp)
   xtmp[,gew1Num:=cumsum(gew1)]
@@ -260,26 +196,9 @@ MedianX <- function(xx,TFstring,var, negativeZero=TRUE){
     }
     
     estb2 <- vector()
-    if(length(grep("\\+",var))>0||length(grep("\\*",var))>0||length(grep("\\-",var))>0||length(grep("\\/",var))>0){
-      if(negativeZero){
-        vars <- unlist(strsplit(var,"\\+"))
-        vars <- unlist(strsplit(vars,"\\*"))
-        vars <- unlist(strsplit(vars,"\\-"))
-        vars <- unlist(strsplit(vars,"\\/"))
-        vars <- unlist(strsplit(vars,"\\("))
-        vars <- unlist(strsplit(vars,"\\)"))
-        vars <- vars[vars!=""]
-        for(v in vars){
-          y[eval(parse(text=quote(v)))<0,eval(parse(text=quote(v))):=0]  
-        }
-      }
-      y[,':='(varNumTmp=eval(parse(text=var)))]
-    }else{
-      y[,':='(varNumTmp=eval(parse(text=var)))]
-      if(negativeZero){
-        y[varNumTmp<0,varNumTmp:=0]
-      }
-    }
+    
+    appendVarNumTmp(y, var, negativeZero)
+    
     ytmp <-y[eval(parse(text=TFstring))]
     setkey(ytmp,varNumTmp)
     ytmp[,gew1Num:=cumsum(gew1)]
