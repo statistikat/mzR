@@ -1,3 +1,29 @@
+## Hilfsfunktionen zum erstellen der Listenelemente in mzR Objekten
+mzRComponent <- function(date, est, estb) {
+  sde <- sd(estb)
+  list(date = date, est = est, sd = sde, cv = sde/est, cil = quantNA(estb, .025),
+       ciu = quantNA(estb, .975))
+}
+mzRComponent2 <- function(date, est, est2, estb, estb2, datePrev) {
+  sde <- sd(estb)
+  sde2 <- sd(estb2)
+  absdiff <- est-est2
+  absdiffb <- estb-estb2
+  ratediff <- 100*(est-est2)/est2
+  ratediffb <- 100*(estb-estb2)/estb2
+  sdabs <- sd(absdiffb)
+  sdrel <- sd(ratediffb)
+  list(
+    date = date, est = est, sd = sde, cv = sde/est, cil = quantNA(estb, .025), 
+    ciu = quantNA(estb, .975), datePrev = datePrev, estPrev = est2, sdPrev = sde2,
+    cvPrev = sde2/est2, cilPrev = quantNA(estb2, .025), ciuPrev = quantNA(estb2, .975),
+    absChange = absdiff, sdAbsChange = sdabs, cvAbsChange = sdabs/absdiff, 
+    cilAbsChange = quantNA(absdiffb, .025), ciuAbsChange = quantNA(absdiffb, .975),
+    relChange = ratediff, sdRelChange = sdrel, cvRelChange = sdrel/ratediff, 
+    cilRelChange = quantNA(ratediffb,.025), ciuRelChange = quantNA(ratediffb, .975)
+  )
+}
+
 # Statt "Ver\u00E4nderung" doch besser "Change" in Anzeige
 CompFehlerX <- function(x,each=NULL,thousands_separator=TRUE,digits=2){  
   if(is.null(each)){

@@ -92,22 +92,11 @@ TotalX <- function(xx,TFstring,var, negativeZero=TRUE){
   estb <- x[eval(parse(text=TFstring)),lapply(.SD,sum),.SDcols=bwNum]
   sde <- sd(estb)
   if(is.null(y)){
-    return(list(date=date,est=est,sd=sde,cv=sde/est,cil=quantNA(estb,.025),ciu=quantNA(estb,.975)))
+    return(mzRComponent(date, est, estb))
   }else{
     est2 <- y[eval(parse(text=TFstring)),sum(gew1Num)]
     estb2 <- y[eval(parse(text=TFstring)),lapply(.SD,sum),.SDcols=bwNum]
-    sde2 <- sd(estb2)
-    absdiff <- est-est2
-    absdiffb <- estb-estb2
-    ratediff <- 100*(est-est2)/est2
-    ratediffb <- 100*(estb-estb2)/estb2
-    sdabs <- sd(absdiffb)
-    sdrel <- sd(ratediffb)
-    return(list(date=date,est=est,sd=sde,cv=sde/est,cil=quantNA(estb,.025),ciu=quantNA(estb,.975),
-                datePrev=datePrev,estPrev=est2,sdPrev=sde2,cvPrev=sde2/est2,cilPrev=quantNA(estb2,.025),ciuPrev=quantNA(estb2,.975),
-                absChange=absdiff,sdAbsChange=sdabs,cvAbsChange=sdabs/absdiff,cilAbsChange=quantNA(absdiffb,.025),ciuAbsChange=quantNA(absdiffb,.975),
-                relChange=ratediff,sdRelChange=sdrel,cvRelChange=sdrel/ratediff,cilRelChange=quantNA(ratediffb,.025),ciuRelChange=quantNA(ratediffb,.975)
-    ))
+    return(mzRComponent2(date, est, est2, estb, estb2, datePrev))
   }
 }
 MeanX <- function(xx,TFstring,var, negativeZero=TRUE){
@@ -207,7 +196,7 @@ MeanX <- function(xx,TFstring,var, negativeZero=TRUE){
   estb <- numb/denumb
   sde <- sd(estb)
   if(is.null(y)){
-    return(list(date=date,est=est,sd=sde,cv=sde/est,cil=quantNA(estb,.025),ciu=quantNA(estb,.975)))  
+    return(mzRComponent(date, est, estb))
   }else{
     num2 <- y[eval(parse(text=TFstring)),sum(gew1Num)]
     numb2 <- y[eval(parse(text=TFstring)),lapply(.SD,sum),.SDcols=bwNum]
@@ -215,18 +204,7 @@ MeanX <- function(xx,TFstring,var, negativeZero=TRUE){
     denumb2 <- y_bw[eval(parse(text=TFstring)),lapply(.SD,sum),.SDcols=bw]
     est2 <- num2/denum2
     estb2 <- numb2/denumb2
-    sde2 <- sd(estb2)
-    absdiff <- est-est2
-    absdiffb <- estb-estb2
-    ratediff <- 100*(est-est2)/est2
-    ratediffb <- 100*(estb-estb2)/estb2
-    sdabs <- sd(absdiffb)
-    sdrel <- sd(ratediffb)
-    return(list(date=date,est=est,sd=sde,cv=sde/est,cil=quantNA(estb,.025),ciu=quantNA(estb,.975),
-                datePrev=datePrev,estPrev=est2,sdPrev=sde2,cvPrev=sde2/est2,cilPrev=quantNA(estb2,.025),ciuPrev=quantNA(estb2,.975),
-                absChange=absdiff,sdAbsChange=sdabs,cvAbsChange=sdabs/absdiff,cilAbsChange=quantNA(absdiffb,.025),ciuAbsChange=quantNA(absdiffb,.975),
-                relChange=ratediff,sdRelChange=sdrel,cvRelChange=sdrel/ratediff,cilRelChange=quantNA(ratediffb,.025),ciuRelChange=quantNA(ratediffb,.975)
-    ))
+    return(mzRComponent2(date, est, est2, estb, estb2, datePrev))
   }
 }
 MedianX <- function(xx,TFstring,var, negativeZero=TRUE){
@@ -315,20 +293,9 @@ MedianX <- function(xx,TFstring,var, negativeZero=TRUE){
   }
   sde <- sd(estb)
   if(is.null(y)){
-    return(list(date=date,est=est,sd=sde,cv=sde/est,cil=quantNA(estb,.025),ciu=quantNA(estb,.975)))  
+    return(mzRComponent(date, est, estb))
   }else{
-    sde2 <- sd(estb2)
-    absdiff <- est-est2
-    absdiffb <- estb-estb2
-    ratediff <- 100*(est-est2)/est2
-    ratediffb <- 100*(estb-estb2)/estb2
-    sdabs <- sd(absdiffb)
-    sdrel <- sd(ratediffb)
-    return(list(date=date,est=est,sd=sde,cv=sde/est,cil=quantNA(estb,.025),ciu=quantNA(estb,.975),
-                datePrev=datePrev,estPrev=est2,sdPrev=sde2,cvPrev=sde2/est2,cilPrev=quantNA(estb2,.025),ciuPrev=quantNA(estb2,.975),
-                absChange=absdiff,sdAbsChange=sdabs,cvAbsChange=sdabs/absdiff,cilAbsChange=quantNA(absdiffb,.025),ciuAbsChange=quantNA(absdiffb,.975),
-                relChange=ratediff,sdRelChange=sdrel,cvRelChange=sdrel/ratediff,cilRelChange=quantNA(ratediffb,.025),ciuRelChange=quantNA(ratediffb,.975)
-    ))
+    return(mzRComponent2(date, est, est2, estb, estb2, datePrev))
   }
 }
 #' @export
