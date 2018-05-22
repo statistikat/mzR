@@ -240,50 +240,34 @@ GroupX <- function(x,TFstring,TFstring2=NULL,each=NULL,byeach=TRUE,thousands_sep
       res <- GroupSizeX(x,TFstring)
     else
       res <- GroupRateX(x,TFstring,TFstring2)
-    class(res) <- "mzR"
-    attr(res,"each") <- NULL
-    attr(res,"thousands_separator") <- thousands_separator
-    attr(res,"digits") <- digits
-    if(method=="GroupSize"){
-      attr(res,"ergType") <- "GroupSize"
-      attr(res,"TFstring") <- TFstring
-    }else{
-      attr(res,"ergType") <- "GroupRate"
-      attr(res,"TFstring") <- TFstring
-      attr(res,"TFstring2") <- TFstring2
-      attr(res,"byeach") <- byeach
-    }
-    # if(any(is.na(res))){
-    #   warning("\nAchtung, moeglicherweise fehlen zu einer oder mehreren Beobachtungen Bootstrapgewichte!\n")
-    # }
-    return(res)
-  }
-  res <- list()
-  if(length(grep("\\+",each))>0){
-    eachv <- strsplit(each,"\\+")[[1]]
-    eachvar <- paste(eachv,collapse="_")
-    for(i in 1:length(x)){
-      x[[i]][[eachvar]] <- apply(x[[i]][,eachv,with=FALSE],1,makeEachVar)
-    }
-  }else{
-    eachv <- eachvar <- each
-  }
-  for(l in x[[1]][,sort(unique(eval(parse(text=eachvar))))]){
-    TFstringcur <- paste0(eachvar,"==",l,"& (",TFstring, ")")
-    if(method=="GroupSize"){
-      res[[paste0(eachvar,"_",l)]] <- GroupSizeX(x,TFstringcur)
-    }else{
-      if(byeach){
-        if(!is.null(TFstring2))
-          TFstringcur2 <- paste0(eachvar,"==",l,"& (",TFstring2, ")")
-        else
-          TFstringcur2 <- paste0(eachvar,"==",l)
-      }else{
-        TFstringcur2 <- TFstring
+  } else{
+    res <- list()
+    if(length(grep("\\+",each))>0){
+      eachv <- strsplit(each,"\\+")[[1]]
+      eachvar <- paste(eachv,collapse="_")
+      for(i in 1:length(x)){
+        x[[i]][[eachvar]] <- apply(x[[i]][,eachv,with=FALSE],1,makeEachVar)
       }
-      res[[paste0(eachvar,"_",l)]] <- GroupRateX(x,TFstringcur,TFstringcur2)
+    }else{
+      eachv <- eachvar <- each
     }
-    res[[paste0(eachvar,"_",l)]][["each"]] <- head(x[[1]][eval(parse(text=TFstringcur)),eachv,with=FALSE],1)
+    for(l in x[[1]][,sort(unique(eval(parse(text=eachvar))))]){
+      TFstringcur <- paste0(eachvar,"==",l,"& (",TFstring, ")")
+      if(method=="GroupSize"){
+        res[[paste0(eachvar,"_",l)]] <- GroupSizeX(x,TFstringcur)
+      }else{
+        if(byeach){
+          if(!is.null(TFstring2))
+            TFstringcur2 <- paste0(eachvar,"==",l,"& (",TFstring2, ")")
+          else
+            TFstringcur2 <- paste0(eachvar,"==",l)
+        }else{
+          TFstringcur2 <- TFstring
+        }
+        res[[paste0(eachvar,"_",l)]] <- GroupRateX(x,TFstringcur,TFstringcur2)
+      }
+      res[[paste0(eachvar,"_",l)]][["each"]] <- head(x[[1]][eval(parse(text=TFstringcur)),eachv,with=FALSE],1)
+    }
   }
   
   class(res) <- "mzR"
@@ -297,7 +281,7 @@ GroupX <- function(x,TFstring,TFstring2=NULL,each=NULL,byeach=TRUE,thousands_sep
     attr(res,"ergType") <- "GroupRate"
     attr(res,"TFstring") <- TFstring
     attr(res,"TFstring2") <- TFstring2
-    attr(byeach,"TFstring2") <- byeach
+    attr(res,"byeach") <- byeach
   }
   # if(any(is.na(unlist(res)))){
   #   warning("\nAchtung, moeglicherweise fehlen zu einer oder mehreren Beobachtungen Bootstrapgewichte!\n")
