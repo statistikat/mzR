@@ -9,20 +9,20 @@
 \title{Schaetz- und Fehlerrechnungsfunktionen fuer numerische Variablen.}
 \usage{
 Median(x, TFstring = NULL, each = NULL, var, negativeZero = TRUE,
-  thousands_separator = TRUE, digits = 2)
+  thousands_separator = TRUE, digits = 2, replicates = FALSE)
 
 Mean(x, TFstring = NULL, each = NULL, var, negativeZero = TRUE,
-  thousands_separator = TRUE, digits = 2)
+  thousands_separator = TRUE, digits = 2, replicates = FALSE)
 
 Total(x, TFstring = NULL, each = NULL, var, negativeZero = TRUE,
-  thousands_separator = TRUE, digits = 2)
+  thousands_separator = TRUE, digits = 2, replicates = FALSE)
 }
 \arguments{
 \item{x}{MZ Daten - Output von Funktion \link{ImportData}.}
 
 \item{TFstring}{Character oder NULL: Logische Einschraenkung der Gruppe. Falls NULL, gilt keine Einschraenkung.}
 
-\item{each}{Character oder NULL: Name der Variable nach der getrennt berechnet werden soll. 
+\item{each}{Character oder NULL: Name der Variable nach der getrennt berechnet werden soll.
 Hier koennen auch mehrere Variablen angegeben werden und zwar in einem character string, getrennt durch ein +, siehe Examples.}
 
 \item{var}{character: Name der numerischen Variable oder Formel zur Berechnung dieser
@@ -36,6 +36,10 @@ angezeigt.}
 
 \item{digits}{Numerischer Wert: Anzahl der Nachkommastellen im angezeigten Ergebnis. Default
 ist 2.}
+
+\item{replicates}{Fürge einen Vektor aus Schätzwerten zum Output hinzu? Die Anzahl der Schätzwerte
+pro Gruppe in \code{each} entspricht der Anzahl der Bootstrapreplikate (typischerweise 500).
+Siehe auch \link{getReplicates}.}
 }
 \value{
 Output ist ein Objekt der Klasse \code{mzR}.
@@ -50,7 +54,7 @@ Wiedergegeben wird der Schaetzer \code{est}, der Stichprobenfehler
 des 95\% Konfidenzintervalls \code{cil_2.5\%}/\code{ciu_97.5\%}.
 Die Fehler werden mit Hilfe von Replikationsgewichten aus einem Bootstrapverfahren
 berechnet, d.h. \code{sd} entspricht der Standardabweichung der mit den Bootstrapgewichten
-berechneten Schaetzwerte, \code{cil_2.5\%} und \code{ciu_97.5\%} sind die 
+berechneten Schaetzwerte, \code{cil_2.5\%} und \code{ciu_97.5\%} sind die
 entsprechenden 2.5\% und 97.5\% Quantile und \code{cv=sd/est}.
 }
 \section{Functions}{

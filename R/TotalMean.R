@@ -21,7 +21,7 @@ appendVarNumTmp <- function(x, var, negativeZero) {
   }
 }
 
-TotalX <- function(xx,TFstring,var, negativeZero=TRUE){
+TotalX <- function(xx, TFstring, var, negativeZero = TRUE, replicates){
   gew1Num <- varNumTmp <- bwTmp <- gew1 <- NULL
   bw <- colnames(xx[[1]])[grepl("gew1_",colnames(xx[[1]]))]
   if(length(bw)==0){
@@ -59,14 +59,14 @@ TotalX <- function(xx,TFstring,var, negativeZero=TRUE){
   estb <- x[eval(parse(text=TFstring)),lapply(.SD,sum),.SDcols=bwNum]
   sde <- sd(estb)
   if(is.null(y)){
-    return(mzRComponent(date, est, estb))
+    return(mzRComponent(date, est, estb, returnBR = replicates))
   }else{
     est2 <- y[eval(parse(text=TFstring)),sum(gew1Num)]
     estb2 <- y[eval(parse(text=TFstring)),lapply(.SD,sum),.SDcols=bwNum]
-    return(mzRComponent2(date, est, est2, estb, estb2, datePrev))
+    return(mzRComponent2(date, est, est2, estb, estb2, datePrev, returnBR = replicates))
   }
 }
-MeanX <- function(xx,TFstring,var, negativeZero=TRUE){
+MeanX <- function(xx, TFstring, var, negativeZero = TRUE, replicates = replicates){
   gew1Num <- varNumTmp <- bwTmp <- gew1 <- NULL
   bw <- colnames(xx[[1]])[grepl("gew1_",colnames(xx[[1]]))]
   if(length(bw)==0){
@@ -110,7 +110,7 @@ MeanX <- function(xx,TFstring,var, negativeZero=TRUE){
   estb <- numb/denumb
   sde <- sd(estb)
   if(is.null(y)){
-    return(mzRComponent(date, est, estb))
+    return(mzRComponent(date, est, estb, returnBR = replicates))
   }else{
     num2 <- y[eval(parse(text=TFstring)),sum(gew1Num)]
     numb2 <- y[eval(parse(text=TFstring)),lapply(.SD,sum),.SDcols=bwNum]
@@ -118,10 +118,10 @@ MeanX <- function(xx,TFstring,var, negativeZero=TRUE){
     denumb2 <- y_bw[eval(parse(text=TFstring)),lapply(.SD,sum),.SDcols=bw]
     est2 <- num2/denum2
     estb2 <- numb2/denumb2
-    return(mzRComponent2(date, est, est2, estb, estb2, datePrev))
+    return(mzRComponent2(date, est, est2, estb, estb2, datePrev, returnBR = replicates))
   }
 }
-MedianX <- function(xx,TFstring,var, negativeZero=TRUE){
+MedianX <- function(xx, TFstring,var, negativeZero = TRUE, replicates = replicates){
   gew1Num <- varNumTmp <- bwTmp <- gew1 <- bwNum <- NULL
   bw <- colnames(xx[[1]])[grepl("gew1_",colnames(xx[[1]]))]
   if(length(bw)==0){
@@ -172,21 +172,27 @@ MedianX <- function(xx,TFstring,var, negativeZero=TRUE){
   }
   sde <- sd(estb)
   if(is.null(y)){
-    return(mzRComponent(date, est, estb))
+    return(mzRComponent(date, est, estb, returnBR = replicates))
   }else{
-    return(mzRComponent2(date, est, est2, estb, estb2, datePrev))
+    return(mzRComponent2(date, est, est2, estb, estb2, datePrev, returnBR = replicates))
   }
 }
 #' @export
 #' @describeIn TotalMean Median. Robuste alternative zu \code{Mean}
-Median <- function(x,TFstring=NULL,each=NULL,var, negativeZero=TRUE,thousands_separator=TRUE,digits=2){
-  ComputeNum(x=x,TFstring=TFstring,each=each,var=var,negativeZero=negativeZero,thousands_separator=thousands_separator,digits=digits,method="MedianX")
+Median <- function(x, TFstring = NULL, each = NULL, var, negativeZero = TRUE,
+                   thousands_separator = TRUE, digits = 2, replicates = FALSE){
+  ComputeNum(x = x, TFstring = TFstring, each = each, var = var, negativeZero = negativeZero,
+             thousands_separator = thousands_separator, digits = digits, replicates = replicates,
+             method = "MedianX")
 }
 
 #' @export
 #' @describeIn TotalMean Arithmetisches Mittel
-Mean <- function(x,TFstring=NULL,each=NULL,var, negativeZero=TRUE,thousands_separator=TRUE,digits=2){
-  ComputeNum(x=x,TFstring=TFstring,each=each,var=var,negativeZero=negativeZero,thousands_separator=thousands_separator,digits=digits,method="MeanX")
+Mean <- function(x, TFstring = NULL, each = NULL, var, negativeZero = TRUE, 
+                 thousands_separator = TRUE, digits = 2, replicates = FALSE){
+  ComputeNum(x = x, TFstring = TFstring, each = each, var = var, negativeZero = negativeZero,
+             thousands_separator = thousands_separator, digits = digits, replicates = replicates,
+             method = "MeanX")
 }
 
 
@@ -216,6 +222,9 @@ Mean <- function(x,TFstring=NULL,each=NULL,var, negativeZero=TRUE,thousands_sepa
 #' angezeigt.
 #' @param digits Numerischer Wert: Anzahl der Nachkommastellen im angezeigten Ergebnis. Default
 #' ist 2.
+#' @param replicates Fürge einen Vektor aus Schätzwerten zum Output hinzu? Die Anzahl der Schätzwerte
+#' pro Gruppe in `each` entspricht der Anzahl der Bootstrapreplikate (typischerweise 500). 
+#' Siehe auch [getReplicates].
 #' @return Output ist ein Objekt der Klasse \code{mzR}.
 #' @seealso \code{\link{ImportData},\link{IndivImportData},\link{ImportAndMerge},
 #' \link{GetLabels},\link{GroupSize},\link{GroupRate},\link{export.mzR}}
@@ -237,16 +246,20 @@ Mean <- function(x,TFstring=NULL,each=NULL,var, negativeZero=TRUE,thousands_sepa
 #' Mean(mzTestData,TFstring="xerwstat==1&balt>=15&balt<=74",var="estund+dtstd",each="xnuts2+bsex")
 #' 
 #' @export
-Total <- function(x,TFstring=NULL,each=NULL,var, negativeZero=TRUE,thousands_separator=TRUE,digits=2){
-  ComputeNum(x=x,TFstring=TFstring,each=each,var=var,negativeZero=negativeZero,thousands_separator=thousands_separator,digits=digits,method="TotalX")
+Total <- function(x, TFstring = NULL, each = NULL, var, negativeZero = TRUE, 
+                  thousands_separator = TRUE, digits = 2, replicates = FALSE){
+  ComputeNum(x = x, TFstring = TFstring, each = each, var = var, negativeZero = negativeZero,
+             thousands_separator = thousands_separator, digits = digits, replicates = replicates,
+             method = "TotalX")
 }
-ComputeNum <- function(x,TFstring=NULL,each=NULL,var, negativeZero=TRUE,thousands_separator=TRUE,digits=2,method){
+ComputeNum <- function(x, TFstring = NULL, each = NULL, var, negativeZero = TRUE,
+                       thousands_separator = TRUE, digits = 2, replicates = FALSE, method){
   if(!method%in%c("MeanX","MedianX","TotalX"))
     stop("Unknown method for Numeric computation")
   if(is.null(TFstring))
     TFstring <- TRUE
   if(is.null(each)){
-    res <- get(method)(x,TFstring,var=var, negativeZero=negativeZero)
+    res <- get(method)(x, TFstring, var = var, negativeZero = negativeZero, replicates = replicates)
     class(res) <- "mzR"
     attr(res,"each") <- NULL
     attr(res,"thousands_separator") <- thousands_separator
@@ -272,7 +285,8 @@ ComputeNum <- function(x,TFstring=NULL,each=NULL,var, negativeZero=TRUE,thousand
   for(l in x[[1]][,sort(unique(eval(parse(text=eachvar))))]){
     TFstringcur <- paste0(eachvar,"==",l,"&",TFstring)
     
-    res[[paste0(eachvar,"_",l)]] <- get(method)(x,TFstringcur,var=var, negativeZero=negativeZero)
+    res[[paste0(eachvar,"_",l)]] <- get(method)(x, TFstringcur, var = var, 
+                                                negativeZero = negativeZero, replicates = replicates)
     
   }
   class(res) <- "mzR"

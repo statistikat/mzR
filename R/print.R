@@ -1,10 +1,16 @@
 ## Hilfsfunktionen zum erstellen der Listenelemente in mzR Objekten
-mzRComponent <- function(date, est, estb) {
+mzRComponent <- function(date, est, estb, returnBR = FALSE) {
   sde <- sd(estb)
-  list(date = date, est = est, sd = sde, cv = sde/est, cil = quantNA(estb, .025),
+  out <- list(date = date, est = est, sd = sde, cv = sde/est, cil = quantNA(estb, .025),
        ciu = quantNA(estb, .975))
+  
+  ## ggf. bootstrap replikas hinzufügen
+  if (returnBR)
+    out$replicates <- as.numeric(estb)
+  
+  out
 }
-mzRComponent2 <- function(date, est, est2, estb, estb2, datePrev) {
+mzRComponent2 <- function(date, est, est2, estb, estb2, datePrev, returnBR = FALSE) {
   sde <- sd(estb)
   sde2 <- sd(estb2)
   absdiff <- est-est2
@@ -13,7 +19,7 @@ mzRComponent2 <- function(date, est, est2, estb, estb2, datePrev) {
   ratediffb <- 100*(estb-estb2)/estb2
   sdabs <- sd(absdiffb)
   sdrel <- sd(ratediffb)
-  list(
+  out <- list(
     date = date, est = est, sd = sde, cv = sde/est, cil = quantNA(estb, .025), 
     ciu = quantNA(estb, .975), datePrev = datePrev, estPrev = est2, sdPrev = sde2,
     cvPrev = sde2/est2, cilPrev = quantNA(estb2, .025), ciuPrev = quantNA(estb2, .975),
@@ -22,6 +28,14 @@ mzRComponent2 <- function(date, est, est2, estb, estb2, datePrev) {
     relChange = ratediff, sdRelChange = sdrel, cvRelChange = sdrel/ratediff, 
     cilRelChange = quantNA(ratediffb,.025), ciuRelChange = quantNA(ratediffb, .975)
   )
+  
+  ## ggf. bootstrap replikas hinzufügen
+  if (returnBR) {
+    out$replicates <- as.numeric(estb)
+    out$replicatesPrev <- as.numeric(estb2)
+  }
+  
+  out
 }
 
 # Statt "Ver\u00E4nderung" doch besser "Change" in Anzeige
@@ -121,3 +135,55 @@ print.mzR <-function(x,...){
   CompFehlerX(x,attr(x,"each"),attr(x,"thousands_separator"),attr(x,"digits"))
 }
 
+#' Extrahiere die Bootstrap Replikla aus einem mzR Objekt
+#' 
+#' Falls ein `mzR` Objekt mit dem Parameter `replicate = TRUE` erzeugt wurde, lassen sich mit dieser
+#' Funktion alle Schätzwerte zurückgeben.
+#' 
+#' @param x Ein Objekt der Klasse `mzR`. Typischerweise generiert durch `GroupRate`, `Groupsize`,
+#' `Median`, `Mean` oder `Total`.
+#' @export
+#' @return Tabelle mit Bootstrapreplika. Die Spalten entsprechen den Gruppierungsvariablen der
+#' Auswertung, falls vorhanden (siehe das Argument `each` in `GroupRate`, `Median`, etc.). Die Zeilen
+#' enstsprechen den Bootstrapgewichten (typischerweise 500 Stück).
+#' @examples 
+#' library(dplyr)  ## Für %>%
+#' 
+#' ######################## Beispiel 1: Durschnittliche Arbeitsstunden #############################
+#' 
+#' dat <- ImportData(year = 2014, quarter = 4)
+#' mzObj <- Mean(dat, TFstring = "xerwstat==1&balt >= 15&balt <= 74", 
+#'               var = "estund*13+dtstd*13", replicates = TRUE)
+#' replicates <- getReplicates(mzObj)$replicates
+#' 
+#' hist(replicates, main = "Durschnittlich geleistete Arbeitsstunden, 95% KI", freq = FALSE,
+#'      col = "lightblue", xlab = "Durchschnittliche Wochenstunden in Replika")
+#' abline(v = quantile(replicates, c(.025, 0.975)), col = "red", lwd = 2)
+#' lines(density(replicates), col = "darkblue", lwd = 2)
+#' 
+#' ########################### Beispiel 2: Wohnkosten nach Geschlecht ##############################
+#' 
+#' mzObj2 <- Mean(dat, TFstring = "xerwstat==1&balt >= 15&balt <= 74", var = "wkges", 
+#'                replicates = TRUE, each = "bsex")
+#' getReplicates(mzObj2) %>% tidyr::gather(Geschlecht, wk) %>% 
+#'   mutate(Geschlecht = recode(Geschlecht, bsex_1 = "M", bsex_2 = "W")) %>%
+#'   ggplot(aes(Geschlecht, wk, fill = Geschlecht)) + 
+#'   geom_boxplot(outlier.shape = NA, alpha = 0.5) +
+#'   geom_jitter(aes(col = Geschlecht), alpha = 0.5) +
+#'   ylab("Durchschnittliche Wohnkosten in Replika")
+#'   
+#' ###################### Beispiel 3: Arbeitslosenquote nach Bundesland ############################
+#' 
+#' mzObj3 <- GroupSize(dat,TFstring="xerwstat==2&balt>=15&balt<=74", replicates = TRUE, 
+#'                     each = "xnuts2")
+#' getReplicates(mzObj3) %>% tidyr::gather(Bundesland, unemployment) %>% 
+#' ggplot(aes(Bundesland, unemployment, fill = Bundesland)) + 
+#'   geom_boxplot(outlier.shape = NA, alpha = 0.5) +
+#'   geom_jitter(aes(col = Bundesland), alpha = 0.05) +
+#'   ylab("Arbeislosenzahlen in Bootstrap-Replika")
+getReplicates <- function(x) {
+  if(is.null(attr(x, "each")))
+    as.data.table(list(replicates = x$replicates))
+  else
+  lapply(x, function(comp) comp$replicates) %>% as.data.table
+}

@@ -9,7 +9,7 @@ makeEachVar <- function(x){
   }
   return(out)
 }
-GroupSizeX <- function(x,TFstring){
+GroupSizeX <- function(x, TFstring, replicates){
   gew1 <- sd <- NULL
 
   if(length(x)==1){
@@ -36,14 +36,14 @@ GroupSizeX <- function(x,TFstring){
   estb <- x[eval(parse(text=TFstring)),lapply(.SD,sum),.SDcols=bw]
   sde <- sd(estb)
   if(is.null(y)){
-    return(mzRComponent(date, est, estb))
+    return(mzRComponent(date, est, estb, returnBR = replicates))
   }else{
     est2 <- y[eval(parse(text=TFstring)),sum(gew1)]
     estb2 <- y[eval(parse(text=TFstring)),lapply(.SD,sum),.SDcols=bw]
-    mzRComponent2(date, est, est2, estb, estb2, datePrev)
+    mzRComponent2(date, est, est2, estb, estb2, datePrev, returnBR = replicates)
   }
 }
-GroupRateX <- function(x,TFstring,TFstring2=NULL){
+GroupRateX <- function(x, TFstring, TFstring2 = NULL, replicates){
   gew1 <- sd <- NULL
   if(length(x)==1){
     date <- gsub("dat_","",names(x))
@@ -83,7 +83,7 @@ GroupRateX <- function(x,TFstring,TFstring2=NULL){
   estb <- 100*numb/denumb
   sde <- sd(estb)
   if(is.null(y)){
-    return(mzRComponent(date, est, estb))
+    return(mzRComponent(date, est, estb, returnBR = replicates))
   }else{
     num2 <- y[eval(parse(text=TFstring)),sum(gew1)]
     numb2 <- y[eval(parse(text=TFstring)),lapply(.SD,sum),.SDcols=bw]
@@ -100,14 +100,17 @@ GroupRateX <- function(x,TFstring,TFstring2=NULL){
     }
     est2 <- 100*num2/denum2
     estb2 <- 100*numb2/denumb2
-    return(mzRComponent2(date, est, est2, estb2, datePrev))
+    return(mzRComponent2(date, est, est2, estb2, datePrev, returnBR = replicates))
   }
 }
 
 #' @export
 #' @rdname GroupSize
-GroupRate <- function(x,TFstring,TFstring2=NULL,each=NULL,byeach=TRUE,thousands_separator=TRUE,digits=2){
-  GroupX(x=x,TFstring=TFstring,TFstring2=TFstring2,each=each,byeach=byeach,thousands_separator=thousands_separator,digits=digits,method="GroupRate")
+GroupRate <- function(x, TFstring, TFstring2 = NULL, each = NULL, byeach = TRUE, 
+                      thousands_separator = TRUE, digits = 2, replicates = FALSE) {
+  GroupX(x = x, TFstring = TFstring, TFstring2 = TFstring2, each = each, byeach = byeach, 
+         thousands_separator = thousands_separator, digits = digits, replicates = replicates, 
+         method = "GroupRate")
 }
 
 
@@ -142,6 +145,9 @@ GroupRate <- function(x,TFstring,TFstring2=NULL,each=NULL,byeach=TRUE,thousands_
 #' angezeigt.
 #' @param digits Numerischer Wert: Anzahl der Nachkommastellen im angezeigten Ergebnis. Default
 #' ist 2.
+#' @param replicates Fürge einen Vektor aus Schätzwerten zum Output hinzu? Die Anzahl der Schätzwerte
+#' pro Gruppe in `each` entspricht der Anzahl der Bootstrapreplikate (typischerweise 500). 
+#' Siehe auch [getReplicates].
 #' @return Output ist ein Objekt der Klasse \code{mzR}.
 #' @seealso
 #' \code{\link{ImportData},\link{IndivImportData},\link{ImportAndMerge},\link{GetLabels},\link{Total},\link{Mean},\link{export}}
@@ -206,18 +212,20 @@ GroupRate <- function(x,TFstring,TFstring2=NULL,each=NULL,byeach=TRUE,thousands_
 #' }
 #' 
 #' @export GroupSize
-GroupSize <- function(x,TFstring=NULL,each=NULL,thousands_separator=TRUE,digits=2){
-  GroupX(x=x,TFstring=TFstring,each=each,thousands_separator=thousands_separator,digits=digits,method="GroupSize")
+GroupSize <- function(x,TFstring=NULL,each=NULL,thousands_separator=TRUE,digits=2, replicates = FALSE){
+  GroupX(x = x, TFstring = TFstring, each = each, thousands_separator = thousands_separator,
+         digits = digits, replicates = replicates, method = "GroupSize")
 }  
-GroupX <- function(x,TFstring,TFstring2=NULL,each=NULL,byeach=TRUE,thousands_separator=TRUE,digits=2,method){
+GroupX <- function(x,TFstring,TFstring2=NULL,each=NULL,byeach=TRUE,thousands_separator=TRUE,digits=2,
+                   replicates, method){
   if(is.null(TFstring)){
     TFstring <- TRUE  
   }
   if(is.null(each)){
     if(method=="GroupSize")
-      res <- GroupSizeX(x,TFstring)
+      res <- GroupSizeX(x,TFstring, replicates)
     else
-      res <- GroupRateX(x,TFstring,TFstring2)
+      res <- GroupRateX(x,TFstring,TFstring2, replicates)
   } else{
     res <- list()
     if(length(grep("\\+",each))>0){
@@ -232,7 +240,7 @@ GroupX <- function(x,TFstring,TFstring2=NULL,each=NULL,byeach=TRUE,thousands_sep
     for(l in x[[1]][,sort(unique(eval(parse(text=eachvar))))]){
       TFstringcur <- paste0(eachvar,"==",l,"& (",TFstring, ")")
       if(method=="GroupSize"){
-        res[[paste0(eachvar,"_",l)]] <- GroupSizeX(x,TFstringcur)
+        res[[paste0(eachvar,"_",l)]] <- GroupSizeX(x,TFstringcur, replicates)
       }else{
         if(byeach){
           if(!is.null(TFstring2))
@@ -242,7 +250,7 @@ GroupX <- function(x,TFstring,TFstring2=NULL,each=NULL,byeach=TRUE,thousands_sep
         }else{
           TFstringcur2 <- TFstring
         }
-        res[[paste0(eachvar,"_",l)]] <- GroupRateX(x,TFstringcur,TFstringcur2)
+        res[[paste0(eachvar,"_",l)]] <- GroupRateX(x,TFstringcur,TFstringcur2, replicates)
       }
       res[[paste0(eachvar,"_",l)]][["each"]] <- head(x[[1]][eval(parse(text=TFstringcur)),eachv,with=FALSE],1)
     }

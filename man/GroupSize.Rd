@@ -7,28 +7,28 @@
 \title{Schaetz- und Fehlerrechnungsfunktionen.}
 \usage{
 GroupRate(x, TFstring, TFstring2 = NULL, each = NULL, byeach = TRUE,
-  thousands_separator = TRUE, digits = 2)
+  thousands_separator = TRUE, digits = 2, replicates = FALSE)
 
 GroupSize(x, TFstring = NULL, each = NULL, thousands_separator = TRUE,
-  digits = 2)
+  digits = 2, replicates = FALSE)
 }
 \arguments{
 \item{x}{MZ Daten - Output von Funktion \link{ImportData}.}
 
-\item{TFstring}{Character oder NULL: Logische Einschraenkung der Gruppe, im Fall der Anteile (\code{GroupRate}): 
+\item{TFstring}{Character oder NULL: Logische Einschraenkung der Gruppe, im Fall der Anteile (\code{GroupRate}):
 Einschraenkung fuer Zaehler. Falls NULL, gilt keine Einschraenkung.}
 
-\item{TFstring2}{Character oder NULL: Logische Einschraenkung fuer den Nenner. 
+\item{TFstring2}{Character oder NULL: Logische Einschraenkung fuer den Nenner.
 Falls NULL, gilt keine Einschraenkung fuer den Nenner ausser wenn \code{each} ungleich NULL und \code{byeach=TRUE}.}
 
-\item{each}{Character oder NULL: Name der Variable nach der getrennt berechnet werden soll. 
+\item{each}{Character oder NULL: Name der Variable nach der getrennt berechnet werden soll.
 Hier koennen auch mehrere Variablen angegeben werden und zwar in einem character string, getrennt durch ein +, siehe Examples.}
 
-\item{byeach}{Logical: Vorgabe fuer den Nenner. \code{byeach} bezieht sich auf den 
-Parameter \code{each} und gibt an, ob bei \code{GroupRate} zusaetzlich zu 
-\code{TFstring2} auch die jeweilige durch \code{each} definierte Einschraenkung 
-in den Nenner kommen soll, also ob die Raten jeweils bezogen auf die Auspraegungen 
-bzw. Auspraegungskombinationen von \code{each} berechnet werden sollen (\code{byeach=TRUE}) 
+\item{byeach}{Logical: Vorgabe fuer den Nenner. \code{byeach} bezieht sich auf den
+Parameter \code{each} und gibt an, ob bei \code{GroupRate} zusaetzlich zu
+\code{TFstring2} auch die jeweilige durch \code{each} definierte Einschraenkung
+in den Nenner kommen soll, also ob die Raten jeweils bezogen auf die Auspraegungen
+bzw. Auspraegungskombinationen von \code{each} berechnet werden sollen (\code{byeach=TRUE})
 oder rein bezogen auf \code{TFstring2} (\code{byeach=FALSE}).}
 
 \item{thousands_separator}{Logical: Wenn TRUE, werden Tausendertrennzeichen
@@ -36,6 +36,10 @@ angezeigt.}
 
 \item{digits}{Numerischer Wert: Anzahl der Nachkommastellen im angezeigten Ergebnis. Default
 ist 2.}
+
+\item{replicates}{Fürge einen Vektor aus Schätzwerten zum Output hinzu? Die Anzahl der Schätzwerte
+pro Gruppe in \code{each} entspricht der Anzahl der Bootstrapreplikate (typischerweise 500).
+Siehe auch \link{getReplicates}.}
 }
 \value{
 Output ist ein Objekt der Klasse \code{mzR}.
@@ -50,7 +54,7 @@ Wiedergegeben wird der Schaetzer \code{est}, der Stichprobenfehler
 des 95\% Konfidenzintervalls \code{cil_2.5\%}/\code{ciu_97.5\%}.
 Die Fehler werden mit Hilfe von Replikationsgewichten aus einem Bootstrapverfahren
 berechnet, d.h. \code{sd} entspricht der Standardabweichung der mit den Bootstrapgewichten
-berechneten Schaetzwerte, \code{cil_2.5\%} und \code{ciu_97.5\%} sind die 
+berechneten Schaetzwerte, \code{cil_2.5\%} und \code{ciu_97.5\%} sind die
 entsprechenden 2.5\% und 97.5\% Quantile und \code{cv=sd/est}.
 }
 \examples{
