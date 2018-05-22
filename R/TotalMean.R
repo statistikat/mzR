@@ -41,20 +41,6 @@ TotalX <- function(xx,TFstring,var, negativeZero=TRUE){
   x[, (bw) := lapply(.SD, function(y){y * x[['varNumTmp']]}), .SDcols = bw]
   setnames(x,old=bw,new=bwNum)
   
-  # ## #TODO: Schoener Loesung fuer die Generierung der Variablen
-  #  
-  #   bwX <- c("varNumTmp",bw)
-  #   x[,eval(bwNum):=lapply(.SD[,-1,with=FALSE],function(x,vn){
-  #             x*vn[,varNumTmp]
-  #           },
-  #   vn=.SD[,1,with=FALSE]),.SDcols=bwX]
-  #   
-  #  for(i in seq_along(bwNum)){
-  #    setnames(x,bw[i],"bwTmp")
-  #    x[, bwNum[i]:=bwTmp*varNumTmp]
-  #    setnames(x,"bwTmp",bw[i])
-  #  }
-  
   if(length(xx)>1){
     date <- gsub("dat_","",names(xx)[1])
     datePrev <- gsub("dat_","",names(xx)[2])
@@ -68,13 +54,6 @@ TotalX <- function(xx,TFstring,var, negativeZero=TRUE){
     
     y[, (bw) := lapply(.SD, function(z){z * y[['varNumTmp']]}), .SDcols = bw]
     setnames(y,old=bw,new=bwNum)
-    
-    # #TODO: Schoener Loesung fuer die Generierung der Variablen
-    #     for(i in seq_along(bwNum)){
-    #       setnames(y,bw[i],"bwTmp")
-    #       y[, bwNum[i]:=bwTmp*varNumTmp]
-    #       setnames(y,"bwTmp",bw[i])
-    #     }
   }
   est <- x[eval(parse(text=TFstring)),sum(gew1Num)]
   estb <- x[eval(parse(text=TFstring)),lapply(.SD,sum),.SDcols=bwNum]
@@ -108,18 +87,6 @@ MeanX <- function(xx,TFstring,var, negativeZero=TRUE){
   x[, (bw) := lapply(.SD, function(y){y * x[['varNumTmp']]}), .SDcols = bw]
   setnames(x,old=bw,new=bwNum)
   
-  # #TODO: Schoener Loesung fuer die Generierung der Variablen
-  #   bwX <- c("varNumTmp",bw)
-  #   x[,eval(bwNum):=lapply(.SD[,-1,with=FALSE],function(x,vn){
-  #             x*vn[,varNumTmp]
-  #           },
-  #           vn=.SD[,1,with=FALSE]),.SDcols=bwX]
-  # oder  
-  #  for(i in seq_along(bwNum)){
-  #    setnames(x,bw[i],"bwTmp")
-  #    x[, bwNum[i]:=bwTmp*varNumTmp]
-  #    setnames(x,"bwTmp",bw[i])
-  #  }
   if(length(xx)>1){
     date <- gsub("dat_","",names(xx)[1])
     datePrev <- gsub("dat_","",names(xx)[2])
@@ -134,13 +101,6 @@ MeanX <- function(xx,TFstring,var, negativeZero=TRUE){
     y_bw <- copy(y)
     y[, (bw) := lapply(.SD, function(z){z * y[['varNumTmp']]}), .SDcols = bw]
     setnames(y,old=bw,new=bwNum)
-    
-    # #TODO: Schoener Loesung fuer die Generierung der Variablen
-    #     for(i in seq_along(bwNum)){
-    #       setnames(y,bw[i],"bwTmp")
-    #       y[, bwNum[i]:=bwTmp*varNumTmp]
-    #       setnames(y,"bwTmp",bw[i])
-    #     }
   }
   num <- x[eval(parse(text=TFstring)),sum(gew1Num)]
   numb <- x[eval(parse(text=TFstring)),lapply(.SD,sum),.SDcols=bwNum]
