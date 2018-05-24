@@ -22,7 +22,7 @@ Funktion erzeugt neue Variable in MZ-Daten.
 \details{
 Um in den Daten eine neue Variable \code{newVar} zu erzeugen, z.B. durch Rekodierungen einer anderen Variable,
 muss man eine Funktion \code{functionName} definieren. Dieser Funktion uebergibt man als Funktionsparameter die
-Variablenname(n) der in den Daten vorhandenen Merkmale die man zum Erzeugen der neuen Variable braucht. 
+Variablenname(n) der in den Daten vorhandenen Merkmale die man zum Erzeugen der neuen Variable braucht.
 Mehr dazu in den Beispielen.
 }
 \examples{

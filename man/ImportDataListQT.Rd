@@ -22,11 +22,11 @@ dem dg7-Mikrozensus-File die im Output-File enthalten sein sollen. Die
 uebrigen Variablen werden weggelassen. Default ist NULL, dabei werden alle
 Variablen behalten.}
 
-\item{weightDecimals}{Numerischer Wert oder NULL. Anzahl der Nachkommastellen der Stichprobengewichte, 
-gerundet nach SPSS RND Logik (0.5 bwz. -0.5 wird dabei immer "weg von 0" gerundet). 
+\item{weightDecimals}{Numerischer Wert oder NULL. Anzahl der Nachkommastellen der Stichprobengewichte,
+gerundet nach SPSS RND Logik (0.5 bwz. -0.5 wird dabei immer "weg von 0" gerundet).
 Falls NULL, werden die Gewichte nicht gerundet.}
 
-\item{ImportAndMerge}{TRUE/FALSE ob die Funktion \link{ImportAndMerge} angewendet werden soll. 
+\item{ImportAndMerge}{TRUE/FALSE ob die Funktion \link{ImportAndMerge} angewendet werden soll.
 Bei der Defaulteinstellung \code{ImportAndMerge=TRUE} und \code{curr_inFile=NULL} wird \emph{Daten_ab2004_QuartPub.sav}
 zu den MZ-Daten gemerged.}
 
@@ -42,7 +42,7 @@ Files vom Typ .sav, .csv und .csv.gz.}
 soll (default=c("asbper","ajahr","amonat")).}
 }
 \value{
-Output ist eine Liste deren Elemente jeweils MZ-Daten enthalten 
+Output ist eine Liste deren Elemente jeweils MZ-Daten enthalten
 die die selbe Grundstruktur haben wie der Output aus der Funktion \link{ImportData}.
 }
 \description{
@@ -51,14 +51,14 @@ mit dem derzeit fuer die Quartalsberichtsproduktion verwendeten SPSS-File zusamm
 }
 \details{
 Anzugeben ist bei dieser Funktion der Referenzzeitpunkt \code{timeInstant} des MZ-Quartalsberichts.
-Die MZ-Daten (dg7) werden (derzeit) defaultmaessig (\code{ImportAndMerge=TRUE})  
-ueber \code{mergeBy = c("asbper","ajahr","amonat")} mit \emph{Daten_ab2004_QuartPub.sav} 
+Die MZ-Daten (dg7) werden (derzeit) defaultmaessig (\code{ImportAndMerge=TRUE})
+ueber \code{mergeBy = c("asbper","ajahr","amonat")} mit \emph{Daten_ab2004_QuartPub.sav}
 gemerged. Dieses File wird quartalsweise vom Fachbereich erzeugt und immer im selben Ordner abgelegt.
-Sollte man mit einem anderen File mergen wollen, so kann man die entsprechenden File-Pfade in 
+Sollte man mit einem anderen File mergen wollen, so kann man die entsprechenden File-Pfade in
 \code{curr_inFile} und \code{prev_inFile} spezifizieren aber auch \code{mergeBy} anpassen, analog zu \link{ImportAndMerge}.
 Des Weiteren koennen die einzulesenden MZ-Daten mit den Funktionsparametern
-\code{nbw}, \code{whichVar} und \code{weightDecimals} angepasst werden, siehe \link{ImportData}. 
-Dadurch kann man z.B. vermeiden, dass Variablen die sowohl in den MZ-Daten als auch in 
+\code{nbw}, \code{whichVar} und \code{weightDecimals} angepasst werden, siehe \link{ImportData}.
+Dadurch kann man z.B. vermeiden, dass Variablen die sowohl in den MZ-Daten als auch in
 \emph{Daten_ab2004_QuartPub.sav} vorkommen doppelt eingelesen werden.
 }
 \examples{

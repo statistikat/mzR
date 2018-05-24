@@ -7,25 +7,25 @@
 \format{A list containing two datasets of class data.table with 90 rows and 13 variables each.
 The variables are as follows:
 \itemize{
-  \item asbper: personal ID
-  \item bsex: gender (1 = male, 2 = female)
-  \item xnuts2: NUTS-2 region, i.e. Austrian federal states (11 = Burgenland,  12 = Lower Austria,  
-  13 = Vienna,  21 = Carinthia,  22 = Styria,  31 = Upper Austria,  32 = Salzburg,  33 = Tyrol,  34 = Vorarlberg)
-  \item xerwstat: activity status during the reference week (1 = in employment, 
-  2 = unemployed, 3 = economically inactive, 4 = compulsory military or community service, 
-  9 = not applicable (child less than 15 years))
-  \item balt: age
-  \item estund: number of hours actually worked during the reference week in the second job
-  \item dtstd: number of hours actually worked during the reference week in the main job
-  \item gew1: weights
-  \item gew1_1, \ldots, gew1_5: bootstrap weights
+\item asbper: personal ID
+\item bsex: gender (1 = male, 2 = female)
+\item xnuts2: NUTS-2 region, i.e. Austrian federal states (11 = Burgenland,  12 = Lower Austria,
+13 = Vienna,  21 = Carinthia,  22 = Styria,  31 = Upper Austria,  32 = Salzburg,  33 = Tyrol,  34 = Vorarlberg)
+\item xerwstat: activity status during the reference week (1 = in employment,
+2 = unemployed, 3 = economically inactive, 4 = compulsory military or community service,
+9 = not applicable (child less than 15 years))
+\item balt: age
+\item estund: number of hours actually worked during the reference week in the second job
+\item dtstd: number of hours actually worked during the reference week in the main job
+\item gew1: weights
+\item gew1_1, \ldots, gew1_5: bootstrap weights
 }}
 \usage{
 mzTestData
 }
 \description{
 A list containing two datasets corresponding to the time points year 1 and year 2.
-Each dataset consists of a selection of variables from a subset of the Austrian Microcensus 
+Each dataset consists of a selection of variables from a subset of the Austrian Microcensus
 including weights and five bootstrap weights.
 }
 \keyword{datasets}

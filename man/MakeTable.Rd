@@ -23,13 +23,13 @@ Details.}
 kommen soll. Auwahlmoeglichkeiten sind \code{"est"}, \code{"estPrev"},
 \code{"absChange"} und \code{"relChange"}.}
 
-\item{error}{character um festzulegen, welcher Genauigkeitsschaetzer zur Markierung von Zellen verwendet werden soll. 
-Auswahlmoeglichkeiten sind \code{"cv"} (Variationskoeffizient) und \code{"ci"} (Konfidenzintervall). 
-Sollte \code{error="cv"} gewaehlt werden, so sind die Parameter \code{lim1} bzw. \code{lim2} gegebenenfalls zu spezifizieren. 
-Falls jedoch \code{error="ci"} gewaehlt wird, so sind diese Limits nicht notwendig, da in diesem Fall untersucht wird, 
-ob der Schaetzer nicht-signifikant ist, ob also das jeweilige Konfidenzintervall den Wert 0 enthaelt. 
+\item{error}{character um festzulegen, welcher Genauigkeitsschaetzer zur Markierung von Zellen verwendet werden soll.
+Auswahlmoeglichkeiten sind \code{"cv"} (Variationskoeffizient) und \code{"ci"} (Konfidenzintervall).
+Sollte \code{error="cv"} gewaehlt werden, so sind die Parameter \code{lim1} bzw. \code{lim2} gegebenenfalls zu spezifizieren.
+Falls jedoch \code{error="ci"} gewaehlt wird, so sind diese Limits nicht notwendig, da in diesem Fall untersucht wird,
+ob der Schaetzer nicht-signifikant ist, ob also das jeweilige Konfidenzintervall den Wert 0 enthaelt.
 Man kann jedoch \code{markLeft1}, \code{markRight1} und \code{markValue1}
-spezifizieren, falls die nicht-signifikanten Zellen anders als durch die Defaulteinstellung 
+spezifizieren, falls die nicht-signifikanten Zellen anders als durch die Defaulteinstellung
 \code{markLeft1 = "("}, \code{markRight1 = ")"} und \code{markValue1 = NULL} markiert werden sollen.}
 
 \item{lim1}{numerischer Wert: falls \code{lim1}>\code{error}, wird der
@@ -93,20 +93,20 @@ uebergeben, wenn einem Element aus \code{row} mehr als ein Parameter
 zugewiesen werden soll. Zusaetzlich zu den moeglichen Argumenten fuer
 \code{col} (ausser \code{digits}) kann hier auch noch \code{each} gesetzt
 werden (auch ein Parameter aus den mzR-Schaetz-und
-Fehlerrechnungsfunktionen), \code{fun} ist hier prinzipiell optional, muss 
-aber in vielen Faellen fuer einen sinnvollen Output angegeben werden. 
-Will man beispielsweise einen Mittelwert berechnen, so wuerde das dementsprechende 
-\code{row} Sublistenelement z.B. folgendermassen aussehen: 
+Fehlerrechnungsfunktionen), \code{fun} ist hier prinzipiell optional, muss
+aber in vielen Faellen fuer einen sinnvollen Output angegeben werden.
+Will man beispielsweise einen Mittelwert berechnen, so wuerde das dementsprechende
+\code{row} Sublistenelement z.B. folgendermassen aussehen:
 \code{list(fun="Mean",var="VarName",TFstring="!is.na(VarName)",scaleF="*1")},
 d.h. es wird in der entsprechenden Zeile der Tabelle jeweils der Mittelwert
-der Variable VarName berechnet, zusaetzlich dazu werden aber ueber den \code{TFstring} 
+der Variable VarName berechnet, zusaetzlich dazu werden aber ueber den \code{TFstring}
 auch noch die fehlenden Werte in der Variable VarName ausgeschlossen.
 Wird der Parameter
 \code{scaleF} bei \code{row} gesetzt, so hat er den Vorzug vor \code{scaleF}
 bei \code{col} - sollte er dort gesetzt worden sein (hier nicht vergessen,
 falls in \code{row} Raten berechnet werden sollen \code{scaleF="*1"}
-setzen). Falls \code{GroupRate}, \code{Mean}, \code{Total} oder \code{Median} sowohl in 
-\code{row} als auch \code{col} gesetzt wurden wird fuer die jeweilige Zelle 
+setzen). Falls \code{GroupRate}, \code{Mean}, \code{Total} oder \code{Median} sowohl in
+\code{row} als auch \code{col} gesetzt wurden wird fuer die jeweilige Zelle
 im Output kein Ergebnis ausgegeben.
 
 \strong{block}
@@ -119,7 +119,7 @@ kann z.B. eine Output-Tabelle erstellt werden die im ersten 'Block' die
 Ergebnisse fuer Schnecken und im zweiten Block die Ergebnisse fuer
 Nicht-Schnecken enthaelt.
 
-Kleine Bemerkung am Rande: Fuer die meisten Publikationen ist es sinnvoll, 
+Kleine Bemerkung am Rande: Fuer die meisten Publikationen ist es sinnvoll,
 keine \code{digits} bei \code{col} bei \code{MakeTable()} zu setzen da oft die vorgegebenen
 Excel-Formate das Runden uebernehmen.
 }

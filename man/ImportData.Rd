@@ -43,8 +43,8 @@ Variablen behalten.}
 werden soll. Default ist NULL, dabei werden alle verfuegbaren
 Bootstrap-Gewichte eingelesen.}
 
-\item{weightDecimals}{Numerischer Wert oder NULL. Anzahl der Nachkommastellen der Stichprobengewichte, 
-gerundet nach SPSS RND Logik (0.5 bwz. -0.5 wird dabei immer "weg von 0" gerundet). 
+\item{weightDecimals}{Numerischer Wert oder NULL. Anzahl der Nachkommastellen der Stichprobengewichte,
+gerundet nach SPSS RND Logik (0.5 bwz. -0.5 wird dabei immer "weg von 0" gerundet).
 Falls NULL, werden die Gewichte nicht gerundet.}
 }
 \value{

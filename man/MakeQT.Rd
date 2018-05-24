@@ -49,8 +49,8 @@ definierten Spalten und Zeilen fuer bestimmte Zeitpunkte und Veraenderungen.
 }
 \description{
 Funktion erstellt Tabellen in einem Format das im
-Mikrozensus-Quartalsbericht ueblich ist, also mit Ergebnissen fuer verschiedene Zeitpunkte. 
-Die zugehoerigen MZ-Daten muessen dabei vorher mit der Funktion \link{ImportDataListQT} 
+Mikrozensus-Quartalsbericht ueblich ist, also mit Ergebnissen fuer verschiedene Zeitpunkte.
+Die zugehoerigen MZ-Daten muessen dabei vorher mit der Funktion \link{ImportDataListQT}
 eingelesen werden.
 }
 \details{
@@ -75,7 +75,7 @@ ist als character zu uebergeben.
 
 \strong{row}
 
-\code{row} entspricht in dieser Funktion im Prinzip dem 
+\code{row} entspricht in dieser Funktion im Prinzip dem
 \code{block}-Parameter von \link{MakeTable}.
 
 \code{row} ist eine 'list', 'named list' oder 'partly named list' die
