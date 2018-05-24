@@ -100,7 +100,8 @@ GroupRateX <- function(x, TFstring, TFstring2 = NULL, replicates){
     }
     est2 <- 100*num2/denum2
     estb2 <- 100*numb2/denumb2
-    return(mzRComponent2(date, est, est2, estb2, datePrev, returnBR = replicates))
+    #browser()
+    return(mzRComponent2(date, est, est2, estb, estb2, datePrev, returnBR = replicates))
   }
 }
 
