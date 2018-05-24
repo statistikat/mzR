@@ -187,3 +187,77 @@ getReplicates <- function(x) {
   else
   lapply(x, function(comp) comp$replicates) %>% as.data.table
 }
+
+#' Visualisiere ein mzR Objekt
+#' 
+#' Standarplots für `mzR` Objecte. Nur anwendbar, wenn das Objekt bootsrtap Replikate beinhaltet,
+#' ansonsten wird eine Warnung geworfen. Siehe auch [getReplicates].
+#' @param x Ein Objekt der Klasse `mzR`.
+#' @examples 
+#' dat <- ImportData(year = 2014, quarter = 4)
+#' mzObj <- Mean(dat, TFstring = "xerwstat==1&balt >= 15&balt <= 74", 
+#'               var = "estund*13+dtstd*13", replicates = TRUE)
+#' plot(mzObj)
+#' @export
+plot.mzR <- function(x) {
+  rep <- getReplicates(x)
+  if (nrow(rep) == 0) {
+    warning("no bootstrap replicates available")
+    return(invisible(NULL))
+  }
+  if (ncol(rep) == 1) {
+    rep <- rep[[1]]
+    plot_text <- paste("Histogram of", attr(x, "var"), "(replicates)")
+    hist(rep, freq = FALSE, col = "lightblue", main =plot_text, xlab = attr(x, "var"))
+    abline(v = quantile(rep, c(0.025, 0.975)), col = "red", lwd = 2)
+    lines(density(rep), col = "darkblue", lwd = 2)
+    return(invisible(NULL))
+  }
+  alph <- 1/ncol(rep)
+  rep %>% tidyr::gather() %>% 
+    ggplot(aes(key, value, fill = key)) + 
+    geom_boxplot(outlier.shape = NA, alpha = alph) +
+    geom_jitter(aes(col = key), alpha = alph) +
+    ylab(paste(attr(x, "var"), "(replicates)")) +
+    xlab(attr(x, "each")) +
+    scale_color_discrete(name = xlab(attr(x, "each"))) +
+    scale_fill_discrete(guide=FALSE)
+    
+}
+
+#' Kopnvertiere ein `mzR` Objekt in ein Tabelle
+#'
+#' Generische Funktion [as.data.frame] implementiert für `mzR` Objekte.
+#' 
+#' @param x Ein Objekt der Klasse `mzR`.
+#' @export
+as.data.frame.mzR <- function(x) {
+  if ("cil" %in% names(x))
+    x <- list(noeachvar = x)
+  
+  dat <- data.frame(
+    est = lapply(x, function(x) x$est) %>% as.numeric,
+    sd = lapply(x, function(x) x$sd) %>% as.numeric,
+    cv = lapply(x, function(x) x$cv) %>% as.numeric,
+    cil = lapply(x, function(x) x$cil) %>% as.numeric,
+    ciu = lapply(x, function(x) x$cil) %>% as.numeric
+  )
+  
+  if("noeachvar" %in% names(x))
+    return(dat)
+  
+  nms <- strsplit(names(x), "_")
+  nms1 <- nms[[1]]
+  factors <- nms1[1:(length(nms1)-1)]
+  id <- lapply(nms, function(el){ el[[length(el)]]}) %>% as.character()
+  
+  vals <- NULL
+  for(i in 1:length(id)) {
+    vals[[i]] <- substring(id[i], rev(pmax(seq(nchar(id[i]) - 2, -1, -3))), rev(seq(nchar(id[i]), 1, -3)))
+  }
+  vals <- as.data.frame(t(as.data.frame(as.list(vals))))
+  names(vals) <- factors
+  rownames(vals) <- NULL
+  
+  cbind(vals, dat)
+}
