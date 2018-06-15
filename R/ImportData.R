@@ -198,7 +198,11 @@ ImportDataQ <- function(j, q, comp_jahresgew=FALSE, whichVar=whichVar, hh=hh, fa
   ##DG7 einlesen
   sav_path <- paste0(dircurr,"/dg7.mz",name_teil,".sav")
   
-  dat <- data.table(suppressWarnings(spss.get(sav_path, use.value.labels = FALSE, allow = FALSE)))
+  dat <- data.table(suppressWarnings(spss.get(
+    sav_path, use.value.labels = FALSE, allow = FALSE,
+    datevars = c("adatum", "adatumpers", "arefwo", "asendf2f", "wvertr", "bgeb", "bgebk", 
+                 "boseit", "ckseit", "dseit", "hgefseit", "hseit", "jlwa")
+  )))
   cat(dQuote(sav_path), "wurde eingelesen.\n")
   if(!is.null(whichVar)){
     dat <- dat[,whichVar,with=F]  
