@@ -6,35 +6,51 @@
 \alias{mzR-package}
 \title{mzR: Microcensus tools}
 \description{
-R package to compute estimates and their errors for Austrian Microcensus (labour force survey) data.
+R package to compute estimates and their errors for Austrian Microcensus (labour force survey)
+data.
 }
-\section{Testdaten}{
+\section{Test data}{
 
 \link{mzTestData}
 }
 
-\section{Import von STAT internen Daten}{
+\section{Import of data from STAT internal sources}{
 
-\link{ImportData}, \link{ImportDataListQT}
+Import data from the file system provided by STAT. These functions will not be operational for
+external users.
+
+\link{ImportData}, \link{ImportDataListQT}, \link{ImportAndMerge}
 }
 
-\section{Individueller Datenimport}{
+\section{Individual data import}{
+
+Import spss and csv files based on custom paths.
 
 \link{IndivImportData}
 }
 
-\section{Schaetz- und Fehlerrechnungsfunktionen}{
+\section{Compute estimates and uncertainty}{
 
-\link{GroupRate}, \link{GroupSize}, \link{Mean}, \link{Total}
+Create objects of the class \code{mzR} which contain estimates, confidence intervals and more based
+on calibrated bootstrapping.
+
+\link{GroupRate}, \link{GroupSize}, \link{Mean}, \link{Total}, \link{Median}
+}
+
+\section{Methods for class \code{mzR}}{
+
+\link{print.mzR}, \link{as.data.frame.mzR}, \link{plot.mzR}, \link{AddVariable}, \link{GetLabels}
+}
+
+\section{Calculate tables}{
+
+Calculate tables for excel export
+
+\link{MakeTable}, \link{MakeQT}, \link{MakeAKETimeInstantsTable}
 }
 
 \section{Excel export}{
 
-\link{MakeTable}, \link{MakeQT}, \link{FillExcelTemplate}
-}
-
-\section{Utility Funktionen}{
-
-\link{AddVariable}, \link{GetLabels}
+\link{export}, \link{FillExcelTemplate}
 }
 

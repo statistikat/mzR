@@ -1,24 +1,38 @@
 #' mzR: Microcensus tools
 #'
-#' R package to compute estimates and their errors for Austrian Microcensus (labour force survey) data.
+#' R package to compute estimates and their errors for Austrian Microcensus (labour force survey) 
+#' data.
 #' 
-#' @section Testdaten:
+#' @section Test data:
 #' [mzTestData]
 #' 
-#' @section Import von STAT internen Daten:
-#' [ImportData], [ImportDataListQT]
+#' @section Import of data from STAT internal sources:
+#' Import data from the file system provided by STAT. These functions will not be operational for
+#' external users.
 #' 
-#' @section Individueller Datenimport:
+#' [ImportData], [ImportDataListQT], [ImportAndMerge]
+#' 
+#' @section Individual data import:
+#' Import spss and csv files based on custom paths.
+#' 
 #' [IndivImportData]
 #' 
-#' @section Schaetz- und Fehlerrechnungsfunktionen:
-#' [GroupRate], [GroupSize], [Mean], [Total]
+#' @section Compute estimates and uncertainty:
+#' Create objects of the class `mzR` which contain estimates, confidence intervals and more based
+#' on calibrated bootstrapping.
+#' 
+#' [GroupRate], [GroupSize], [Mean], [Total], [Median]
+#' 
+#' @section Methods for class `mzR`:
+#' [print.mzR], [as.data.frame.mzR], [plot.mzR], [AddVariable], [GetLabels]
+#' 
+#' @section Calculate tables:
+#' Calculate tables for excel export
+#' 
+#' [MakeTable], [MakeQT], [MakeAKETimeInstantsTable]
 #' 
 #' @section Excel export:
-#' [MakeTable], [MakeQT], [FillExcelTemplate]
-#' 
-#' @section Utility Funktionen:
-#' [AddVariable], [GetLabels]
+#' [export], [FillExcelTemplate] 
 #'
 #' @md
 #' @name mzR
