@@ -95,7 +95,7 @@ ImportAndMerge <- function(x, curr_inFile, prev_inFile=NULL, mergeBy="asbper", w
     }
   }
   
-  curr_fileType <- unlist(strsplit(curr_inFile,".",fixed=TRUE))[length(unlist(strsplit(curr_inFile,".",fixed=TRUE)))]
+  curr_fileType <- tools::file_ext(curr_inFile)
   if(curr_fileType=="gz"){
     curr_fileType <- substr(curr_inFile,start=nchar(curr_inFile)-5,stop=nchar(curr_inFile))  
   }
