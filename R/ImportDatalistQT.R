@@ -69,7 +69,7 @@ ImportDataListQT <- function(timeInstant, nbw=NULL, whichVar=NULL, weightDecimal
     
     if(file.exists(paste0(mz, "/AKE Neu ab 2004/06 Ergebnisse/Quartalsberichte fertig/Quartalsbericht ", timeInstant[1],
                           " Q", timeInstant[2]))){
-      qt_spss_path_curr <- qt_spss_path_prev <- paste0("/mnt/mz/AKE Neu ab 2004/06 Ergebnisse/Quartalsberichte fertig/",
+      qt_spss_path_curr <- qt_spss_path_prev <- paste0(mz, "/AKE Neu ab 2004/06 Ergebnisse/Quartalsberichte fertig/",
                                                        "Quartalsbericht ",timeInstant[1]," Q",timeInstant[2],
                                                        "/Daten/Daten_ab2004_QuartPub.sav")
       warning("\n\nACHTUNG: timeInstant=c(",timeInstant[1],",",timeInstant[2],") entspricht nicht dem aktuellsten",
@@ -78,7 +78,7 @@ ImportDataListQT <- function(timeInstant, nbw=NULL, whichVar=NULL, weightDecimal
               "Produktion/Daten/Daten_ab2004_QuartPub.sav'\n\n")
     }else{
       qt_spss_path_curr <- qt_spss_path_prev <-paste0(mz, "/AKE Neu ab 2004/06 Ergebnisse/Quartalsberichte Produktion/",
-                                                      "Daten/Daten_ab2004_QuartPub.sav")
+                                                      "Daten/Datensatz_QuartPub.sav")
     }
   }
   
