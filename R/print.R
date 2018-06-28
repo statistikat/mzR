@@ -42,31 +42,31 @@ mzRComponent2 <- function(date, est, est2, estb, estb2, datePrev, returnBR = FAL
 CompFehlerX <- function(x,each=NULL,thousands_separator=TRUE,digits=2){  
   if(is.null(each)){
     
-  if(any(grepl("Prev",names(x)))){
-    print_obj <- as.data.frame(rbind(
-      unlist(x[c("est","sd", "cv", "cil","ciu")] ) ,
-      unlist(x[c("estPrev","sdPrev", "cvPrev", "cilPrev","ciuPrev")]),
-      unlist(x[c("absChange","sdAbsChange","cvAbsChange","cilAbsChange","ciuAbsChange")]),
-      unlist(x[c("relChange","sdRelChange","cvRelChange","cilRelChange","ciuRelChange")])
-    ))
-    print_obj <- round(print_obj,digits=digits)
-    if(thousands_separator){
-    print_obj <- format(print_obj, big.mark = ",")
+    if(any(grepl("Prev",names(x)))){
+      print_obj <- as.data.frame(rbind(
+        unlist(x[c("est","sd", "cv", "cil","ciu")] ) ,
+        unlist(x[c("estPrev","sdPrev", "cvPrev", "cilPrev","ciuPrev")]),
+        unlist(x[c("absChange","sdAbsChange","cvAbsChange","cilAbsChange","ciuAbsChange")]),
+        unlist(x[c("relChange","sdRelChange","cvRelChange","cilRelChange","ciuRelChange")])
+      ))
+      print_obj <- round(print_obj,digits=digits)
+      if(thousands_separator){
+        print_obj <- format(print_obj, big.mark = ",")
+      }
+      row.names(print_obj) <- c(x[["date"]],x[["datePrev"]],"Absolute change","Relative change")
+      colnames(print_obj) <- c("est","sd", "cv",paste(names(x[c("cil","ciu")]),unlist(lapply(x[c("cil","ciu")],names)),sep="_"))
+    }else{
+      print_obj <- as.data.frame(x[c("est","sd", "cv", "cil","ciu")])
+      print_obj <- round(print_obj,digits=digits)
+      if(thousands_separator){
+        print_obj <- format(print_obj, big.mark = ",")
+      }
+      row.names(print_obj) <- x[["date"]]
+      colnames(print_obj) <- c("est","sd", "cv",paste(names(x[c("cil","ciu")]),unlist(lapply(x[c("cil","ciu")],names)),sep="_"))
     }
-    row.names(print_obj) <- c(x[["date"]],x[["datePrev"]],"Absolute change","Relative change")
-    colnames(print_obj) <- c("est","sd", "cv",paste(names(x[c("cil","ciu")]),unlist(lapply(x[c("cil","ciu")],names)),sep="_"))
-  }else{
-    print_obj <- as.data.frame(x[c("est","sd", "cv", "cil","ciu")])
-    print_obj <- round(print_obj,digits=digits)
-    if(thousands_separator){
-      print_obj <- format(print_obj, big.mark = ",")
-    }
-    row.names(print_obj) <- x[["date"]]
-    colnames(print_obj) <- c("est","sd", "cv",paste(names(x[c("cil","ciu")]),unlist(lapply(x[c("cil","ciu")],names)),sep="_"))
-  }
-  
-  print(print_obj)  
-  
+    
+    print(print_obj)  
+    
   }else{
     
     if(any(grepl("Prev",names(x[[1]])))){
