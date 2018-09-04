@@ -1,5 +1,5 @@
 Package: mzR
-Version: 1.1.0
+Version: 1.1.1
 Date: 2017-01-10
 Title: mzR - To compute estimates and their errors for Austrian microcensus data
 Authors@R: c(person("Gregor", "de Cillia", role = c("aut", "cre")),

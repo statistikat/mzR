@@ -65,7 +65,8 @@ ImportDataListQT <- function(timeInstant, nbw=NULL, whichVar=NULL, weightDecimal
   requireNamespace("mountSTAT")
   
   if(ImportAndMerge && is.null(curr_inFile)){
-    mz <- mountSTAT::mountWinShare(server = "DatenB", share = "B_MZ", mountpunkt = "mz", FALSE)
+    mz <- mountSTAT::mountWinShare(server = "DatenB", share = "B_MZ", mountpunkt = "mz", 
+                                   verbose = FALSE)
     
     if(file.exists(paste0(mz, "/AKE Neu ab 2004/06 Ergebnisse/Quartalsberichte fertig/Quartalsbericht ", timeInstant[1],
                           " Q", timeInstant[2]))){

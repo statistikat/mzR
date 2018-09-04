@@ -13,7 +13,8 @@ round.spss = function(x, digits=0) {
 # vollstaendige Quartale (inkl. Bootstrap-Gewichten)
 vorhQuartaleUndPfade <- function() {
   # Pfade
-  mz2 <- mountSTAT::mountWinShare(server = "DatenB", share = "B_MZ2", mountpunkt = "mz2", FALSE)
+  mz2 <- mountSTAT::mountWinShare(server = "DatenB", share = "B_MZ2", mountpunkt = "mz2", 
+                                  verbose = FALSE)
   p1 <- file.path(mz2, "20_MZ/MZ_intern/")
   dir_gew <- paste0(p1, "XXXX/XXXXqYY")
   
@@ -192,7 +193,8 @@ ImportDataQ <- function(j, q, comp_jahresgew=FALSE, whichVar=whichVar, hh=hh, fa
   bstell <- xfstell <- asbhh <- NULL #Sonst kommt Fehlermeldung bei Paketbildung: no visible binding for global variable
   
   name_teil <- paste0(j,"q",q)
-  mz2 <- mountSTAT::mountWinShare(server = "DatenB", share = "B_MZ2", mountpunkt = "mz2", FALSE)
+  mz2 <- mountSTAT::mountWinShare(server = "DatenB", share = "B_MZ2", mountpunkt = "mz2", 
+                                  verbose = FALSE)
   dircurrb <- dircurr <- paste0(mz2, "/20_MZ/MZ_intern/", j, "/", j, "q", q)
   
   ##DG7 einlesen
