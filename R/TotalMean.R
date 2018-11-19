@@ -81,10 +81,10 @@ MeanX <- function(xx, TFstring, var, negativeZero = TRUE, replicates = replicate
   }
   
   appendVarNumTmp(x, var, negativeZero)
-  
+
   x[,gew1Num:=gew1*varNumTmp]
   x_bw <- copy(x)
-  x[, (bw) := lapply(.SD, function(y){y * x[['varNumTmp']]}), .SDcols = bw]
+  x[, (bw) := lapply(.SD, function(y){y * x_bw[['varNumTmp']]}), .SDcols = bw]
   setnames(x,old=bw,new=bwNum)
   
   if(length(xx)>1){
@@ -99,7 +99,7 @@ MeanX <- function(xx, TFstring, var, negativeZero = TRUE, replicates = replicate
     
     y[,gew1Num:=gew1*varNumTmp]
     y_bw <- copy(y)
-    y[, (bw) := lapply(.SD, function(z){z * y[['varNumTmp']]}), .SDcols = bw]
+    y[, (bw) := lapply(.SD, function(z){z * y_bw[['varNumTmp']]}), .SDcols = bw]
     setnames(y,old=bw,new=bwNum)
   }
   num <- x[eval(parse(text=TFstring)),sum(gew1Num)]
