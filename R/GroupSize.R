@@ -34,12 +34,16 @@ GroupSizeX <- function(x, TFstring, replicates){
   }
   est <- x[eval(parse(text=TFstring)),sum(gew1)]
   estb <- x[eval(parse(text=TFstring)),lapply(.SD,sum),.SDcols=bw]
+  if(any(dim(estb)==0))
+    estb <- rep(0,length(bw))
   sde <- sd(estb)
   if(is.null(y)){
     return(mzRComponent(date, est, estb, returnBR = replicates))
   }else{
     est2 <- y[eval(parse(text=TFstring)),sum(gew1)]
     estb2 <- y[eval(parse(text=TFstring)),lapply(.SD,sum),.SDcols=bw]
+    if(any(dim(estb2)==0))
+      estb2 <- rep(0,length(bw))
     mzRComponent2(date, est, est2, estb, estb2, datePrev, returnBR = replicates)
   }
 }
