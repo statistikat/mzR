@@ -4,8 +4,6 @@
 \alias{Median}
 \alias{Mean}
 \alias{Total}
-\alias{Mean}
-\alias{Median}
 \title{Schaetz- und Fehlerrechnungsfunktionen fuer numerische Variablen.}
 \usage{
 Median(x, TFstring = NULL, each = NULL, var, negativeZero = TRUE,

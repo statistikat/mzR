@@ -3,14 +3,13 @@
 \name{GroupRate}
 \alias{GroupRate}
 \alias{GroupSize}
-\alias{GroupRate}
 \title{Schaetz- und Fehlerrechnungsfunktionen.}
 \usage{
 GroupRate(x, TFstring, TFstring2 = NULL, each = NULL, byeach = TRUE,
   thousands_separator = TRUE, digits = 2, replicates = FALSE)
 
-GroupSize(x, TFstring = NULL, each = NULL, thousands_separator = TRUE,
-  digits = 2, replicates = FALSE)
+GroupSize(x, TFstring = NULL, each = NULL,
+  thousands_separator = TRUE, digits = 2, replicates = FALSE)
 }
 \arguments{
 \item{x}{MZ Daten - Output von Funktion \link{ImportData}.}

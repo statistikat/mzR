@@ -5,8 +5,9 @@
 \title{Mikrozensus-Files und zugehoerige Bootstrapgewichte einlesen.}
 \usage{
 IndivImportData(curr_inFile, curr_inFile_bw, prev_inFile = NULL,
-  prev_inFile_bw = NULL, whichVar = NULL, mergeBy = "asbhh", nbw = NULL,
-  bwNames = NULL, weightName = "gew1", weightDecimals = 2)
+  prev_inFile_bw = NULL, whichVar = NULL, mergeBy = "asbhh",
+  nbw = NULL, bwNames = NULL, weightName = "gew1",
+  weightDecimals = 2)
 }
 \arguments{
 \item{curr_inFile}{Character oder Character Vektor mit Pfad(en) der
@@ -38,7 +39,7 @@ dem zur Verfuegung gestellten Datenfile die im Output-File enthalten sein
 sollen. Die uebrigen Variablen werden weggelassen. Default ist NULL, dabei
 werden alle Variablen behalten.}
 
-\item{mergeBy}{Character oder Character Vector der Variablen die zum Mergen von 
+\item{mergeBy}{Character oder Character Vector der Variablen die zum Mergen von
 \code{curr_inFile} und \code{curr_inFile_bw} bzw. \code{prev_inFile} und \code{prev_inFile_bw}
 verwendet werden sollen. Default ist der Haushalts-Identifikator \code{"asbhh"}.}
 
@@ -46,30 +47,30 @@ verwendet werden sollen. Default ist der Haushalts-Identifikator \code{"asbhh"}.
 werden soll. Default ist NULL, dabei werden alle verfuegbaren
 Bootstrap-Gewichte eingelesen.}
 
-\item{bwNames}{Falls ungleich NULL, die Variablennamen der Bootstrap-Gewichte 
+\item{bwNames}{Falls ungleich NULL, die Variablennamen der Bootstrap-Gewichte
 in \code{curr_inFile_bw} bzw. \code{prev_inFile_bw}. Default ist NULL, dabei
 ist die Variablenbezeichnung der Bootstrapgewichte \code{"gew1_1"}, \code{"gew1_2"}, \code{"gew1_3"}, \ldots wie beim Mikrozensus ueblich.}
 
 \item{weightName}{Character: Name des Gewichtsvektors der eingelesenen Daten, default ist \code{weightName="gew1"}.}
 
-\item{weightDecimals}{Numerischer Wert oder NULL. Anzahl der Nachkommastellen der (angepassten) Stichprobengewichte, 
-gerundet nach SPSS RND Logik (0.5 bwz. -0.5 wird dabei immer "weg von 0" gerundet). 
+\item{weightDecimals}{Numerischer Wert oder NULL. Anzahl der Nachkommastellen der (angepassten) Stichprobengewichte,
+gerundet nach SPSS RND Logik (0.5 bwz. -0.5 wird dabei immer "weg von 0" gerundet).
 Falls NULL, werden die Gewichte nicht gerundet.}
 }
 \value{
 Output ist eine Liste mit einem oder zwei Elementen, je nachdem ob
 \code{prev_inFile=NULL} oder nicht. Die Listenelemente sind Objekte der Klasse data.table.
-Wurden mehrere Dateipfade angegeben, so enthaelt der Output angepasste Gewichte, 
-d.h. alle Gewichte werden durch die Anzahl der uebergebenen Dateipfade in \code{curr_inFile} dividiert. 
+Wurden mehrere Dateipfade angegeben, so enthaelt der Output angepasste Gewichte,
+d.h. alle Gewichte werden durch die Anzahl der uebergebenen Dateipfade in \code{curr_inFile} dividiert.
 Jahresgewichte berechnen sich also als Quartalsgewichte durch 4.
 }
 \description{
 Funktion liest vom Nutzer zur Verfuegung gestellte Datenfiles ein
 }
 \details{
-Das mzR-Paket benoetigt in den Daten eine Gewichtsvariable mit dem Namen \code{"gew1"} 
+Das mzR-Paket benoetigt in den Daten eine Gewichtsvariable mit dem Namen \code{"gew1"}
 und Bootstrapgewichte mit den Namen \code{"gew1_1"}, \code{"gew1_2"}, \code{"gew1_3"}, \ldots (wie beim Mikrozensus ueblich).
-Sollten diese Variablen in den einzulesenden Daten andere Namen haben, so muessen diese 
+Sollten diese Variablen in den einzulesenden Daten andere Namen haben, so muessen diese
 in den Funktionsparametern \code{weightName} bzw. \code{bwNames} spezifiziert werden.
 }
 \examples{

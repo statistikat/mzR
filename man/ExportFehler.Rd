@@ -3,7 +3,6 @@
 \name{export}
 \alias{export}
 \alias{export.mzR}
-\alias{export}
 \title{Export der Schaetz-und Fehlerrechnungsergebnisse.}
 \usage{
 export(x, outFilePath = getwd(), outFileName = NULL)

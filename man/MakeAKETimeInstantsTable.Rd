@@ -50,8 +50,8 @@ definierten Spalten und Zeilen fuer bestimmte Zeitpunkte und Veraenderungen.
 }
 \description{
 Funktion erstellt Tabellen in einem Format das im
-Mikrozensus-Quartalsbericht ueblich ist. Die zugehoerigen MZ-Daten werden 
-dabei automatisch dem STAT-Filemanagement entsprechend eingelesen, d.h. diese 
+Mikrozensus-Quartalsbericht ueblich ist. Die zugehoerigen MZ-Daten werden
+dabei automatisch dem STAT-Filemanagement entsprechend eingelesen, d.h. diese
 Funktion funktioniert nur STAT-intern
 }
 \details{
