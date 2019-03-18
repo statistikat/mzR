@@ -4,10 +4,12 @@
 \alias{plot.mzR}
 \title{Visualisiere ein mzR Objekt}
 \usage{
-\method{plot}{mzR}(x)
+\method{plot}{mzR}(x, ...)
 }
 \arguments{
 \item{x}{Ein Objekt der Klasse \code{mzR}.}
+
+\item{...}{Ungenützt.}
 }
 \description{
 Standarplots für \code{mzR} Objecte. Nur anwendbar, wenn das Objekt bootsrtap Replikate beinhaltet,

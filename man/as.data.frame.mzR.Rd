@@ -4,10 +4,12 @@
 \alias{as.data.frame.mzR}
 \title{Kopnvertiere ein \code{mzR} Objekt in ein Tabelle}
 \usage{
-\method{as.data.frame}{mzR}(x)
+\method{as.data.frame}{mzR}(x, ...)
 }
 \arguments{
 \item{x}{Ein Objekt der Klasse \code{mzR}.}
+
+\item{...}{Ungenützt}
 }
 \description{
 Generische Funktion \link{as.data.frame} implementiert für \code{mzR} Objekte.

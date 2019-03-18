@@ -21,6 +21,7 @@ Funktion alle Schätzwerte zurückgeben.
 }
 \examples{
 library(dplyr)  ## Für \%>\%
+library(ggplot2)
 
 ######################## Beispiel 1: Durschnittliche Arbeitsstunden #############################
 

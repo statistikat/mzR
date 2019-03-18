@@ -1,3 +1,7 @@
+#' @importFrom graphics abline hist lines
+#' @importFrom stats density
+NULL
+
 ## Hilfsfunktionen zum erstellen der Listenelemente in mzR Objekten
 mzRComponent <- function(date, est, estb, returnBR = FALSE) {
   sde <- sd(estb)
@@ -148,6 +152,7 @@ print.mzR <-function(x,...){
 #' enstsprechen den Bootstrapgewichten (typischerweise 500 Stück).
 #' @examples 
 #' library(dplyr)  ## Für %>%
+#' library(ggplot2)
 #' 
 #' ######################## Beispiel 1: Durschnittliche Arbeitsstunden #############################
 #' 
@@ -193,13 +198,15 @@ getReplicates <- function(x) {
 #' Standarplots für `mzR` Objecte. Nur anwendbar, wenn das Objekt bootsrtap Replikate beinhaltet,
 #' ansonsten wird eine Warnung geworfen. Siehe auch [getReplicates].
 #' @param x Ein Objekt der Klasse `mzR`.
+#' @param ... Ungenützt.
 #' @examples 
 #' dat <- ImportData(year = 2014, quarter = 4)
 #' mzObj <- Mean(dat, TFstring = "xerwstat==1&balt >= 15&balt <= 74", 
 #'               var = "estund*13+dtstd*13", replicates = TRUE)
 #' plot(mzObj)
+#' @import ggplot2
 #' @export
-plot.mzR <- function(x) {
+plot.mzR <- function(x, ...) {
   rep <- getReplicates(x)
   if (nrow(rep) == 0) {
     warning("no bootstrap replicates available")
@@ -230,8 +237,9 @@ plot.mzR <- function(x) {
 #' Generische Funktion [as.data.frame] implementiert für `mzR` Objekte.
 #' 
 #' @param x Ein Objekt der Klasse `mzR`.
+#' @param ... Ungenützt
 #' @export
-as.data.frame.mzR <- function(x) {
+as.data.frame.mzR <- function(x, ...) {
   if ("cil" %in% names(x))
     x <- list(noeachvar = x)
   
