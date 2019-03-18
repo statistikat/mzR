@@ -163,7 +163,7 @@ ImportData <- function(year=NULL, quarter=NULL, comp_diff_lag=NULL, from=NULL, t
             indatzr[j][[1]][,(cn_sel):=lapply(.SD,unclass),.SDcols=cn_sel]
           }
           
-          indatzr[j][[1]] <- rbind(indatzr[j][[1]][,cn,with=FALSE],indat[j][[1]][,cn,with=FALSE])
+          indatzr[j][[1]] <- rbind(indatzr[j][[1]][,cn,with=FALSE],indat[j][[1]][,cn,with=FALSE],fill=TRUE)
         }else{
           indatzr[j][[1]] <- rbind(indatzr[j][[1]],indat[j][[1]],fill=TRUE)
         }
@@ -366,7 +366,7 @@ ImportDataJQ <- function(year, quarter=NULL, comp_diff_lag=NULL, hh=FALSE, famil
           datj[,(cn_sel):=lapply(.SD,unclass),.SDcols=cn_sel]
         }
         
-        datj <- rbind(datj[,cn,with=FALSE],dat[,cn,with=FALSE])
+        datj <- rbind(datj[,cn,with=FALSE],dat[,cn,with=FALSE],fill=TRUE)
         
       }else{
         datj <- rbind(datj,dat,fill=TRUE)
@@ -422,7 +422,7 @@ ImportDataJQ <- function(year, quarter=NULL, comp_diff_lag=NULL, hh=FALSE, famil
           datvj[,(cn_sel):=lapply(.SD,unclass),.SDcols=cn_sel]
         }
         
-        datvj <- rbind(datvj[,cn,with=FALSE],datvq[,cn,with=FALSE])
+        datvj <- rbind(datvj[,cn,with=FALSE],datvq[,cn,with=FALSE],fill=TRUE)
       }else{
         datvj <- rbind(datvj,datvq,fill=TRUE)
       }
