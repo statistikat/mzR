@@ -11,11 +11,9 @@ round.spss = function(x, digits=0) {
 }
 
 # vollstaendige Quartale (inkl. Bootstrap-Gewichten)
-vorhQuartaleUndPfade <- function() {
+vorhQuartaleUndPfade <- function(mz_intern) {
   # Pfade
-  mz2 <- mountSTAT::mountWinShare(server = "DatenB", share = "B_MZ2", mountpunkt = "mz2", 
-                                  verbose = FALSE)
-  p1 <- file.path(mz2, "20_MZ/MZ_intern/")
+  p1 <- mz_intern
   dir_gew <- paste0(p1, "XXXX/XXXXqYY")
   
   ## alle moeglichen Jahre/Quartale herausfiltern
@@ -51,6 +49,11 @@ vorhQuartaleUndPfade <- function() {
   return(out)
 }
 
+mount_mz_intern <- function() {
+  mountSTAT::mountWinShare(server = "DatenB", share = "B_MZ2",
+                           mountpunkt = "mz_intern", verbose = FALSE,
+                           folder = "20_MZ/MZ_intern")
+}
 
 # Output ist eine Liste mit einem oder zwei Elementen, je nachdem ob comp_diff_lag angegeben wurde oder nicht.
 
@@ -90,6 +93,8 @@ vorhQuartaleUndPfade <- function() {
 #' @param weightDecimals Numerischer Wert oder NULL. Anzahl der Nachkommastellen der Stichprobengewichte, 
 #' gerundet nach SPSS RND Logik (0.5 bwz. -0.5 wird dabei immer "weg von 0" gerundet). 
 #' Falls NULL, werden die Gewichte nicht gerundet.
+#' @param mz_intern Pfad zu dem `mz_intern` Ordner in der STAT Infrastruktur.
+#'   Standardmäßig wird dieser mit `mountSTAT` generiert.
 #' @return Output ist eine Liste mit einem oder zwei Elementen, je nachdem ob
 #' \code{comp_diff_lag=NULL} oder nicht. Die Listenelemente sind Objekte der Klasse data.table.
 #' @seealso
@@ -119,9 +124,11 @@ vorhQuartaleUndPfade <- function() {
 #'   "xnuts2","xerwstat"))
 #' }
 #' 
-ImportData <- function(year=NULL, quarter=NULL, comp_diff_lag=NULL, from=NULL, to=NULL, hh=FALSE, families=FALSE, whichVar=NULL, nbw=NULL, weightDecimals=2){
-  requireNamespace("mountSTAT")
-  
+ImportData <- function(
+  year = NULL, quarter = NULL, comp_diff_lag = NULL, from = NULL, to = NULL, 
+  hh = FALSE, families = FALSE, whichVar = NULL, nbw = NULL, weightDecimals = 2, 
+  mz_intern = mount_mz_intern()
+) {
   jahr <- year
   quartal <- quarter
   
@@ -145,11 +152,17 @@ ImportData <- function(year=NULL, quarter=NULL, comp_diff_lag=NULL, from=NULL, t
       quartal_seq <- as.numeric(plyr::mapvalues(format(sapply(strsplit(sequence, ".",fixed=TRUE),function(x)x[2])), from=c("00","25","50","75"),to=c(1,2,3,4),warn_missing =FALSE))
     }
     
-    indatzr <- ImportDataJQ(year=jahr_seq[1], quarter=quartal_seq[1], comp_diff_lag=comp_diff_lag, hh=hh, families=families, whichVar=whichVar, nbw=nbw, weightDecimals=weightDecimals)  
+    indatzr <- ImportDataJQ(
+      year = jahr_seq[1], quarter = quartal_seq[1], comp_diff_lag =
+        comp_diff_lag, hh = hh, families = families, whichVar = whichVar, 
+      nbw = nbw, weightDecimals = weightDecimals, mz_intern = mz_intern)  
     
     
     for(i in 2:length(sequence)){
-      indat <- ImportDataJQ(year=jahr_seq[i], quarter=quartal_seq[i], comp_diff_lag=comp_diff_lag, hh=hh, families=families, whichVar=whichVar, nbw=nbw, weightDecimals=weightDecimals)  
+      indat <- ImportDataJQ(
+        year = jahr_seq[i], quarter = quartal_seq[i], comp_diff_lag = 
+          comp_diff_lag, hh = hh, families = families, whichVar = whichVar, 
+        nbw = nbw, weightDecimals = weightDecimals, mz_intern = mz_intern)  
       
       for(j in 1:length(indatzr)){      
         if(length(colnames(indatzr[j][[1]]))>0){
@@ -183,19 +196,23 @@ ImportData <- function(year=NULL, quarter=NULL, comp_diff_lag=NULL, from=NULL, t
       names(indatzr)[j] <- paste0("dat_",paste0(from,collapse="q"),"_to_",paste0(to,collapse="q"))
     }
   }else{
-    indatzr <- ImportDataJQ(year=jahr, quarter=quartal, comp_diff_lag=comp_diff_lag, hh=hh, families=families, whichVar=whichVar, nbw=nbw, weightDecimals=weightDecimals)  
+    indatzr <- ImportDataJQ(
+      year = jahr, quarter = quartal, comp_diff_lag = comp_diff_lag, hh = hh, 
+      families = families, whichVar = whichVar, nbw = nbw, 
+      weightDecimals = weightDecimals, mz_intern = mz_intern)  
   }   
   
   return(indatzr)  
 }
 
-ImportDataQ <- function(j, q, comp_jahresgew=FALSE, whichVar=whichVar, hh=hh, families=families, nbw=nbw, weightDecimals=weightDecimals){   
+ImportDataQ <- function(
+  j, q, comp_jahresgew = FALSE, whichVar = whichVar, hh = hh, families = 
+    families, nbw = nbw, weightDecimals = weightDecimals, mz_intern = mz_intern
+) {   
   bstell <- xfstell <- asbhh <- NULL #Sonst kommt Fehlermeldung bei Paketbildung: no visible binding for global variable
   
   name_teil <- paste0(j,"q",q)
-  mz2 <- mountSTAT::mountWinShare(server = "DatenB", share = "B_MZ2", mountpunkt = "mz2", 
-                                  verbose = FALSE)
-  dircurrb <- dircurr <- paste0(mz2, "/20_MZ/MZ_intern/", j, "/", j, "q", q)
+  dircurrb <- dircurr <- paste0(mz_intern, "/", j, "/", j, "q", q)
   
   ##DG7 einlesen
   sav_path <- paste0(dircurr,"/dg7.mz",name_teil,".sav")
@@ -260,7 +277,10 @@ ImportDataQ <- function(j, q, comp_jahresgew=FALSE, whichVar=whichVar, hh=hh, fa
   
 }
 
-ImportDataJQ <- function(year, quarter=NULL, comp_diff_lag=NULL, hh=FALSE, families=FALSE, whichVar=NULL, nbw=NULL, weightDecimals=2){
+ImportDataJQ <- function(
+  year, quarter = NULL, comp_diff_lag = NULL, hh = FALSE, families = FALSE, 
+  whichVar = NULL, nbw = NULL, weightDecimals = 2, mz_intern
+) {
   asbhh <- bstell <- xfstell <- NULL ## initialize to avoid warning
   
   # aus historischen gruenden neue Parameternamen zuweisen, Fkt. wurde urspruenglich mit deutschen Parameternamen geschrieben
@@ -290,7 +310,7 @@ ImportDataJQ <- function(year, quarter=NULL, comp_diff_lag=NULL, hh=FALSE, famil
   }
   
   # vorhandene Quartale
-  inp <- vorhQuartaleUndPfade()
+  inp <- vorhQuartaleUndPfade(mz_intern)
   
   # check: es kann nur auf hh ODER families eingeschraenkt werden
   if(hh && families){
@@ -336,7 +356,9 @@ ImportDataJQ <- function(year, quarter=NULL, comp_diff_lag=NULL, hh=FALSE, famil
     ##    Quartal   ##
     ##################
     
-    dat <- ImportDataQ(j=jahr, q=quartal, whichVar=whichVar, hh=hh, families=families, nbw=nbw, weightDecimals=weightDecimals)
+    dat <- ImportDataQ(
+      j = jahr, q = quartal, whichVar = whichVar, hh = hh, families = families, 
+      nbw = nbw, weightDecimals = weightDecimals, mz_intern = mz_intern)
     indat[[length(indat)+1]] <- dat 
     names(indat)[length(indat)] <- paste0("dat_",jahr,"q",quartal)
     rm(dat);gc()
@@ -352,7 +374,10 @@ ImportDataJQ <- function(year, quarter=NULL, comp_diff_lag=NULL, hh=FALSE, famil
     for(i in 1:4){
       quartal <- i  
       
-      dat <- ImportDataQ(j=jahr, q=quartal, comp_jahresgew=TRUE, whichVar=whichVar, hh=hh, families=families, nbw=nbw, weightDecimals=weightDecimals)
+      dat <- ImportDataQ(
+        j = jahr, q = quartal, comp_jahresgew = TRUE, whichVar = whichVar, 
+        hh = hh, families = families, nbw = nbw, weightDecimals = 
+          weightDecimals, mz_intern = mz_intern)
       
       #if(packageDescription("data.table")$Version)
       if(length(colnames(datj))>0){
@@ -391,7 +416,10 @@ ImportDataJQ <- function(year, quarter=NULL, comp_diff_lag=NULL, hh=FALSE, famil
     vquartal <- start(lag(ts(start=c(jahr,quartal),frequency=4),k=comp_diff_lag))[2] ## Vorquartal
     vjahr <- start(lag(ts(start=c(jahr,quartal),frequency=4),k=comp_diff_lag))[1] ## Vorjahr
     
-    datvq <- ImportDataQ(j=vjahr, q=vquartal, whichVar=whichVar, hh=hh, families=families, nbw=nbw, weightDecimals=weightDecimals)
+    datvq <- ImportDataQ(
+      j = vjahr, q = vquartal, whichVar = whichVar, hh = hh,
+      families = families, nbw = nbw, weightDecimals = weightDecimals,
+      mz_intern = mz_intern)
     
     indat[[length(indat)+1]] <- datvq 
     names(indat)[length(indat)] <- paste0("dat_",vjahr,"q",vquartal)
@@ -409,7 +437,10 @@ ImportDataJQ <- function(year, quarter=NULL, comp_diff_lag=NULL, hh=FALSE, famil
     for(i in 1:4){
       vquartal <- i
       
-      datvq <- ImportDataQ(j=vjahr, q=vquartal, comp_jahresgew=TRUE, whichVar=whichVar, hh=hh, families=families, nbw=nbw, weightDecimals=weightDecimals)
+      datvq <- ImportDataQ(
+        j = vjahr, q = vquartal, comp_jahresgew = TRUE, whichVar = whichVar, 
+        hh = hh, families = families, nbw = nbw, weightDecimals = 
+          weightDecimals, mz_intern = mz_intern)
       
       if(length(colnames(datvj))>0){
         cn <- intersect(colnames(datvj),colnames(datvq))
