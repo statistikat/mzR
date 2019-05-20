@@ -17,13 +17,15 @@ out from https://github.com/statistikat/mzR and then installed manually.
 
 ### Getting started
 
-You can find examples for getting started with mzR with `help(package = mzR)`
-under "User guides, package vignettes and other documentation.". The vignette
-can be displayed with
+You can find examples for getting started with mzR by reading the introduction
+vignette.
 
 ```r
 vignette("mzR")
 ```
+
+This vignette is also available online under
+http://statistikat.github.io/mzR/articles/mzR.html
 
 ### Issues
 
