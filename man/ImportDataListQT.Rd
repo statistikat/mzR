@@ -7,7 +7,8 @@ MZ-Quartalsbericht-Format zu erstellen (hausintern).}
 \usage{
 ImportDataListQT(timeInstant, nbw = NULL, whichVar = NULL,
   weightDecimals = 2, ImportAndMerge = TRUE, curr_inFile = NULL,
-  prev_inFile = NULL, mergeBy = c("asbper", "ajahr", "amonat"))
+  prev_inFile = NULL, mergeBy = c("asbper", "ajahr", "amonat"),
+  mz_intern = mount_mz_intern())
 }
 \arguments{
 \item{timeInstant}{numerischer Vektor mit 2 Elementen: c(jahr, quartal).
@@ -40,6 +41,9 @@ Files vom Typ .sav, .csv und .csv.gz.}
 
 \item{mergeBy}{Character Vektor mit Variable(n) nach denen gemerged werden
 soll (default=c("asbper","ajahr","amonat")).}
+
+\item{mz_intern}{Pfad zu dem \code{mz_intern} Ordner in der STAT Infrastruktur.
+Standardmäßig wird dieser mit \code{mountSTAT} generiert.}
 }
 \value{
 Output ist eine Liste deren Elemente jeweils MZ-Daten enthalten

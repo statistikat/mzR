@@ -39,6 +39,7 @@
 #' Files vom Typ .sav, .csv und .csv.gz.
 #' @param mergeBy Character Vektor mit Variable(n) nach denen gemerged werden
 #' soll (default=c("asbper","ajahr","amonat")).
+#' @inheritParams ImportData
 #' 
 #' @return Output ist eine Liste deren Elemente jeweils MZ-Daten enthalten 
 #' die die selbe Grundstruktur haben wie der Output aus der Funktion \link{ImportData}.
@@ -59,9 +60,11 @@
 #' }
 #' 
 
-ImportDataListQT <- function(timeInstant, nbw=NULL, whichVar=NULL, weightDecimals=2,
-                             ImportAndMerge=TRUE,curr_inFile=NULL,prev_inFile = NULL, 
-                             mergeBy = c("asbper","ajahr","amonat")){
+ImportDataListQT <- function(
+  timeInstant, nbw = NULL, whichVar = NULL, weightDecimals = 2,
+  ImportAndMerge = TRUE, curr_inFile = NULL, prev_inFile = NULL, 
+  mergeBy = c("asbper", "ajahr", "amonat"), mz_intern = mount_mz_intern()
+) {
   requireNamespace("mountSTAT")
   
   if(ImportAndMerge && is.null(curr_inFile)){
@@ -132,7 +135,10 @@ ImportDataListQT <- function(timeInstant, nbw=NULL, whichVar=NULL, weightDecimal
     
     if(jahr==ende[1]&&quartal==ende[2]){
       ### Aktuelles Quartal plus Vorquartal
-      dat <- ImportData(year=jahr,quarter=quartal,comp_diff_lag=1,nbw=nbw,whichVar=whichVar,weightDecimals=weightDecimals)
+      dat <- ImportData(
+        year = jahr, quarter = quartal, comp_diff_lag = 1, nbw = nbw, 
+        whichVar = whichVar, weightDecimals = weightDecimals, 
+        mz_intern = mz_intern)
       if(ImportAndMerge){
         dat <- ImportAndMerge(dat,curr_inFile=qt_spss_path_curr, prev_inFile=qt_spss_path_prev,mergeBy=c("asbper","ajahr","amonat"))
       }
@@ -140,7 +146,10 @@ ImportDataListQT <- function(timeInstant, nbw=NULL, whichVar=NULL, weightDecimal
       names(datalist)[length(datalist)] <- paste0("dat_",jahr,"q",quartal,"vq")
       rm(dat);gc()
       ### Vorjahresquartal
-      dat <- ImportData(year=jahr,quarter=quartal,comp_diff_lag=4,nbw=nbw,whichVar=whichVar,weightDecimals=weightDecimals)
+      dat <- ImportData(
+        year = jahr, quarter = quartal, comp_diff_lag = 4, nbw = nbw,
+        whichVar = whichVar,weightDecimals = weightDecimals, 
+        mz_intern = mz_intern)
       if(ImportAndMerge){
         dat <- ImportAndMerge(dat,curr_inFile=qt_spss_path_curr, prev_inFile=qt_spss_path_prev,mergeBy=c("asbper","ajahr","amonat"))
       }
@@ -149,7 +158,9 @@ ImportDataListQT <- function(timeInstant, nbw=NULL, whichVar=NULL, weightDecimal
       rm(dat);gc()
     }else if(!identical(c(jahr,quartal),c(jahr_seq[length(jahr_seq)-1] ,quartal_seq[length(quartal_seq)-1]))){
       ### Rest
-      dat <- ImportData(year=jahr,quarter=quartal,nbw=nbw,whichVar=whichVar,weightDecimals=weightDecimals)
+      dat <- ImportData(
+        year = jahr, quarter = quartal, nbw = nbw, whichVar = whichVar,
+        weightDecimals = weightDecimals, mz_intern = mz_intern)
       if(ImportAndMerge){
         dat <- ImportAndMerge(dat,curr_inFile=qt_spss_path_curr,mergeBy=c("asbper","ajahr","amonat"))
       }
