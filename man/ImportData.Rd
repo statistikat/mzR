@@ -6,7 +6,8 @@
 \usage{
 ImportData(year = NULL, quarter = NULL, comp_diff_lag = NULL,
   from = NULL, to = NULL, hh = FALSE, families = FALSE,
-  whichVar = NULL, nbw = NULL, weightDecimals = 2)
+  whichVar = NULL, nbw = NULL, weightDecimals = 2,
+  mz_intern = mount_mz_intern())
 }
 \arguments{
 \item{year}{Numerischer Wert (Jahr).}
@@ -46,6 +47,9 @@ Bootstrap-Gewichte eingelesen.}
 \item{weightDecimals}{Numerischer Wert oder NULL. Anzahl der Nachkommastellen der Stichprobengewichte,
 gerundet nach SPSS RND Logik (0.5 bwz. -0.5 wird dabei immer "weg von 0" gerundet).
 Falls NULL, werden die Gewichte nicht gerundet.}
+
+\item{mz_intern}{Pfad zu dem \code{mz_intern} Ordner in der STAT Infrastruktur.
+Standardmäßig wird dieser mit \code{mountSTAT} generiert.}
 }
 \value{
 Output ist eine Liste mit einem oder zwei Elementen, je nachdem ob
