@@ -13,7 +13,7 @@ round.spss = function(x, digits=0) {
 # vollstaendige Quartale (inkl. Bootstrap-Gewichten)
 vorhQuartaleUndPfade <- function(mz_intern) {
   # Pfade
-  p1 <- mz_intern
+  p1 <- paste0(mz_intern, "/")
   dir_gew <- paste0(p1, "XXXX/XXXXqYY")
   
   ## alle moeglichen Jahre/Quartale herausfiltern
