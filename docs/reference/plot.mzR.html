@@ -6,7 +6,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Testdata resembling a subsample of the Austrian Microcensus — mzTestData • mzR</title>
+<title>Visualisiere ein mzR Objekt — plot.mzR • mzR</title>
 
 <!-- jquery -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js" integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8=" crossorigin="anonymous"></script>
@@ -33,11 +33,10 @@
 
   <link href="../extra.css" rel="stylesheet">
   
-<meta property="og:title" content="Testdata resembling a subsample of the Austrian Microcensus — mzTestData" />
+<meta property="og:title" content="Visualisiere ein mzR Objekt — plot.mzR" />
 
-<meta property="og:description" content="A list containing two datasets corresponding to the time points year 1 and year 2.
-Each dataset consists of a selection of variables from a subset of the Austrian Microcensus
-including weights and five bootstrap weights." />
+<meta property="og:description" content="Standarplots für mzR Objecte. Nur anwendbar, wenn das Objekt bootsrtap Replikate beinhaltet,
+ansonsten wird eine Warnung geworfen. Siehe auch getReplicates." />
 <meta name="twitter:card" content="summary" />
 
 
@@ -107,47 +106,47 @@ including weights and five bootstrap weights." />
 <div class="row">
   <div class="col-md-9 contents">
     <div class="page-header">
-    <h1>Testdata resembling a subsample of the Austrian Microcensus</h1>
-    <small class="dont-index">Source: <a href='https://github.com/statistikat/mzR/blob/master/R/data.R'><code>R/data.R</code></a></small>
-    <div class="hidden name"><code>mzTestData.Rd</code></div>
+    <h1>Visualisiere ein mzR Objekt</h1>
+    <small class="dont-index">Source: <a href='https://github.com/statistikat/mzR/blob/master/R/print.R'><code>R/print.R</code></a></small>
+    <div class="hidden name"><code>plot.mzR.Rd</code></div>
     </div>
 
     <div class="ref-description">
     
-    <p>A list containing two datasets corresponding to the time points year 1 and year 2.
-Each dataset consists of a selection of variables from a subset of the Austrian Microcensus
-including weights and five bootstrap weights.</p>
+    <p>Standarplots für <code>mzR</code> Objecte. Nur anwendbar, wenn das Objekt bootsrtap Replikate beinhaltet,
+ansonsten wird eine Warnung geworfen. Siehe auch <a href='getReplicates.html'>getReplicates</a>.</p>
     
     </div>
 
-    <pre class="usage"><span class='no'>mzTestData</span></pre>
-        
-    <h2 class="hasAnchor" id="format"><a class="anchor" href="#format"></a>Format</h2>
-
-    <p>A list containing two datasets of class data.table with 90 rows and 13 variables each.
-The variables are as follows:</p><ul>
-<li><p>asbper: personal ID</p></li>
-<li><p>bsex: gender (1 = male, 2 = female)</p></li>
-<li><p>xnuts2: NUTS-2 region, i.e. Austrian federal states (11 = Burgenland,  12 = Lower Austria,
-13 = Vienna,  21 = Carinthia,  22 = Styria,  31 = Upper Austria,  32 = Salzburg,  33 = Tyrol,  34 = Vorarlberg)</p></li>
-<li><p>xerwstat: activity status during the reference week (1 = in employment,
-2 = unemployed, 3 = economically inactive, 4 = compulsory military or community service,
-9 = not applicable (child less than 15 years))</p></li>
-<li><p>balt: age</p></li>
-<li><p>estund: number of hours actually worked during the reference week in the second job</p></li>
-<li><p>dtstd: number of hours actually worked during the reference week in the main job</p></li>
-<li><p>gew1: weights</p></li>
-<li><p>gew1_1, &#8230;, gew1_5: bootstrap weights</p></li>
-</ul>
+    <pre class="usage"><span class='co'># S3 method for mzR</span>
+<span class='fu'><a href='https://rdrr.io/r/graphics/plot.html'>plot</a></span>(<span class='no'>x</span>, <span class='no'>...</span>)</pre>
+    
+    <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
+    <table class="ref-arguments">
+    <colgroup><col class="name" /><col class="desc" /></colgroup>
+    <tr>
+      <th>x</th>
+      <td><p>Ein Objekt der Klasse <code>mzR</code>.</p></td>
+    </tr>
+    <tr>
+      <th>...</th>
+      <td><p>Ungenützt.</p></td>
+    </tr>
+    </table>
     
 
+    <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
+    <pre class="examples"><div class='input'><span class='no'>dat</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='ImportData.html'>ImportData</a></span>(<span class='kw'>year</span> <span class='kw'>=</span> <span class='fl'>2014</span>, <span class='kw'>quarter</span> <span class='kw'>=</span> <span class='fl'>4</span>)</div><div class='output co'>#&gt; <span class='message'>Der Share ist bereits eingebunden!</span></div><div class='output co'>#&gt; <span class='message'>re-encoding from CP1252</span></div><div class='output co'>#&gt; “/home/decill/mnt/mz_intern/2014/2014q4/dg7.mz2014q4.sav” wurde eingelesen.</div><div class='output co'>#&gt; <span class='message'>Taking input= as a system command ('zcat /home/decill/mnt/mz_intern/2014/2014q4/mz2_2014q4_bootweights.csv.gz') and a variable has been used in the expression passed to `input=`. Please use fread(cmd=...). There is a security concern if you are creating an app, and the app could have a malicious user, and the app is not running in a secure envionment; e.g. the app is running as root. Please read item 5 in the NEWS file for v1.11.6 for more information and for the option to suppress this message.</span></div><div class='output co'>#&gt; '/home/decill/mnt/mz_intern/2014/2014q4/mz2_2014q4_bootweights.csv.gz'  wurde eingelesen.</div><div class='input'><span class='no'>mzObj</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='TotalMean.html'>Mean</a></span>(<span class='no'>dat</span>, <span class='kw'>TFstring</span> <span class='kw'>=</span> <span class='st'>"xerwstat==1&amp;balt &gt;= 15&amp;balt &lt;= 74"</span>,
+              <span class='kw'>var</span> <span class='kw'>=</span> <span class='st'>"estund*13+dtstd*13"</span>, <span class='kw'>replicates</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>)
+<span class='fu'><a href='https://rdrr.io/r/graphics/plot.html'>plot</a></span>(<span class='no'>mzObj</span>)</div><div class='img'><img src='plot.mzR-1.png' alt='' width='700' height='433' /></div></pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="sidebar">
     <h2>Contents</h2>
     <ul class="nav nav-pills nav-stacked">
-      
-      <li><a href="#format">Format</a></li>
-          </ul>
+      <li><a href="#arguments">Arguments</a></li>
+            
+      <li><a href="#examples">Examples</a></li>
+    </ul>
 
   </div>
 </div>
