@@ -125,21 +125,21 @@ ImportDataListQT <- function(
   
   tInterval <- as.numeric(time(ts(start=start(lag(ts(end=ende,frequency=4),3)),end=ende,frequency=4)))
   tInterval <- date_decimal(tInterval)
-  jahr_seq <- year(tInterval)
-  quartal_seq <- quarter(tInterval)
+  jahr_seq <- lubridate::year(tInterval)
+  quartal_seq <- lubridate::quarter(tInterval)
   
   ## 'POSIXct, POSIXt' object
   # vjq <- lag(ts(end=ende,frequency=4),4)
   # vjq <- as.numeric(time(vjq))
   # vjq <- date_decimal(vjq)
-  # vjq_jahr <- year(vjq)
-  # vjq_quartal <- quarter(vjq)
+  # vjq_jahr <- lubridate::year(vjq)
+  # vjq_quartal <- lubridate::quarter(vjq)
 
   vvjq <- lag(ts(end=ende,frequency=4),8)
   vvjq <- as.numeric(time(vvjq))
   vvjq <- date_decimal(vvjq)
-  vvjq_jahr <- year(vvjq)
-  vvjq_quartal <- quarter(vvjq)
+  vvjq_jahr <- lubridate::year(vvjq)
+  vvjq_quartal <- lubridate::quarter(vvjq)
   
   timeInstants_jahr <- c(vvjq_jahr,jahr_seq)
   timeInstants_quartal <- c(vvjq_quartal,quartal_seq)

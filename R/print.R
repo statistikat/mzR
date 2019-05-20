@@ -207,6 +207,7 @@ getReplicates <- function(x) {
 #' @import ggplot2
 #' @export
 plot.mzR <- function(x, ...) {
+  value <- NULL
   rep <- getReplicates(x)
   if (nrow(rep) == 0) {
     warning("no bootstrap replicates available")

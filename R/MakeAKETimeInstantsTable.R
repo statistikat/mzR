@@ -124,16 +124,16 @@ MakeAKETimeInstantsTable <- function(col,row=NULL,timeInstant,nbw=NULL,
   ende <- timeInstant  
 
   tInterval <- date_decimal(as.numeric(time(ts(start=start(lag(ts(end=ende,frequency=4),3)),end=ende,frequency=4))))
-  jahr_seq <- year(tInterval)
-  quartal_seq <- quarter(tInterval)
+  jahr_seq <- lubridate::year(tInterval)
+  quartal_seq <- lubridate::quarter(tInterval)
   
   vjq <- date_decimal(as.numeric(time(lag(ts(end=ende,frequency=4),4))))
-  vjq_jahr <- year(vjq)
-  vjq_quartal <-  quarter(vjq)
+  vjq_jahr <- lubridate::year(vjq)
+  vjq_quartal <-  lubridate::quarter(vjq)
   
   vvjq <- date_decimal(as.numeric(time(lag(ts(end=ende,frequency=4),8))))
-  vvjq_jahr <- year(vvjq)
-  vvjq_quartal <-  quarter(vvjq)
+  vvjq_jahr <- lubridate::year(vvjq)
+  vvjq_quartal <-  lubridate::quarter(vvjq)
   
   timeInstants_jahr <- c(vvjq_jahr,jahr_seq)
   timeInstants_quartal <- c(vvjq_quartal,quartal_seq)

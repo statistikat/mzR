@@ -4,9 +4,10 @@
 #' @import methods
 #' @import survey
 #' @import XLConnect
-#' @importFrom lubridate date_decimal year quarter
+#' @importFrom lubridate date_decimal
 #' @importFrom plyr mapvalues
 #' @importFrom stats as.formula lag na.omit quantile sd start time ts
 #' @importFrom utils head tail write.csv2
+#' @importFrom dplyr %>%
 #' 
 NULL

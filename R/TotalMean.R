@@ -1,4 +1,5 @@
 appendVarNumTmp <- function(x, var, negativeZero) {
+  varNumTmp <- NULL
   if(length(grep("\\+",var))>0||length(grep("\\*",var))>0||length(grep("\\-",var))>0||length(grep("\\/",var))>0){
     if(negativeZero){
       vars <- unlist(strsplit(var,"\\+"))
