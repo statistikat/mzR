@@ -82,6 +82,15 @@ ImportDataListQT <- function(
       qt_spss_path_curr <- qt_spss_path_prev <- paste0(
         mz_ergebnisse, "/Quartalsberichte fertig/", "Quartalsbericht ",
         timeInstant[1], " Q", timeInstant[2], "/Daten/Daten_ab2004_QuartPub.sav")
+      
+      if (!file.exists(qt_spss_path_curr)) {
+        qt_spss_path_curr <- qt_spss_path_prev <- file.path(
+          dirname(qt_spss_path_curr), "Daten_QuartPub.sav"
+        )
+        if (!file.exists(qt_spss_path_curr))
+          stop(qt_spss_path_curr, " existiert nicht")
+      }
+      
       warning("\n\nACHTUNG: timeInstant=c(",timeInstant[1],",",timeInstant[2],") entspricht nicht dem aktuellsten",
               "Referenzzeitpunkt fuer MZ-Quartalstabellen!\n", "Es wird also \n'",qt_spss_path_curr,
               "' \n ueber ImportAndMerge eingelesen statt \n'/mnt/mz/AKE Neu ab 2004/06 Ergebnisse/Quartalsberichte",
