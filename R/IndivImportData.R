@@ -387,7 +387,7 @@ IndivImportDataQ <- function(inFile, inFile_bw, multipleFiles=FALSE, nrMultipleF
     if(curr_fileType=="sav"){
       dat <- data.table(spss.get(grep(inFile,list.files(dirname(inFile),full.names=TRUE),value=TRUE,fixed=TRUE),use.value.labels=FALSE,allow=FALSE)) 
     }else if(curr_fileType=="csv"){
-      dat <- data.table(read_csv2(inFile))  
+      dat <- data.table(read_csv2(inFile, locale = locale(encoding = "latin1")))  
     }else if(curr_fileType=="csv.gz"){
       dat <- data.table(read_csv2(gzfile(inFile)))
     }
@@ -411,8 +411,21 @@ IndivImportDataQ <- function(inFile, inFile_bw, multipleFiles=FALSE, nrMultipleF
   #########################
   ##    inFile_bw   ##
   #########################
+  curr_fileType <- unlist(strsplit(inFile_bw,".",fixed=TRUE))[length(unlist(strsplit(inFile_bw,".",fixed=TRUE)))]
+  if(curr_fileType=="gz"){
+    curr_fileType <- substr(inFile_bw,start=nchar(inFile_bw)-5,stop=nchar(inFile_bw))  
+  }
+  
+  if(!tolower(curr_fileType)%in%c("rds","csv","csv.gz")){
+    stop("Unterst\u00FCtzte Dateiformate: 'rds', 'csv' und 'csv.gz'")
+  } 
+  
   #Bootstrapgewichte einlesen
+  if(curr_fileType%in%c("csv","csv.gz")) {
   dat_bw <- data.table(read_csv2(gzfile(inFile_bw),n_max=1))      
+  } else {
+    dat_bw <- readRDS(inFile_bw)
+  }
   
   if(any(grepl("gew1_",names(dat_bw))) && is.null(bwNames_orig)){
     bwNames <- grep("gew1_",names(dat_bw),value=TRUE)
@@ -426,10 +439,13 @@ IndivImportDataQ <- function(inFile, inFile_bw, multipleFiles=FALSE, nrMultipleF
     einlesen <- c(mergeBy,bwNames[1:nbw])
   }
   
+  if(curr_fileType%in%c("csv","csv.gz")) {
   col_sel_gew1 <- paste0("cols_only(",paste0("'",einlesen,"'=col_guess()",collapse=","),")")
-  
   dat_bw <- data.table(read_csv2(gzfile(inFile_bw),col_types=eval(parse(text=col_sel_gew1)),locale=locale("de")))
-  
+  } else {
+    dat_bw <- dat_bw[ , einlesen, with=FALSE]
+  }
+
   ## bw muessen ja in mzR gew1_... heissen
   if(!is.null(bwNames_orig)){
     if(any(grepl("gew1_",names(dat_bw)))){
