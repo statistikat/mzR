@@ -587,13 +587,13 @@ FillExcelTemplate <- function(tab1,tab2=NULL,startingPoints,nrEmptyRows,
             while(!tolower(answer2)%in%c("nein","n","ja","j")){    
               answer2 <- readline(prompt="Soll vor dem Loeschen des Template-Sheets eine Sicherheitskopie des Files angelegt werden?: \n")
               if(tolower(answer2)%in%c("ja","j")){
-                newfile <- unlist(strsplit(basename(f_in),".",fixed=TRUE))[length(unlist(strsplit(basename(f_in),".",fixed=TRUE)))-1]
-                fileExtension <- unlist(strsplit(basename(f_in),".",fixed=TRUE))[length(unlist(strsplit(basename(f_in),".",fixed=TRUE)))]
+                newfile <- tools::file_path_sans_ext(basename(f_in))
+                fileExtension <- tools::file_ext(f_in)
                 newfile <- paste0(dirname(f_in),"/",newfile,"_kopie.",fileExtension)
                 n <- 1
                 while(file.exists(newfile)){
-                  newfile2 <- unlist(strsplit(basename(newfile),".",fixed=TRUE))[length(unlist(strsplit(basename(newfile),".",fixed=TRUE)))-1]
-                  fileExtension <- unlist(strsplit(basename(newfile),".",fixed=TRUE))[length(unlist(strsplit(basename(newfile),".",fixed=TRUE)))]
+                  newfile2 <- tools::file_path_sans_ext(basename(newfile))
+                  fileExtension <- tools::file_ext(newfile)
                   newfile <- paste0(dirname(newfile),"/",newfile2,"_(",n,").",fileExtension)
                   n <- n+1
                 }
@@ -628,13 +628,13 @@ FillExcelTemplate <- function(tab1,tab2=NULL,startingPoints,nrEmptyRows,
           while(!tolower(answer2)%in%c("nein","n","ja","j")){    
             answer2 <- readline(prompt="Soll vor dem Loeschen der Template-Sheets eine Sicherheitskopie des Original-Files angelegt werden?: \n")
             if(tolower(answer2)%in%c("ja","j")){
-              newfile <- unlist(strsplit(basename(f_in),".",fixed=TRUE))[length(unlist(strsplit(basename(f_in),".",fixed=TRUE)))-1]
-              fileExtension <- unlist(strsplit(basename(f_in),".",fixed=TRUE))[length(unlist(strsplit(basename(f_in),".",fixed=TRUE)))]
+              newfile <- tools::file_path_sans_ext(basename(f_in))
+              fileExtension <- tools::file_ext(f_in)
               newfile <- paste0(dirname(f_in),"/",newfile,"_kopie.",fileExtension)
               n <- 1
               while(file.exists(newfile)){
-                newfile2 <- unlist(strsplit(basename(newfile),".",fixed=TRUE))[length(unlist(strsplit(basename(newfile),".",fixed=TRUE)))-1]
-                fileExtension <- unlist(strsplit(basename(newfile),".",fixed=TRUE))[length(unlist(strsplit(basename(newfile),".",fixed=TRUE)))]
+                newfile2 <- tools::file_path_sans_ext(basename(newfile))
+                fileExtension <- tools::file_ext(newfile)
                 newfile <- paste0(dirname(newfile),"/",newfile2,"_(",n,").",fileExtension)
                 n <- n+1
               }

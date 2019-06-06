@@ -353,7 +353,7 @@ IndivImportDataQ <- function(inFile, inFile_bw, multipleFiles=FALSE, nrMultipleF
   ##    inFile   ##
   ######################
   
-  curr_fileType <- unlist(strsplit(inFile,".",fixed=TRUE))[length(unlist(strsplit(inFile,".",fixed=TRUE)))]
+  curr_fileType <- tools::file_ext(inFile)
   if(curr_fileType=="gz"){
     curr_fileType <- substr(inFile,start=nchar(inFile)-5,stop=nchar(inFile))  
   }
@@ -411,7 +411,7 @@ IndivImportDataQ <- function(inFile, inFile_bw, multipleFiles=FALSE, nrMultipleF
   #########################
   ##    inFile_bw   ##
   #########################
-  curr_fileType <- unlist(strsplit(inFile_bw,".",fixed=TRUE))[length(unlist(strsplit(inFile_bw,".",fixed=TRUE)))]
+  curr_fileType <- tools::file_ext(inFile_bw)
   if(curr_fileType=="gz"){
     curr_fileType <- substr(inFile_bw,start=nchar(inFile_bw)-5,stop=nchar(inFile_bw))  
   }
