@@ -399,8 +399,8 @@ IndivImportDataQ <- function(inFile, inFile_bw, multipleFiles=FALSE, nrMultipleF
   
   if(q_gew!="gew1"){
     if("gew1"%in%names(dat)){
-      newname <- c("gew1_original","gew1_orig","gew1_alt","gew1_kreizbirnbaumhollastaudn")[which(!c("gew1_original","gew1_orig","gew1_alt","gew1_kreizbirnbaumhollastaudn")%in%names(dat))[1]]
-      setnames(dat,old="gew1",new=newname)
+      newname <- c("gew1original","gew1orig","gew1alt","gew1kreizbirnbaumhollastaudn")[which(!c("gew1original","gew1orig","gew1alt","gew1kreizbirnbaumhollastaudn")%in%names(dat))[1]]
+      setnames(dat, old = "gew1", new = newname)
       warning("\n'gew1' wurde umbenannt zu ",paste0("'",newname,"'"),"! \n")
     }
     setnames(dat,old=q_gew,new="gew1")
