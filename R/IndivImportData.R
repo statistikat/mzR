@@ -396,7 +396,12 @@ IndivImportDataQ <- function(inFile, inFile_bw, multipleFiles=FALSE, nrMultipleF
   if(!q_gew%in%names(dat)){
     stop("\nGewichtsvariable ",q_gew ," ist im Datensatz nicht vorhanden!\n")
   }
-  
+  if(any(grepl("gew1_",names(dat)))){
+    oldname <- grep("gew1_", names(dat), value = TRUE)
+    newname <- gsub("gew1_","gew1underscorekreizbirnbaumhollastaudn",oldname)
+    setnames(dat, old = oldname, new = newname)
+    warning("\n",paste0("'",oldname,"'",collapse=",")," wurde umbenannt zu ", paste0("'",newname,"'",collapse=","),"! \n")
+  }
   if(q_gew!="gew1"){
     if("gew1"%in%names(dat)){
       newname <- c("gew1original","gew1orig","gew1alt","gew1kreizbirnbaumhollastaudn")[which(!c("gew1original","gew1orig","gew1alt","gew1kreizbirnbaumhollastaudn")%in%names(dat))[1]]
@@ -405,8 +410,9 @@ IndivImportDataQ <- function(inFile, inFile_bw, multipleFiles=FALSE, nrMultipleF
     }
     setnames(dat,old=q_gew,new="gew1")
     warning("\n",paste0("'",q_gew,"'") ," wurde umbenannt zu 'gew1'!\n")
-    
   }
+
+  
   
   #########################
   ##    inFile_bw   ##
