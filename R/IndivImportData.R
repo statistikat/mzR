@@ -217,14 +217,14 @@ IndivImportData<- function(curr_inFile, curr_inFile_bw, prev_inFile=NULL, prev_i
     } ## Ende for-Schleife fuer Einlesen mehrerer Files
     
     ### neue data.table Version kann fill bei rbind nicht mehr fuer class labelled -> Problem abfangen     
-    if(!length(unique(sapply(indat,ncol)))==1){
-      cn <- unique(unlist(sapply(indat,colnames)))
-      cn_info <- unique(unlist(sapply(indat,function(z) cn[which(!cn%in%colnames(z))])))
-      indat <- lapply(indat,function(z)
-        if(any(cn_info%in%names(z))){
-          cn_info_sel <- names(z)[which(names(z)%in%cn_info)]
-          z[,(cn_info_sel):=lapply(.SD, unclass),.SDcols=cn_info_sel]
-        })
+    if (!length(unique(sapply(indat, ncol))) == 1) {
+      cn <- unique(unlist(sapply(indat, colnames)))
+      cn_info <- unique(unlist(sapply(indat, function(z) cn[which(!cn %in% colnames(z))])))
+      indat <- lapply(indat, function(z)
+        if(any(cn_info %in% names(z))){
+          cn_info_sel <- names(z)[which(names(z) %in% cn_info)]
+          z[ , (cn_info_sel) := lapply(.SD, unclass), .SDcols = cn_info_sel]
+        } else { z })
     }
     
     
@@ -244,14 +244,14 @@ IndivImportData<- function(curr_inFile, curr_inFile_bw, prev_inFile=NULL, prev_i
       rm(x);gc()
     }else{
       ### neue data.table Version kann fill bei rbind nicht mehr fuer class labelled -> Problem abfangen     
-      if(!length(unique(sapply(indat_prev,ncol)))==1){
-        cn <- unique(unlist(sapply(indat_prev,colnames)))
-        cn_info <- unique(unlist(sapply(indat_prev,function(z) cn[which(!cn%in%colnames(z))])))
-        indat_prev <- lapply(indat_prev,function(z)
-          if(any(cn_info%in%names(z))){
-            cn_info_sel <- names(z)[which(names(z)%in%cn_info)]
-            z[,(cn_info_sel):=lapply(.SD, unclass),.SDcols=cn_info_sel]
-          })
+      if (!length(unique(sapply(indat_prev, ncol))) == 1) {
+        cn <- unique(unlist(sapply(indat_prev, colnames)))
+        cn_info <- unique(unlist(sapply(indat_prev, function(z) cn[which(!cn %in% colnames(z))])))
+        indat_prev <- lapply(indat_prev, function(z)
+          if(any(cn_info %in% names(z))){
+            cn_info_sel <- names(z)[which(names(z) %in% cn_info)]
+            z[ , (cn_info_sel) := lapply(.SD, unclass), .SDcols = cn_info_sel]
+          } else { z })
       }
       x <- list()
       x[[length(x)+1]] <-  rbindlist(indat,fill=TRUE)
