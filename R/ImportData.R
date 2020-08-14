@@ -227,7 +227,10 @@ ImportDataQ <- function(
     dat <- dat[,whichVar,with=F]  
   }
   if(hh){
-    dat <- dat[bstell==0,]
+    if ("bstell" %in% names(dat))
+      dat <- dat[bstell==0,]
+    else
+      dat <- dat[bstell18==0,]
   }
   if(families){
     dat <- dat[xfstell==1,]
