@@ -19,7 +19,7 @@ vorhQuartaleUndPfade <- function(mz_intern) {
   ## alle moeglichen Jahre/Quartale herausfiltern
   nn <- tolower(list.files(p1,include.dirs =TRUE,recursive = TRUE))
   nn <- nn[grep("dg7.mz....q..sav$",nn)]
-  nn <- nn[which(!nchar(nn) > min(nchar(nn)))]
+  nn <- nn[which(nchar(nn) == 28)]
   nn <- unlist(lapply(strsplit(nn,"dg7.mz"),function(x)x[2]))
   nn <- unlist(lapply(strsplit(nn,".sav"),function(x)x[1]))
   
