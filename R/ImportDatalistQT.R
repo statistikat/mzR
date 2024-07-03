@@ -1,8 +1,5 @@
 mount_mz_ergebnisse <- function() {
-  b_mz <- mountSTAT::mountWinShare(
-    server = "DatenB", share = "B_MZ", mountpunkt = "mz", 
-    verbose = FALSE
-  )
+  b_mz <- sampSTAT::getFolder("mz")
   file.path(b_mz, "AKE Neu ab 2004", "06 Ergebnisse")
 }
 
@@ -49,7 +46,7 @@ mount_mz_ergebnisse <- function() {
 #' soll (default=c("asbper","ajahr","amonat")).
 #' @inheritParams ImportData
 #' @param mz_ergebnisse Pfad zu dem `06 Ergebnisse` Ordner in der STAT
-#'   Infrastruktur. Standardmäßig wird dieser mit `mountSTAT` generiert.
+#'   Infrastruktur. Standardmäßig wird dieser mit `mountSTAT` innerhalb von `sampSTAT` generiert.
 #' 
 #' @return Output ist eine Liste deren Elemente jeweils MZ-Daten enthalten 
 #' die die selbe Grundstruktur haben wie der Output aus der Funktion \link{ImportData}.

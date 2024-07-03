@@ -51,9 +51,8 @@ vorhQuartaleUndPfade <- function(mz_intern) {
 }
 
 mount_mz_intern <- function() {
-  mountSTAT::mountWinShare(server = "DatenB", share = "B_MZ2",
-                           mountpunkt = "mz_intern", verbose = FALSE,
-                           folder = "20_MZ/MZ_intern")
+  b_mz2 <- sampSTAT::getFolder("mz2")
+  file.path(b_mz2, "20_MZ","MZ_intern")
 }
 
 # Output ist eine Liste mit einem oder zwei Elementen, je nachdem ob comp_diff_lag angegeben wurde oder nicht.
@@ -95,7 +94,7 @@ mount_mz_intern <- function() {
 #' gerundet nach SPSS RND Logik (0.5 bwz. -0.5 wird dabei immer "weg von 0" gerundet). 
 #' Falls NULL, werden die Gewichte nicht gerundet.
 #' @param mz_intern Pfad zu dem `mz_intern` Ordner in der STAT Infrastruktur.
-#'   Standardmäßig wird dieser mit `mountSTAT` generiert.
+#'   Standardmäßig wird dieser mit `mountSTAT` innerhalb von `sampSTAT` generiert.
 #' @return Output ist eine Liste mit einem oder zwei Elementen, je nachdem ob
 #' \code{comp_diff_lag=NULL} oder nicht. Die Listenelemente sind Objekte der Klasse data.table.
 #' @seealso
@@ -126,9 +125,9 @@ mount_mz_intern <- function() {
 #' }
 #' 
 ImportData <- function(
-  year = NULL, quarter = NULL, comp_diff_lag = NULL, from = NULL, to = NULL, 
-  hh = FALSE, families = FALSE, whichVar = NULL, nbw = NULL, weightDecimals = 2, 
-  mz_intern = mount_mz_intern()
+    year = NULL, quarter = NULL, comp_diff_lag = NULL, from = NULL, to = NULL, 
+    hh = FALSE, families = FALSE, whichVar = NULL, nbw = NULL, weightDecimals = 2, 
+    mz_intern = mount_mz_intern()
 ) {
   jahr <- year
   quartal <- quarter
@@ -207,23 +206,33 @@ ImportData <- function(
 }
 
 ImportDataQ <- function(
-  j, q, comp_jahresgew = FALSE, whichVar = whichVar, hh = hh, families = 
-    families, nbw = nbw, weightDecimals = weightDecimals, mz_intern = mz_intern
+    j, q, comp_jahresgew = FALSE, whichVar = whichVar, hh = hh, families = 
+      families, nbw = nbw, weightDecimals = weightDecimals, mz_intern = mz_intern
 ) {   
   bstell <- xfstell <- asbhh <- NULL #Sonst kommt Fehlermeldung bei Paketbildung: no visible binding for global variable
   
   name_teil <- paste0(j,"q",q)
   dircurrb <- dircurr <- paste0(mz_intern, "/", j, "/", j, "q", q)
-  
-  ##DG7 einlesen
   sav_path <- paste0(dircurr,"/dg7.mz",name_teil,".sav")
   
+  ##DG7 einlesen
+  if(!file.exists(paste0(dircurr,"/dg7.mz",name_teil,".sav"))) {
+    
+    b_mz <- sampSTAT::getFolder("mz")
+    dircurr <- paste0(b_mz,  "/01 Datenmanagement/", j, "q", q,"/02 datenbest\U00E4nde")
+    sav_path <- paste0(dircurr,"/dg7.mz",name_teil,".sav")
+    if(file.exists(sav_path <- paste0(dircurr,"/dg7.mz",name_teil,".sav"))) {
+    warning("Fuer das Quartal ",q," in ",j," gab es noch keine Datenfreigabe!\n",
+            "Für UserInnen mit entsprechenden Zugriffsrechten werden jedoch die noch nicht freigegebenen Daten eingelesen.")
+    } 
+  }
   dat <- data.table(suppressWarnings(spss.get(
     sav_path, use.value.labels = FALSE, allow = FALSE,
     datevars = c("adatum", "adatumpers", "arefwo", "asendf2f", "wvertr", "bgeb", "bgebk", 
                  "boseit", "ckseit", "dseit", "hgefseit", "hseit", "jlwa")
   )))
   cat(dQuote(sav_path), "wurde eingelesen.\n")
+  
   if(!is.null(whichVar)){
     dat <- dat[,whichVar,with=F]  
   }
@@ -250,7 +259,7 @@ ImportDataQ <- function(
     cat(shQuote(bootpath), " wurde eingelesen.\n")    
     
     setkey(dat,asbhh)
-
+    
     if(hh | families){
       dat <- merge(dat,lfshrb,by=c("asbhh"),all.x=TRUE)
     }else{
@@ -282,8 +291,8 @@ ImportDataQ <- function(
 }
 
 ImportDataJQ <- function(
-  year, quarter = NULL, comp_diff_lag = NULL, hh = FALSE, families = FALSE, 
-  whichVar = NULL, nbw = NULL, weightDecimals = 2, mz_intern
+    year, quarter = NULL, comp_diff_lag = NULL, hh = FALSE, families = FALSE, 
+    whichVar = NULL, nbw = NULL, weightDecimals = 2, mz_intern
 ) {
   asbhh <- bstell <- xfstell <- NULL ## initialize to avoid warning
   
@@ -324,7 +333,11 @@ ImportDataJQ <- function(
   # jahr/quartal vorhanden
   if ( !is.null(quartal) ) {
     if ( !paste0(jahr,"q",quartal) %in% names(inp) ) {
+      if(!file.exists(paste0(sampSTAT::getFolder("mz"),
+                            "/01 Datenmanagement/", j, "q", q,"/02 datenbest\U00E4nde",
+                            "/dg7.mz",paste0(jahr,"q",quartal),".sav"))) {
       stop("fuer das Quartal ",quartal," in ",jahr," gibt es noch keine vollstaendigen Daten!\n")
+      }
     }
   } else {
     # 4 Quartale vorhanden
