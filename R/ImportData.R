@@ -221,7 +221,7 @@ ImportDataQ <- function(
     b_mz <- sampSTAT::getFolder("mz")
     dircurr <- paste0(b_mz,  "/01 Datenmanagement/", j, "q", q,"/02 datenbest\U00E4nde")
     sav_path <- paste0(dircurr,"/dg7.mz",name_teil,".sav")
-    if(file.exists(sav_path <- paste0(dircurr,"/dg7.mz",name_teil,".sav"))) {
+    if(file.exists(sav_path)) {
     warning("Fuer das Quartal ",q," in ",j," gab es noch keine Datenfreigabe!\n",
             "Für UserInnen mit entsprechenden Zugriffsrechten werden jedoch die noch nicht freigegebenen Daten eingelesen.")
     } 
