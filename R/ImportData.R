@@ -334,7 +334,7 @@ ImportDataJQ <- function(
   if ( !is.null(quartal) ) {
     if ( !paste0(jahr,"q",quartal) %in% names(inp) ) {
       if(!file.exists(paste0(sampSTAT::getFolder("mz"),
-                            "/01 Datenmanagement/", j, "q", q,"/02 datenbest\U00E4nde",
+                            "/01 Datenmanagement/", jahr, "q", quartal,"/02 datenbest\U00E4nde",
                             "/dg7.mz",paste0(jahr,"q",quartal),".sav"))) {
       stop("fuer das Quartal ",quartal," in ",jahr," gibt es noch keine vollstaendigen Daten!\n")
       }
