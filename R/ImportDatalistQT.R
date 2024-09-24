@@ -1,5 +1,12 @@
+if(!requireNamespace("mountSTAT", quietly = TRUE)){ # TRUE|FALSE) 
+  stop("This function can only be used internally at Statistics Austria.\n")
+}
+
+# getFolder()-Funktion einlesen
+source("http://rstudiodevweb.statistik.local/mz/getFolder.R")
+
 mount_mz_ergebnisse <- function() {
-  b_mz <- sampSTAT::getFolder("mz")
+  b_mz <- getFolder("mz")
   file.path(b_mz, "AKE Neu ab 2004", "06 Ergebnisse")
 }
 
