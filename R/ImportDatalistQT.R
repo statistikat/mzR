@@ -1,5 +1,6 @@
+
 mount_mz_ergebnisse <- function() {
-  b_mz <- sampSTAT::getFolder("mz")
+  b_mz <- getFolder("mz")
   file.path(b_mz, "AKE Neu ab 2004", "06 Ergebnisse")
 }
 
@@ -73,6 +74,13 @@ ImportDataListQT <- function(
   mergeBy = c("asbper", "ajahr", "amonat"), mz_intern = mount_mz_intern(),
   mz_ergebnisse = mount_mz_ergebnisse()
 ) {
+  if(!requireNamespace("mountSTAT", quietly = TRUE)){ # TRUE|FALSE) 
+    stop("This function can only be used internally at Statistics Austria.\n")
+  }
+  
+  # getFolder()-Funktion einlesen
+  source("http://rstudiodevweb.statistik.local/mz/getFolder.R")
+  
   if(ImportAndMerge && is.null(curr_inFile)){
     if(file.exists(paste0(mz_ergebnisse, "/Quartalsberichte fertig/Quartalsbericht ", timeInstant[1],
                           " Q", timeInstant[2]))){

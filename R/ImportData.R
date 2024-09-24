@@ -1,4 +1,3 @@
-
 # Helper Functions
 # Die RND Funktion in SPSS rundet bei 5 immer weg von 0 (also bei positiven Zahlen immer auf, bei negativen Zahlen immer ab)
 round.spss = function(x, digits=0) {
@@ -51,7 +50,7 @@ vorhQuartaleUndPfade <- function(mz_intern) {
 }
 
 mount_mz_intern <- function() {
-  b_mz2 <- sampSTAT::getFolder("mz2")
+  b_mz2 <- getFolder("mz2")
   file.path(b_mz2, "20_MZ","MZ_intern")
 }
 
@@ -129,6 +128,15 @@ ImportData <- function(
     hh = FALSE, families = FALSE, whichVar = NULL, nbw = NULL, weightDecimals = 2, 
     mz_intern = mount_mz_intern()
 ) {
+  
+  if(!requireNamespace("mountSTAT", quietly = TRUE)){ # TRUE|FALSE) 
+    stop("This function can only be used internally at Statistics Austria.\n")
+  }
+  
+  # getFolder()-Funktion einlesen
+  source("http://rstudiodevweb.statistik.local/mz/getFolder.R")
+  
+  
   jahr <- year
   quartal <- quarter
   
@@ -218,7 +226,7 @@ ImportDataQ <- function(
   ##DG7 einlesen
   if(!file.exists(paste0(dircurr,"/dg7.mz",name_teil,".sav"))) {
     
-    b_mz <- sampSTAT::getFolder("mz")
+    b_mz <- getFolder("mz")
     dircurr <- paste0(b_mz,  "/01 Datenmanagement/", j, "q", q,"/02 datenbest\U00E4nde")
     sav_path <- paste0(dircurr,"/dg7.mz",name_teil,".sav")
     if(file.exists(sav_path)) {
@@ -333,7 +341,7 @@ ImportDataJQ <- function(
   # jahr/quartal vorhanden
   if ( !is.null(quartal) ) {
     if ( !paste0(jahr,"q",quartal) %in% names(inp) ) {
-      if(!file.exists(paste0(sampSTAT::getFolder("mz"),
+      if(!file.exists(paste0(getFolder("mz"),
                             "/01 Datenmanagement/", jahr, "q", quartal,"/02 datenbest\U00E4nde",
                             "/dg7.mz",paste0(jahr,"q",quartal),".sav"))) {
       stop("fuer das Quartal ",quartal," in ",jahr," gibt es noch keine vollstaendigen Daten!\n")
