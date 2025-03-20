@@ -50,6 +50,8 @@ vorhQuartaleUndPfade <- function(mz_intern) {
 }
 
 mount_mz_intern <- function() {
+  # getFolder()-Funktion einlesen
+  source("http://rstudiodevweb.statistik.local/mz/getFolder.R")
   b_mz2 <- getFolder("mz2")
   file.path(b_mz2, "20_MZ","MZ_intern")
 }

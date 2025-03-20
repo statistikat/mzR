@@ -1,5 +1,7 @@
 
 mount_mz_ergebnisse <- function() {
+  # getFolder()-Funktion einlesen
+  source("http://rstudiodevweb.statistik.local/mz/getFolder.R")
   b_mz <- getFolder("mz")
   file.path(b_mz, "AKE Neu ab 2004", "06 Ergebnisse")
 }
