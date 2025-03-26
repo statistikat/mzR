@@ -290,6 +290,8 @@ ComputeNum <- function(x, TFstring = NULL, each = NULL, var, negativeZero = TRUE
                                                 negativeZero = negativeZero, replicates = replicates)
     
   }
+  res <- res[sapply(res,function(x)!is.na(x$sd))]
+  attributes(res) <- c(attributes(res)[1],attributes(res)[-1])
   class(res) <- "mzR"
   attr(res,"each") <- each
   attr(res,"thousands_separator") <- thousands_separator

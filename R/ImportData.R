@@ -136,8 +136,7 @@ ImportData <- function(
   }
   
   # getFolder()-Funktion einlesen
-  source("http://rstudiodevweb.statistik.local/mz/getFolder.R")
-  
+  # source("http://rstudiodevweb.statistik.local/mz/getFolder.R")
   
   jahr <- year
   quartal <- quarter

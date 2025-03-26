@@ -81,7 +81,7 @@ ImportDataListQT <- function(
   }
   
   # getFolder()-Funktion einlesen
-  source("http://rstudiodevweb.statistik.local/mz/getFolder.R")
+  # source("http://rstudiodevweb.statistik.local/mz/getFolder.R")
   
   if(ImportAndMerge && is.null(curr_inFile)){
     if(file.exists(paste0(mz_ergebnisse, "/Quartalsberichte fertig/Quartalsbericht ", timeInstant[1],
