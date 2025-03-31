@@ -249,7 +249,7 @@ as.data.frame.mzR <- function(x, ...) {
     sd = lapply(x, function(x) x$sd) %>% as.numeric,
     cv = lapply(x, function(x) x$cv) %>% as.numeric,
     cil = lapply(x, function(x) x$cil) %>% as.numeric,
-    ciu = lapply(x, function(x) x$cil) %>% as.numeric
+    ciu = lapply(x, function(x) x$ciu) %>% as.numeric
   )
   
   if("noeachvar" %in% names(x))
