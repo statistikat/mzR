@@ -47,6 +47,37 @@ GroupSizeX <- function(x, TFstring, replicates){
     mzRComponent2(date, est, est2, estb, estb2, datePrev, returnBR = replicates)
   }
 }
+GroupSizeSampleX <- function(x, TFstring){
+  if(length(x)==1){
+    date <- gsub("dat_","",names(x))
+    x <- x[[1]]
+    y <- NULL
+  }else{
+    date <- gsub("dat_","",names(x)[1])
+    datePrev <- gsub("dat_","",names(x)[2])
+    y <- x[[2]]
+    x <- x[[1]]
+  }
+  if(is.null(y)){
+    if(is.null(TFstring)){
+      return(data.table(date = date, n = x[,.N]))
+    }else{
+      return(data.table(date = date, n = x[eval(parse(text=TFstring)),.N]))
+      
+    }
+  }else{
+    if(is.null(TFstring)){
+      return(data.table(date = c(date, datePrev),
+                        n = c(x[,.N],
+                              y[,.N])))
+    }else{
+      return(data.table(date = c(date, datePrev),
+                        n = c(x[eval(parse(text=TFstring)),.N],
+                              y[eval(parse(text=TFstring)),.N])))  
+    }
+    
+  }
+}
 GroupRateX <- function(x, TFstring, TFstring2 = NULL, replicates){
   gew1 <- sd <- NULL
   if(length(x)==1){
@@ -112,10 +143,11 @@ GroupRateX <- function(x, TFstring, TFstring2 = NULL, replicates){
 #' @export
 #' @rdname GroupSize
 GroupRate <- function(x, TFstring, TFstring2 = NULL, each = NULL, byeach = TRUE, 
-                      thousands_separator = TRUE, digits = 2, replicates = FALSE) {
+                      thousands_separator = TRUE, digits = 2, replicates = FALSE,
+                      add_sample_size = FALSE) {
   GroupX(x = x, TFstring = TFstring, TFstring2 = TFstring2, each = each, byeach = byeach, 
          thousands_separator = thousands_separator, digits = digits, replicates = replicates, 
-         method = "GroupRate")
+         method = "GroupRate", add_sample_size = add_sample_size)
 }
 
 
@@ -166,7 +198,7 @@ GroupRate <- function(x, TFstring, TFstring2 = NULL, each = NULL, byeach = TRUE,
 #' GroupRate(mzTestData,TFstring="xerwstat==2&balt>=15&balt<=74",
 #'           TFstring2="xerwstat%in%c(1,2)&balt>=15&balt<=74")
 #' # Oesterreichische Bevoelkerung nach Bundesland und Geschlecht
-#' GroupSize(mzTestData,TFstring=NULL,each="xnuts2+bsex")
+#' GroupSize(mzTestData,TFstring=NULL,each="xnuts2+bsex", add_sample_size = TRUE)
 #' 
 #' 
 #' \dontrun{
@@ -217,12 +249,14 @@ GroupRate <- function(x, TFstring, TFstring2 = NULL, each = NULL, byeach = TRUE,
 #' }
 #' 
 #' @export GroupSize
-GroupSize <- function(x,TFstring=NULL,each=NULL,thousands_separator=TRUE,digits=2, replicates = FALSE){
+GroupSize <- function(x,TFstring=NULL,each=NULL,thousands_separator=TRUE,digits=2,
+                      replicates = FALSE, add_sample_size = FALSE){
   GroupX(x = x, TFstring = TFstring, each = each, thousands_separator = thousands_separator,
-         digits = digits, replicates = replicates, method = "GroupSize")
+         digits = digits, replicates = replicates, method = "GroupSize",
+         add_sample_size =add_sample_size)
 }  
 GroupX <- function(x,TFstring,TFstring2=NULL,each=NULL,byeach=TRUE,thousands_separator=TRUE,digits=2,
-                   replicates, method){
+                   replicates, method, add_sample_size){
   if(is.null(TFstring)){
     TFstring <- TRUE  
   }
@@ -231,6 +265,16 @@ GroupX <- function(x,TFstring,TFstring2=NULL,each=NULL,byeach=TRUE,thousands_sep
       res <- GroupSizeX(x,TFstring, replicates)
     else
       res <- GroupRateX(x,TFstring,TFstring2, replicates)
+    if(add_sample_size){
+      sample_size <- GroupSizeSampleX(x,TFstring)
+      if(length(sample_size$n)>1){
+        res <- c(res,n = sample_size$n[1], nPrev = sample_size$n[2])  
+      }else{
+        res <- c(res,n = sample_size$n[1])
+      }
+      
+    }
+    
   } else{
     res <- list()
     if(length(grep("\\+",each))>0){
@@ -256,6 +300,14 @@ GroupX <- function(x,TFstring,TFstring2=NULL,each=NULL,byeach=TRUE,thousands_sep
           TFstringcur2 <- TFstring
         }
         res[[paste0(eachvar,"_",l)]] <- GroupRateX(x,TFstringcur,TFstringcur2, replicates)
+      }
+      if(add_sample_size){
+        samp_size <- GroupSizeSampleX(x,TFstringcur)
+        res[[paste0(eachvar,"_",l)]] <- c(res[[paste0(eachvar,"_",l)]], samp_size$n)
+        if(length(samp_size$n)==1)
+          names(res[[paste0(eachvar,"_",l)]])[length(names(res[[paste0(eachvar,"_",l)]]))] <- "n"
+        else
+          names(res[[paste0(eachvar,"_",l)]])[c(-1:0)+length(names(res[[paste0(eachvar,"_",l)]]))] <- c("n","nPrev")
       }
       res[[paste0(eachvar,"_",l)]][["each"]] <- head(x[[1]][eval(parse(text=TFstringcur)),eachv,with=FALSE],1)
     }

@@ -45,66 +45,79 @@ mzRComponent2 <- function(date, est, est2, estb, estb2, datePrev, returnBR = FAL
 # Statt "Ver\u00E4nderung" doch besser "Change" in Anzeige
 CompFehlerX <- function(x,each=NULL,thousands_separator=TRUE,digits=2){  
   if(is.null(each)){
-    
+    nname <- nPrevname <- NULL
+    if("n"%in%names(x)){
+      nname <- "n"
+    }
+    if("nPrev"%in%names(x)){
+      nPrevname <- "nPrev"
+    }
     if(any(grepl("Prev",names(x)))){
       print_obj <- as.data.frame(rbind(
-        unlist(x[c("est","sd", "cv", "cil","ciu")] ) ,
-        unlist(x[c("estPrev","sdPrev", "cvPrev", "cilPrev","ciuPrev")]),
-        unlist(x[c("absChange","sdAbsChange","cvAbsChange","cilAbsChange","ciuAbsChange")]),
-        unlist(x[c("relChange","sdRelChange","cvRelChange","cilRelChange","ciuRelChange")])
+        unlist(x[c("est","sd", "cv", "cil","ciu", nname)] ) ,
+        unlist(x[c("estPrev","sdPrev", "cvPrev", "cilPrev","ciuPrev", nPrevname)]),
+        c(unlist(x[c("absChange","sdAbsChange","cvAbsChange","cilAbsChange","ciuAbsChange")]),rep(NA, length(nPrevname))),
+        c(unlist(x[c("relChange","sdRelChange","cvRelChange","cilRelChange","ciuRelChange")]),rep(NA, length(nPrevname)))
       ))
       print_obj <- round(print_obj,digits=digits)
+      
       if(thousands_separator){
         print_obj <- format(print_obj, big.mark = ",")
       }
       row.names(print_obj) <- c(x[["date"]],x[["datePrev"]],"Absolute change","Relative change")
-      colnames(print_obj) <- c("est","sd", "cv",paste(names(x[c("cil","ciu")]),unlist(lapply(x[c("cil","ciu")],names)),sep="_"))
+      colnames(print_obj)[1:5] <- c("est","sd", "cv",paste(names(x[c("cil","ciu")]),unlist(lapply(x[c("cil","ciu")],names)),sep="_"))
     }else{
-      print_obj <- as.data.frame(x[c("est","sd", "cv", "cil","ciu")])
+      print_obj <- as.data.frame(x[c("est","sd", "cv", "cil","ciu", nname)])
       print_obj <- round(print_obj,digits=digits)
       if(thousands_separator){
         print_obj <- format(print_obj, big.mark = ",")
       }
       row.names(print_obj) <- x[["date"]]
-      colnames(print_obj) <- c("est","sd", "cv",paste(names(x[c("cil","ciu")]),unlist(lapply(x[c("cil","ciu")],names)),sep="_"))
+      colnames(print_obj)[1:5] <- c("est","sd", "cv",paste(names(x[c("cil","ciu")]),unlist(lapply(x[c("cil","ciu")],names)),sep="_"))
     }
     
     print(print_obj)  
     
   }else{
-    
+    nname <- nPrevname <- NULL
+    if("n"%in%names(x[[1]])){
+      nname <- "n"
+    }
+    if("nPrev"%in%names(x[[1]])){
+      nPrevname <- "nPrev"
+    }
     if(any(grepl("Prev",names(x[[1]])))){
       print_obj_list <- list()
       for(i in 1:length(x)){
       print_obj <- as.data.frame(rbind(
-        unlist(x[[i]][c("est","sd", "cv", "cil","ciu")] ) ,
-        unlist(x[[i]][c("estPrev","sdPrev", "cvPrev", "cilPrev","ciuPrev")]),
-        unlist(x[[i]][c("absChange","sdAbsChange","cvAbsChange","cilAbsChange","ciuAbsChange")]),
-        unlist(x[[i]][c("relChange","sdRelChange","cvRelChange","cilRelChange","ciuRelChange")])
+        unlist(x[[i]][c("est","sd", "cv", "cil","ciu",nname)]) ,
+        unlist(x[[i]][c("estPrev","sdPrev", "cvPrev", "cilPrev","ciuPrev",nPrevname)]),
+        c(unlist(x[[i]][c("absChange","sdAbsChange","cvAbsChange","cilAbsChange","ciuAbsChange")]),ifelse(is.null(nname),NULL,NA)),
+        c(unlist(x[[i]][c("relChange","sdRelChange","cvRelChange","cilRelChange","ciuRelChange")]),ifelse(is.null(nname),NULL,NA))
       ))
       print_obj <- round(print_obj,digits=digits)
       if(thousands_separator){
         print_obj <- format(print_obj, big.mark = ",")
       }
       row.names(print_obj) <- c(x[[i]][["date"]],x[[i]][["datePrev"]],"Absolute change","Relative change")
-      colnames(print_obj) <- c("est","sd", "cv",paste(names(x[[i]][c("cil","ciu")]),unlist(lapply(x[[i]][c("cil","ciu")],names)),sep="_"))
+      colnames(print_obj)[1:5] <- c("est","sd", "cv",paste(names(x[[i]][c("cil","ciu")]),unlist(lapply(x[[i]][c("cil","ciu")],names)),sep="_"))
       print_obj_list[[length(print_obj_list)+1]] <- print_obj
       names(print_obj_list)[i] <- names(x)[i]
       
       }
       #do.call(rbind,rbind(print_obj_list,rep("",5)))      
       }else{      
-      print_obj_list <- list()
-      for(i in 1:length(x)){
-      print_obj<- as.data.frame(x[[i]][c("est","sd", "cv", "cil","ciu")])
-      print_obj <- round(print_obj,digits=digits)
-      if(thousands_separator){
-        print_obj <- format(print_obj, big.mark = ",")
-      }
-      row.names(print_obj) <- x[[i]][["date"]]
-      colnames(print_obj) <- c("est","sd", "cv",paste(names(x[[i]][c("cil","ciu")]),unlist(lapply(x[[i]][c("cil","ciu")],names)),sep="_"))
-      print_obj_list[[length(print_obj_list)+1]] <- print_obj
-      names(print_obj_list)[i] <- names(x)[i]
+        print_obj_list <- list()
+        for(i in 1:length(x)){
+          print_obj<- as.data.frame(x[[i]][c("est","sd", "cv", "cil","ciu",nname)])
+          print_obj <- round(print_obj,digits=digits)
+          if(thousands_separator){
+            print_obj <- format(print_obj, big.mark = ",")
+          }
+          row.names(print_obj) <- x[[i]][["date"]]
+          colnames(print_obj)[1:5] <- c("est","sd", "cv",paste(names(x[[i]][c("cil","ciu")]),unlist(lapply(x[[i]][c("cil","ciu")],names)),sep="_"))
+          print_obj_list[[length(print_obj_list)+1]] <- print_obj
+          names(print_obj_list)[i] <- names(x)[i]
       }
 #       cat(x[[1]][["date"]])
 #       do.call(rbind,print_obj_list)
@@ -243,7 +256,6 @@ plot.mzR <- function(x, ...) {
 as.data.frame.mzR <- function(x, ...) {
   if ("cil" %in% names(x))
     x <- list(noeachvar = x)
-  
   dat <- data.frame(
     est = lapply(x, function(x) x$est) %>% as.numeric,
     sd = lapply(x, function(x) x$sd) %>% as.numeric,
@@ -251,11 +263,23 @@ as.data.frame.mzR <- function(x, ...) {
     cil = lapply(x, function(x) x$cil) %>% as.numeric,
     ciu = lapply(x, function(x) x$ciu) %>% as.numeric
   )
-  
+  if("n"%in%names(x[[1]])){
+    dat$n <- lapply(x, function(x)x$n) %>% as.numeric
+  }  
   if("noeachvar" %in% names(x))
     return(dat)
-  
-  nms <- strsplit(names(x), "_")
+  nms <- names(x)
+  indVar <- lapply(nms,function(x)gregexpr("_",x)[[1]])
+  # fix problem with variables that contain one or multiple _
+  if(any(sapply(indVar,length)>1)){
+    for(i in seq_along(nms)){
+      pos <- tail(indVar[[i]],1)
+      nms[i] <- paste0(substring(nms[i],1,pos-1),"§",substring(nms[i],pos+1))
+    }
+    nms <- strsplit(nms, "§")
+  }else{
+    nms <- strsplit(nms, "_")
+  }
   nms1 <- nms[[1]]
   factors <- nms1[1:(length(nms1)-1)]
   id <- lapply(nms, function(el){ el[[length(el)]]}) %>% as.character()
