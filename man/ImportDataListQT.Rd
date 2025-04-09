@@ -5,10 +5,18 @@
 \title{Sehr spezifische Funktion die MZ-Daten einliest um damit in weiterer Folge Tabellen im
 MZ-Quartalsbericht-Format zu erstellen (hausintern).}
 \usage{
-ImportDataListQT(timeInstant, nbw = NULL, whichVar = NULL,
-  weightDecimals = 2, ImportAndMerge = TRUE, curr_inFile = NULL,
-  prev_inFile = NULL, mergeBy = c("asbper", "ajahr", "amonat"),
-  mz_intern = mount_mz_intern(), mz_ergebnisse = mount_mz_ergebnisse())
+ImportDataListQT(
+  timeInstant,
+  nbw = NULL,
+  whichVar = NULL,
+  weightDecimals = 2,
+  ImportAndMerge = TRUE,
+  curr_inFile = NULL,
+  prev_inFile = NULL,
+  mergeBy = c("asbper", "ajahr", "amonat"),
+  mz_intern = mount_mz_intern(),
+  mz_ergebnisse = mount_mz_ergebnisse()
+)
 }
 \arguments{
 \item{timeInstant}{numerischer Vektor mit 2 Elementen: c(jahr, quartal).
@@ -43,10 +51,10 @@ Files vom Typ .sav, .csv und .csv.gz.}
 soll (default=c("asbper","ajahr","amonat")).}
 
 \item{mz_intern}{Pfad zu dem \code{mz_intern} Ordner in der STAT Infrastruktur.
-Standardmäßig wird dieser mit \code{mountSTAT} generiert.}
+Standardmäßig wird dieser mit \code{mountSTAT} innerhalb von \code{sampSTAT} generiert.}
 
-\item{mz_ergebnisse}{Pfad zu dem \code{06 Ergebnisse} Ordner in der STAT
-Infrastruktur. Standardmäßig wird dieser mit \code{mountSTAT} generiert.}
+\item{mz_ergebnisse}{Pfad zu dem \verb{06 Ergebnisse} Ordner in der STAT
+Infrastruktur. Standardmäßig wird dieser mit \code{mountSTAT} innerhalb von \code{sampSTAT} generiert.}
 }
 \value{
 Output ist eine Liste deren Elemente jeweils MZ-Daten enthalten

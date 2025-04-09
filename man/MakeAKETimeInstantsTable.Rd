@@ -5,9 +5,20 @@
 \title{Sehr spezifische Funktion zur Erstellung von Tabellen im
 MZ-Quartalsbericht-Format basierend auf MZ-Quartalsdaten die automatisch eingelesen werden.}
 \usage{
-MakeAKETimeInstantsTable(col, row = NULL, timeInstant, nbw = NULL,
-  lim1 = Inf, markLeft1 = "(", markRight1 = ")", markValue1 = NULL,
-  lim2 = Inf, markLeft2 = "(", markRight2 = ")", markValue2 = "x")
+MakeAKETimeInstantsTable(
+  col,
+  row = NULL,
+  timeInstant,
+  nbw = NULL,
+  lim1 = Inf,
+  markLeft1 = "(",
+  markRight1 = ")",
+  markValue1 = NULL,
+  lim2 = Inf,
+  markLeft2 = "(",
+  markRight2 = ")",
+  markValue2 = "x"
+)
 }
 \arguments{
 \item{col}{Listenobjekt um Spalten zu definieren, siehe Details.}

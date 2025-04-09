@@ -4,11 +4,24 @@
 \alias{FillExcelTemplate}
 \title{Funktion befuellt ein Excel Template.}
 \usage{
-FillExcelTemplate(tab1, tab2 = NULL, startingPoints, nrEmptyRows,
-  inheritTemplateColNr = 1, customColNr = NULL, customCol = NULL,
-  customCellList = NULL, f_in, sheet = 1, prefixTSN = "_",
-  removeTemplateSheet = FALSE, removeAllTemplates = FALSE,
-  interactive = TRUE, showFinalTab = FALSE, showSplitTab = FALSE)
+FillExcelTemplate(
+  tab1,
+  tab2 = NULL,
+  startingPoints,
+  nrEmptyRows,
+  inheritTemplateColNr = 1,
+  customColNr = NULL,
+  customCol = NULL,
+  customCellList = NULL,
+  f_in,
+  sheet = 1,
+  prefixTSN = "_",
+  removeTemplateSheet = FALSE,
+  removeAllTemplates = FALSE,
+  interactive = TRUE,
+  showFinalTab = FALSE,
+  showSplitTab = FALSE
+)
 }
 \arguments{
 \item{tab1}{eine mit \code{MakeTable()} bzw.

@@ -6,14 +6,38 @@
 \alias{Total}
 \title{Schaetz- und Fehlerrechnungsfunktionen fuer numerische Variablen.}
 \usage{
-Median(x, TFstring = NULL, each = NULL, var, negativeZero = TRUE,
-  thousands_separator = TRUE, digits = 2, replicates = FALSE)
+Median(
+  x,
+  TFstring = NULL,
+  each = NULL,
+  var,
+  negativeZero = TRUE,
+  thousands_separator = TRUE,
+  digits = 2,
+  replicates = FALSE
+)
 
-Mean(x, TFstring = NULL, each = NULL, var, negativeZero = TRUE,
-  thousands_separator = TRUE, digits = 2, replicates = FALSE)
+Mean(
+  x,
+  TFstring = NULL,
+  each = NULL,
+  var,
+  negativeZero = TRUE,
+  thousands_separator = TRUE,
+  digits = 2,
+  replicates = FALSE
+)
 
-Total(x, TFstring = NULL, each = NULL, var, negativeZero = TRUE,
-  thousands_separator = TRUE, digits = 2, replicates = FALSE)
+Total(
+  x,
+  TFstring = NULL,
+  each = NULL,
+  var,
+  negativeZero = TRUE,
+  thousands_separator = TRUE,
+  digits = 2,
+  replicates = FALSE
+)
 }
 \arguments{
 \item{x}{MZ Daten - Output von Funktion \link{ImportData}.}
@@ -49,19 +73,19 @@ und die zugehoerigen Fehler.
 \details{
 Wiedergegeben wird der Schaetzer \code{est}, der Stichprobenfehler
 \code{sd}, der Variationskoeffizient \code{cv} und die untere/obere Grenze
-des 95\% Konfidenzintervalls \code{cil_2.5\%}/\code{ciu_97.5\%}.
+des 95\\% Konfidenzintervalls \code{cil_2.5\%}/\code{ciu_97.5\%}.
 Die Fehler werden mit Hilfe von Replikationsgewichten aus einem Bootstrapverfahren
 berechnet, d.h. \code{sd} entspricht der Standardabweichung der mit den Bootstrapgewichten
 berechneten Schaetzwerte, \code{cil_2.5\%} und \code{ciu_97.5\%} sind die
-entsprechenden 2.5\% und 97.5\% Quantile und \code{cv=sd/est}.
+entsprechenden 2.5\\% und 97.5\\% Quantile und \code{cv=sd/est}.
 }
 \section{Functions}{
 \itemize{
-\item \code{Median}: Median. Robuste alternative zu \code{Mean}
+\item \code{Median()}: Median. Robuste alternative zu \code{Mean}
 
-\item \code{Mean}: Arithmetisches Mittel
+\item \code{Mean()}: Arithmetisches Mittel
+
 }}
-
 \examples{
 # Daten laden (oder Daten einlesen mit ImportData() bzw. IndivImportData())
 data(mzTestData)

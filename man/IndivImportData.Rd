@@ -4,10 +4,18 @@
 \alias{IndivImportData}
 \title{Mikrozensus-Files und zugehoerige Bootstrapgewichte einlesen.}
 \usage{
-IndivImportData(curr_inFile, curr_inFile_bw, prev_inFile = NULL,
-  prev_inFile_bw = NULL, whichVar = NULL, mergeBy = "asbhh",
-  nbw = NULL, bwNames = NULL, weightName = "gew1",
-  weightDecimals = 2)
+IndivImportData(
+  curr_inFile,
+  curr_inFile_bw,
+  prev_inFile = NULL,
+  prev_inFile_bw = NULL,
+  whichVar = NULL,
+  mergeBy = "asbhh",
+  nbw = NULL,
+  bwNames = NULL,
+  weightName = "gew1",
+  weightDecimals = 2
+)
 }
 \arguments{
 \item{curr_inFile}{Character oder Character Vektor mit Pfad(en) der

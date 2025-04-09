@@ -4,10 +4,19 @@
 \alias{ImportData}
 \title{Mikrozensus-Files und zugehoerige Bootstrapgewichte einlesen (hausintern).}
 \usage{
-ImportData(year = NULL, quarter = NULL, comp_diff_lag = NULL,
-  from = NULL, to = NULL, hh = FALSE, families = FALSE,
-  whichVar = NULL, nbw = NULL, weightDecimals = 2,
-  mz_intern = mount_mz_intern())
+ImportData(
+  year = NULL,
+  quarter = NULL,
+  comp_diff_lag = NULL,
+  from = NULL,
+  to = NULL,
+  hh = FALSE,
+  families = FALSE,
+  whichVar = NULL,
+  nbw = NULL,
+  weightDecimals = 2,
+  mz_intern = mount_mz_intern()
+)
 }
 \arguments{
 \item{year}{Numerischer Wert (Jahr).}
@@ -49,7 +58,7 @@ gerundet nach SPSS RND Logik (0.5 bwz. -0.5 wird dabei immer "weg von 0" gerunde
 Falls NULL, werden die Gewichte nicht gerundet.}
 
 \item{mz_intern}{Pfad zu dem \code{mz_intern} Ordner in der STAT Infrastruktur.
-Standardmäßig wird dieser mit \code{mountSTAT} generiert.}
+Standardmäßig wird dieser mit \code{mountSTAT} innerhalb von \code{sampSTAT} generiert.}
 }
 \value{
 Output ist eine Liste mit einem oder zwei Elementen, je nachdem ob

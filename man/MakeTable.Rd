@@ -4,10 +4,24 @@
 \alias{MakeTable}
 \title{Funktion zur Erstellung von Tabellen in Matrix-Form.}
 \usage{
-MakeTable(dat, col, row = NULL, block = NULL, estimator = "est",
-  error = "cv", lim1 = Inf, markLeft1 = "(", markRight1 = ")",
-  markValue1 = NULL, lim2 = Inf, markLeft2 = "(", markRight2 = ")",
-  markValue2 = "x", rowPriority = TRUE, returnCommands = FALSE)
+MakeTable(
+  dat,
+  col,
+  row = NULL,
+  block = NULL,
+  estimator = "est",
+  error = "cv",
+  lim1 = Inf,
+  markLeft1 = "(",
+  markRight1 = ")",
+  markValue1 = NULL,
+  lim2 = Inf,
+  markLeft2 = "(",
+  markRight2 = ")",
+  markValue2 = "x",
+  rowPriority = TRUE,
+  returnCommands = FALSE
+)
 }
 \arguments{
 \item{dat}{MZ Daten - Output von Funktion \link{ImportData}.}

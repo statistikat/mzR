@@ -5,9 +5,20 @@
 \title{Sehr spezifische Funktion zur Erstellung von Tabellen im
 MZ-Quartalsbericht-Format.}
 \usage{
-MakeQT(datalist, col, row = NULL, timeInstant, lim1 = Inf,
-  markLeft1 = "(", markRight1 = ")", markValue1 = NULL, lim2 = Inf,
-  markLeft2 = "(", markRight2 = ")", markValue2 = "x")
+MakeQT(
+  datalist,
+  col,
+  row = NULL,
+  timeInstant,
+  lim1 = Inf,
+  markLeft1 = "(",
+  markRight1 = ")",
+  markValue1 = NULL,
+  lim2 = Inf,
+  markLeft2 = "(",
+  markRight2 = ")",
+  markValue2 = "x"
+)
 }
 \arguments{
 \item{datalist}{Output-Objekt der Funktion ImportDataListQT()}

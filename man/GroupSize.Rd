@@ -5,11 +5,27 @@
 \alias{GroupSize}
 \title{Schaetz- und Fehlerrechnungsfunktionen.}
 \usage{
-GroupRate(x, TFstring, TFstring2 = NULL, each = NULL, byeach = TRUE,
-  thousands_separator = TRUE, digits = 2, replicates = FALSE)
+GroupRate(
+  x,
+  TFstring,
+  TFstring2 = NULL,
+  each = NULL,
+  byeach = TRUE,
+  thousands_separator = TRUE,
+  digits = 2,
+  replicates = FALSE,
+  add_sample_size = FALSE
+)
 
-GroupSize(x, TFstring = NULL, each = NULL,
-  thousands_separator = TRUE, digits = 2, replicates = FALSE)
+GroupSize(
+  x,
+  TFstring = NULL,
+  each = NULL,
+  thousands_separator = TRUE,
+  digits = 2,
+  replicates = FALSE,
+  add_sample_size = FALSE
+)
 }
 \arguments{
 \item{x}{MZ Daten - Output von Funktion \link{ImportData}.}
@@ -39,6 +55,8 @@ ist 2.}
 \item{replicates}{Fürge einen Vektor aus Schätzwerten zum Output hinzu? Die Anzahl der Schätzwerte
 pro Gruppe in \code{each} entspricht der Anzahl der Bootstrapreplikate (typischerweise 500).
 Siehe auch \link{getReplicates}.}
+
+\item{add_sample_size}{Logical: ob Stichprobengroesse der jeweiligen Gruppe auch ausgegeben werden soll.}
 }
 \value{
 Output ist ein Objekt der Klasse \code{mzR}.
@@ -50,11 +68,11 @@ Funktion berechnet absolute (\code{GroupSize}) oder relative
 \details{
 Wiedergegeben wird der Schaetzer \code{est}, der Stichprobenfehler
 \code{sd}, der Variationskoeffizient \code{cv} und die untere/obere Grenze
-des 95\% Konfidenzintervalls \code{cil_2.5\%}/\code{ciu_97.5\%}.
+des 95\\% Konfidenzintervalls \code{cil_2.5\%}/\code{ciu_97.5\%}.
 Die Fehler werden mit Hilfe von Replikationsgewichten aus einem Bootstrapverfahren
 berechnet, d.h. \code{sd} entspricht der Standardabweichung der mit den Bootstrapgewichten
 berechneten Schaetzwerte, \code{cil_2.5\%} und \code{ciu_97.5\%} sind die
-entsprechenden 2.5\% und 97.5\% Quantile und \code{cv=sd/est}.
+entsprechenden 2.5\\% und 97.5\\% Quantile und \code{cv=sd/est}.
 }
 \examples{
 # Daten laden (oder Daten einlesen mit ImportData() bzw. IndivImportData())
@@ -66,7 +84,7 @@ GroupSize(mzTestData,TFstring="xerwstat==2&balt>=15&balt<=74")
 GroupRate(mzTestData,TFstring="xerwstat==2&balt>=15&balt<=74",
           TFstring2="xerwstat\%in\%c(1,2)&balt>=15&balt<=74")
 # Oesterreichische Bevoelkerung nach Bundesland und Geschlecht
-GroupSize(mzTestData,TFstring=NULL,each="xnuts2+bsex")
+GroupSize(mzTestData,TFstring=NULL,each="xnuts2+bsex", add_sample_size = TRUE)
 
 
 \dontrun{

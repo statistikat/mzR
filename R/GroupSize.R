@@ -185,6 +185,7 @@ GroupRate <- function(x, TFstring, TFstring2 = NULL, each = NULL, byeach = TRUE,
 #' @param replicates Fürge einen Vektor aus Schätzwerten zum Output hinzu? Die Anzahl der Schätzwerte
 #' pro Gruppe in `each` entspricht der Anzahl der Bootstrapreplikate (typischerweise 500). 
 #' Siehe auch [getReplicates].
+#' @param add_sample_size Logical: ob Stichprobengroesse der jeweiligen Gruppe ausgegeben werden soll
 #' @return Output ist ein Objekt der Klasse \code{mzR}.
 #' @seealso
 #' \code{\link{ImportData},\link{IndivImportData},\link{ImportAndMerge},\link{GetLabels},\link{Total},\link{Mean},\link{export}}

@@ -4,8 +4,13 @@
 \alias{ImportAndMerge}
 \title{Individuelle Datenfiles zu bereits eingelesenen Mikrozensus-Daten mergen.}
 \usage{
-ImportAndMerge(x, curr_inFile, prev_inFile = NULL, mergeBy = "asbper",
-  whichVar = NULL)
+ImportAndMerge(
+  x,
+  curr_inFile,
+  prev_inFile = NULL,
+  mergeBy = "asbper",
+  whichVar = NULL
+)
 }
 \arguments{
 \item{x}{Output-Objekt der Funktion ImportData()}

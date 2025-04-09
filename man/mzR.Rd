@@ -2,8 +2,8 @@
 % Please edit documentation in R/mzR-package.R
 \docType{package}
 \name{mzR}
-\alias{mzR}
 \alias{mzR-package}
+\alias{mzR}
 \title{mzR: Microcensus tools}
 \description{
 R package to compute estimates and their errors for Austrian Microcensus (labour force survey)
@@ -54,3 +54,20 @@ Calculate tables for excel export
 \link{export}, \link{FillExcelTemplate}
 }
 
+\seealso{
+Useful links:
+\itemize{
+  \item \url{https://github.com/statistikat/mzR}
+}
+
+}
+\author{
+\strong{Maintainer}: Angelika Meraner \email{angelika.meraner@statistik.gv.at}
+
+Authors:
+\itemize{
+  \item Gregor de Cillia
+  \item Alexander Kowarik
+}
+
+}

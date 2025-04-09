@@ -4,7 +4,8 @@
 \name{mzTestData}
 \alias{mzTestData}
 \title{Testdata resembling a subsample of the Austrian Microcensus}
-\format{A list containing two datasets of class data.table with 90 rows and 13 variables each.
+\format{
+A list containing two datasets of class data.table with 90 rows and 13 variables each.
 The variables are as follows:
 \itemize{
 \item asbper: personal ID
@@ -19,7 +20,8 @@ The variables are as follows:
 \item dtstd: number of hours actually worked during the reference week in the main job
 \item gew1: weights
 \item gew1_1, \ldots, gew1_5: bootstrap weights
-}}
+}
+}
 \usage{
 mzTestData
 }
