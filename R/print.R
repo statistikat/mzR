@@ -92,8 +92,8 @@ CompFehlerX <- function(x,each=NULL,thousands_separator=TRUE,digits=2){
       print_obj <- as.data.frame(rbind(
         unlist(x[[i]][c("est","sd", "cv", "cil","ciu",nname)]) ,
         unlist(x[[i]][c("estPrev","sdPrev", "cvPrev", "cilPrev","ciuPrev",nPrevname)]),
-        c(unlist(x[[i]][c("absChange","sdAbsChange","cvAbsChange","cilAbsChange","ciuAbsChange")]),ifelse(is.null(nname),NULL,NA)),
-        c(unlist(x[[i]][c("relChange","sdRelChange","cvRelChange","cilRelChange","ciuRelChange")]),ifelse(is.null(nname),NULL,NA))
+        c(unlist(x[[i]][c("absChange","sdAbsChange","cvAbsChange","cilAbsChange","ciuAbsChange")]), if(!is.null(nname)){NA}),
+        c(unlist(x[[i]][c("relChange","sdRelChange","cvRelChange","cilRelChange","ciuRelChange")]), if(!is.null(nname)){NA})
       ))
       print_obj <- round(print_obj,digits=digits)
       if(thousands_separator){

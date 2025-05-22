@@ -56,7 +56,7 @@ ist 2.}
 pro Gruppe in \code{each} entspricht der Anzahl der Bootstrapreplikate (typischerweise 500).
 Siehe auch \link{getReplicates}.}
 
-\item{add_sample_size}{Logical: ob Stichprobengroesse der jeweiligen Gruppe auch ausgegeben werden soll.}
+\item{add_sample_size}{Logical: ob Stichprobengroesse der jeweiligen Gruppe ausgegeben werden soll}
 }
 \value{
 Output ist ein Objekt der Klasse \code{mzR}.
