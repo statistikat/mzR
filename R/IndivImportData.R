@@ -473,7 +473,9 @@ IndivImportDataQ <- function(inFile, inFile_bw, multipleFiles=FALSE, nrMultipleF
   if(!all(mergeBy%in%names(dat))){
     stop("\n",paste0(paste0("'",mergeBy,"'"),collapse=" und ")," muss im uebergebenen Datensatz enthalten sein um ihn mit den Bootstrapgewichten mergen zu koennen!\n")
   }
-  
+  if(class(dat[[mergeBy]]) == "character" &&  class(dat_bw[[mergeBy]]) == "numeric") {
+    dat[, (mergeBy) := as.numeric(get(mergeBy))]
+  }
   setkeyv(dat,mergeBy)
   setkeyv(dat_bw,mergeBy)
   dat <- merge(dat,dat_bw,by=mergeBy,all.x=TRUE)
