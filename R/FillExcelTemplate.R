@@ -40,11 +40,6 @@ seqle <- function(x,incr=1) {
   list(lengths = diff(c(0L,i)),
        values = x[head(c(0L,i)+1L,-1L)]) 
 } 
-
-#table <- customCol
-
-###?? setMissingValue(wb, value = "missing")
-
 #' Funktion befuellt ein Excel Template.
 #' 
 #' Funktion liest ein Excel-File ein, uebernimmt die Formatvorlage eines ausgewaehlten 
@@ -61,13 +56,19 @@ seqle <- function(x,incr=1) {
 #' oder alle auf einmal (removeAllTemplates) geloescht werden. Sollten sowohl das Template 
 #' als auch das neue Sheet im File schon existieren ist es irrelevant ob bei \code{sheet} 
 #' das Template oder das neue Sheet angegeben wird. 
-
 #' 
 #' Derzeit funktioniert diese Funktion nur fuer die Default-Werte von
 #' \code{markLeft1}, \code{markRight1}, \code{markValue1}, \code{markLeft2},
 #' \code{markRight2} und \code{markValue2} aus \code{MakeTable()} und
 #' \code{MakeAKETimeInstantsTable()}.
+#' @importFrom XLConnect loadWorkbook saveWorkbook getSheets writeWorksheet
+#' @importFrom XLConnect setStyleAction existsSheet cloneSheet removeSheet
+#' @importFrom XLConnect getSheetPos setSheetPos setActiveSheet
+#' @importFrom XLConnect createCellStyle setCellStyle setDataFormat
 #' 
+#' @importFrom openxlsx createStyle addStyle
+#'
+#' @import data.table
 #' @param tab1 eine mit \code{MakeTable()} bzw.
 #' \code{MakeAKETimeInstantsTable()} erzeugte Tabelle. Falls bei
 #' \code{MakeTable()} limits angegeben und einzelne Zellen mit Klammern oder
@@ -130,6 +131,16 @@ seqle <- function(x,incr=1) {
 #' sie auch im ausgelesenen Excel-File landen wuerde. Ist dieser Parameter gesetzt, wird also kein Excel-File erstellt.
 #' @param showSplitTab Logical: Falls TRUE, wird in R die durch \code{startingPoints} aufgesplittete Tabelle ausgegeben. 
 #' Ist dieser Parameter gesetzt, wird also kein Excel-File erstellt.
+#' @param fontSizeData Numerisch oder \code{NULL}: Schriftgröße der in das Excel-File geschriebenen Datenspalten. 
+#' Wird dieser Parameter gesetzt, überschreibt die angegebene Schriftgröße die im Template-Excel-Sheet (XLConnect) 
+#' hinterlegte Formatierung.
+#' Entspricht dem Argument \code{fontSize} in \code{openxlsx::createStyle()} und muss ein numerischer Wert > 0 sein.
+#' Default ist \code{NULL}, d.h. die im Template definierte Schriftgröße bleibt vollständig erhalten.
+#' @param fontNameData Character oder \code{NULL}: Schriftart der in das Excel-File geschriebenen Datenspalten.
+#' Wird dieser Parameter gesetzt, überschreibt die angegebene Schriftart die im Template-Excel-Sheet (XLConnect)
+#' hinterlegte Formatierung.
+#' Entspricht dem Argument \code{fontName} in \code{openxlsx::createStyle()}. Hinweis: \code{openxlsx} überprüft Schriftartnamen nicht auf Gültigkeit.
+#' Default ist \code{NULL}, d.h. die im Template definierte Schriftart bleibt vollständig erhalten.#' 
 #' @return Output ist ein Excel-File.
 #' @seealso
 #' \code{\link{MakeTable},\link{MakeQT},\link{ImportData},\link{IndivImportData},\link{ImportDataListQT}}
@@ -161,7 +172,8 @@ FillExcelTemplate <- function(tab1,tab2=NULL,startingPoints,nrEmptyRows,
                               inheritTemplateColNr=1,customColNr=NULL,customCol=NULL,customCellList=NULL,
                               f_in,sheet=1,prefixTSN="_",
                               removeTemplateSheet=FALSE,removeAllTemplates=FALSE,interactive=TRUE,
-                              showFinalTab=FALSE,showSplitTab=FALSE){
+                              showFinalTab=FALSE,showSplitTab=FALSE, 
+                              fontSizeData = NULL, fontNameData = NULL){
   if(!removeAllTemplates){
     
     ## Fehler abfangen
@@ -232,10 +244,10 @@ FillExcelTemplate <- function(tab1,tab2=NULL,startingPoints,nrEmptyRows,
     ##    3. Excel-File inklusive dort vorgegebener Formate einlesen   ##
     ######################################################################
     # Excel-File Einlesen
-    wb <- loadWorkbook(f_in, create=TRUE)
+    wb <- XLConnect::loadWorkbook(f_in, create=TRUE)
     cat("\n",f_in," wird eingelesen.\n")
-    setStyleAction(wb,XLC$"STYLE_ACTION.NONE") #dadurch werden die vorgegebenen Formate beibehalten
-    sheets <- getSheets(wb)
+    XLConnect::setStyleAction(wb,XLC$"STYLE_ACTION.NONE") #dadurch werden die vorgegebenen Formate beibehalten
+    sheets <- XLConnect::getSheets(wb)
     
     # Helper Function: wollen sheet als number und nicht als character. 
     # Ausserdem wollen wir auf Nummer Sicher gehen, dass das von uns uebergebene sheet ueberhaupt existiert!
@@ -264,13 +276,13 @@ FillExcelTemplate <- function(tab1,tab2=NULL,startingPoints,nrEmptyRows,
     
     # Falls zu befuellendes sheet schon existiert, sollten wir dieses loeschen und als kopie von _-sheet neu erstellen
     # Ansonsten wird ja das Format (also evt. Klammern usw. vom frueher schon mal befuellten befuellten Sheet genommen)
-    if((existsSheet(wb,substr(sheets[sheet],2,nchar(sheets[sheet]))) && existsSheet(wb,sheets[sheet]))){
-      removeSheet(wb,substr(sheets[sheet],2,nchar(sheets[sheet])))
-      sheets <- getSheets(wb)
+    if((XLConnect::existsSheet(wb,substr(sheets[sheet],2,nchar(sheets[sheet]))) && XLConnect::existsSheet(wb,sheets[sheet]))){
+      XLConnect::removeSheet(wb,substr(sheets[sheet],2,nchar(sheets[sheet])))
+      sheets <- XLConnect::getSheets(wb)
       sheet <- sheet.orig
-    }else if(existsSheet(wb,paste0(prefixTSN,sheets[sheet])) && existsSheet(wb,sheets[sheet])){
-      removeSheet(wb,sheets[sheet])
-      sheets <- getSheets(wb)
+    }else if(XLConnect::existsSheet(wb,paste0(prefixTSN,sheets[sheet])) && XLConnect::existsSheet(wb,sheets[sheet])){
+      XLConnect::removeSheet(wb,sheets[sheet])
+      sheets <- XLConnect::getSheets(wb)
       sheet <- sheet.orig
     }
     # Wieder Zahl statt character fuer sheet und Kontrolle von uebergebenem sheet-Name
@@ -278,30 +290,30 @@ FillExcelTemplate <- function(tab1,tab2=NULL,startingPoints,nrEmptyRows,
     sheet.orig <- sheet_as_number(sheets=sheets, sheet=sheet, prefixTSN=prefixTSN)$sheet.orig
     
     # leeres sheet generieren, falls es noch keines gibt
-    if(!existsSheet(wb,paste0(prefixTSN,sheets[sheet])) && substr(sheets[sheet],1,1)!=prefixTSN){
-      cloneSheet(wb,sheets[sheet],name=paste0(prefixTSN,sheets[sheet]))
-      sheets <- getSheets(wb)
+    if(!XLConnect::existsSheet(wb,paste0(prefixTSN,sheets[sheet])) && substr(sheets[sheet],1,1)!=prefixTSN){
+      XLConnect::cloneSheet(wb,sheets[sheet],name=paste0(prefixTSN,sheets[sheet]))
+      sheets <- XLConnect::getSheets(wb)
     }  
     # zu befuellendes sheet generieren falls es nur das leere gibt
-    if(substr(sheets[sheet],1,1)==prefixTSN && !existsSheet(wb,substr(sheets[sheet],2,nchar(sheets[sheet])))){
+    if(substr(sheets[sheet],1,1)==prefixTSN && !XLConnect::existsSheet(wb,substr(sheets[sheet],2,nchar(sheets[sheet])))){
       newsheetname <- substr(sheets[sheet],2,nchar(sheets[sheet]))
-      cloneSheet(wb,sheets[sheet],name=newsheetname)
-      sheets <- getSheets(wb)
+      XLConnect::cloneSheet(wb,sheets[sheet],name=newsheetname)
+      sheets <- XLConnect::getSheets(wb)
       sheet <- which(sheets==newsheetname)
     }  
     # leeres _-sheet immer vor zu befuellendes sheet stellen (noch mal kontrollieren diesen Teil hier)
-    if(getSheetPos(wb,sheets[sheet]) != (getSheetPos(wb,paste0(prefixTSN,sheets[sheet]))+1)){
-      if(getSheetPos(wb,sheets[sheet]) < getSheetPos(wb,paste0(prefixTSN,sheets[sheet]))){
-        if(getSheetPos(wb,sheets[sheet])-1!=0)
-          setSheetPos(wb,paste0(prefixTSN,sheets[sheet]),getSheetPos(wb,sheets[sheet]))
+    if(XLConnect::getSheetPos(wb,sheets[sheet]) != (XLConnect::getSheetPos(wb,paste0(prefixTSN,sheets[sheet]))+1)){
+      if(XLConnect::getSheetPos(wb,sheets[sheet]) < XLConnect::getSheetPos(wb,paste0(prefixTSN,sheets[sheet]))){
+        if(XLConnect::getSheetPos(wb,sheets[sheet])-1!=0)
+          XLConnect::setSheetPos(wb,paste0(prefixTSN,sheets[sheet]),XLConnect::getSheetPos(wb,sheets[sheet]))
         else
-          setSheetPos(wb,paste0(prefixTSN,sheets[sheet]),1)
+          XLConnect::setSheetPos(wb,paste0(prefixTSN,sheets[sheet]),1)
       }else{
-        newPosition <- getSheetPos(wb,paste0(prefixTSN,sheets[sheet]))+1
-        setSheetPos(wb,sheets[sheet],newPosition) 
+        newPosition <- XLConnect::getSheetPos(wb,paste0(prefixTSN,sheets[sheet]))+1
+        XLConnect::setSheetPos(wb,sheets[sheet],newPosition) 
         sheet <- newPosition
       }
-      sheets <- getSheets(wb)
+      sheets <- XLConnect::getSheets(wb)
     }
     # aktives Sheet soll das neu zu befuellende sein
     if(substr(sheets[which(sheets==sheet.orig)],1,1)==prefixTSN){
@@ -309,10 +321,10 @@ FillExcelTemplate <- function(tab1,tab2=NULL,startingPoints,nrEmptyRows,
         newsheetname <- substr(sheets[sheet],2,nchar(sheets[sheet]))
         sheet <- which(sheets==newsheetname)
       }
-      setActiveSheet(wb,sheets[sheet])
+      XLConnect::setActiveSheet(wb,sheets[sheet])
     }else{
       sheet <- which(sheets==sheet.orig) 
-      setActiveSheet(wb,sheets[sheet])
+      XLConnect::setActiveSheet(wb,sheets[sheet])
     }
     
     cat("\n",sheets[sheet], " wird bearbeitet.\n")
@@ -432,26 +444,26 @@ FillExcelTemplate <- function(tab1,tab2=NULL,startingPoints,nrEmptyRows,
       # values <- sel_seq$values[which(sel_seq$lengths>1)]
       # lengths <- sel_seq$lengths[which(sel_seq$lengths>1)]
       for(j in writeColNr){
-        writeWorksheet (wb, outlist[[i]][,j,with=FALSE], sheet=sheets[sheet], startRow=startingPoints[i], startCol=j ,header=FALSE )
+        XLConnect::writeWorksheet (wb, outlist[[i]][,j,with=FALSE], sheet=sheets[sheet], startRow=startingPoints[i], startCol=j ,header=FALSE )
       }
     }
     
     # Koennten ein Format setzen fuer ausgeklammerte Werte:
-    klammern <- createCellStyle(wb)
-    klammern_x <- createCellStyle(wb)
-    stern <- createCellStyle(wb)
-    kein_eintrag <- createCellStyle(wb)
-    #null_mit_klammern <- createCellStyle(wb)
-    strich_statt_null <- createCellStyle(wb)
+    klammern <- XLConnect::createCellStyle(wb)
+    klammern_x <- XLConnect::createCellStyle(wb)
+    stern <- XLConnect::createCellStyle(wb)
+    kein_eintrag <- XLConnect::createCellStyle(wb)
+    #null_mit_klammern <- XLConnect::createCellStyle(wb)
+    strich_statt_null <- XLConnect::createCellStyle(wb)
     
     
-    #setDataFormat(klammern, format = "(#.##0,0);(-#.##0,0);@")# deutsches Excel -> macht das daraus:(#,##00);(-#,##00);@
-    setDataFormat(klammern, format = "(#,##0.0);(-#,##0.0);@")# englisches Excel
-    setDataFormat(klammern_x, format = "(x);(x)")
-    setDataFormat(stern, format = "#,##0.0\"*\"")
-    setDataFormat(kein_eintrag, format = "0.0") #Zellen ohne Eintrag sollen "." enthalten. 
-    #setDataFormat(null_mit_klammern, format = "\"[\"0\"]\";\"[\"0\"]\"") #Zellen sollen Format [0] bekommen. 
-    setDataFormat(strich_statt_null, format = "-;-")
+    #XLConnect::setDataFormat(klammern, format = "(#.##0,0);(-#.##0,0);@")# deutsches Excel -> macht das daraus:(#,##00);(-#,##00);@
+    XLConnect::setDataFormat(klammern, format = "(#,##0.0);(-#,##0.0);@")# englisches Excel
+    XLConnect::setDataFormat(klammern_x, format = "(x);(x)")
+    XLConnect::setDataFormat(stern, format = "#,##0.0\"*\"")
+    XLConnect::setDataFormat(kein_eintrag, format = "0.0") #Zellen ohne Eintrag sollen "." enthalten. 
+    #XLConnect::setDataFormat(null_mit_klammern, format = "\"[\"0\"]\";\"[\"0\"]\"") #Zellen sollen Format [0] bekommen. 
+    XLConnect::setDataFormat(strich_statt_null, format = "-;-")
     
     # Jetzt zur Extrawurst fuer die ausgeklammerten Werte
     ersteZeile <- 1
@@ -474,8 +486,8 @@ FillExcelTemplate <- function(tab1,tab2=NULL,startingPoints,nrEmptyRows,
             wert <- gsub(")","",wert,fixed=TRUE)
             if(!is.na(suppressWarnings(as.numeric(wert)))){
               wert <- as.numeric(wert)
-              writeWorksheet (wb, wert, sheet=sheets[sheet], startRow=as.numeric(unlist(ausgeklammertes[i])[j])+(ersteZeile-1), startCol=grep(names(ausgeklammertes)[i],LETTERS) ,header=FALSE )
-              setCellStyle(wb, sheet=sheets[sheet], row=as.numeric(unlist(ausgeklammertes[i])[j])+(ersteZeile-1), col=grep(names(ausgeklammertes)[i],LETTERS), cellstyle=klammern)
+              XLConnect::writeWorksheet (wb, wert, sheet=sheets[sheet], startRow=as.numeric(unlist(ausgeklammertes[i])[j])+(ersteZeile-1), startCol=grep(names(ausgeklammertes)[i],LETTERS) ,header=FALSE )
+              XLConnect::setCellStyle(wb, sheet=sheets[sheet], row=as.numeric(unlist(ausgeklammertes[i])[j])+(ersteZeile-1), col=grep(names(ausgeklammertes)[i],LETTERS), cellstyle=klammern)
             }
           }
         }
@@ -492,8 +504,8 @@ FillExcelTemplate <- function(tab1,tab2=NULL,startingPoints,nrEmptyRows,
             wert <- gsub("*","",wert,fixed=TRUE)
             if(!is.na(suppressWarnings(as.numeric(wert)))){
               wert <- as.numeric(wert)
-              writeWorksheet (wb, wert, sheet=sheets[sheet], startRow=as.numeric(unlist(ausgeklammertes_stern[i])[j])+(ersteZeile-1), startCol=grep(names(ausgeklammertes_stern)[i],LETTERS) ,header=FALSE )
-              setCellStyle(wb, sheet=sheets[sheet], row=as.numeric(unlist(ausgeklammertes_stern[i])[j])+(ersteZeile-1), col=grep(names(ausgeklammertes_stern)[i],LETTERS), cellstyle=stern)
+              XLConnect::writeWorksheet (wb, wert, sheet=sheets[sheet], startRow=as.numeric(unlist(ausgeklammertes_stern[i])[j])+(ersteZeile-1), startCol=grep(names(ausgeklammertes_stern)[i],LETTERS) ,header=FALSE )
+              XLConnect::setCellStyle(wb, sheet=sheets[sheet], row=as.numeric(unlist(ausgeklammertes_stern[i])[j])+(ersteZeile-1), col=grep(names(ausgeklammertes_stern)[i],LETTERS), cellstyle=stern)
             }
           }
         }
@@ -510,8 +522,8 @@ FillExcelTemplate <- function(tab1,tab2=NULL,startingPoints,nrEmptyRows,
         if(length(unlist(ausgeklammertes_x[i]))>0){
           for(j in 1:length(unlist(ausgeklammertes_x[i]))){
             wert <- as.numeric(erg2[suppressWarnings(as.numeric(unlist(ausgeklammertes_x[i])[j])),names(ausgeklammertes_x)[i],with=F])
-            writeWorksheet (wb, wert, sheet=sheets[sheet], startRow=as.numeric(unlist(ausgeklammertes_x[i])[j])+(ersteZeile-1), startCol=grep(names(ausgeklammertes_x)[i],LETTERS) ,header=FALSE )
-            setCellStyle(wb, sheet=sheets[sheet], row=as.numeric(unlist(ausgeklammertes_x[i])[j])+(ersteZeile-1), col=grep(names(ausgeklammertes_x)[i],LETTERS), cellstyle=klammern_x)
+            XLConnect::writeWorksheet (wb, wert, sheet=sheets[sheet], startRow=as.numeric(unlist(ausgeklammertes_x[i])[j])+(ersteZeile-1), startCol=grep(names(ausgeklammertes_x)[i],LETTERS) ,header=FALSE )
+            XLConnect::setCellStyle(wb, sheet=sheets[sheet], row=as.numeric(unlist(ausgeklammertes_x[i])[j])+(ersteZeile-1), col=grep(names(ausgeklammertes_x)[i],LETTERS), cellstyle=klammern_x)
           }
         }
       }
@@ -522,8 +534,8 @@ FillExcelTemplate <- function(tab1,tab2=NULL,startingPoints,nrEmptyRows,
         if(length(unlist(wert_null[i]))>0){
           for(j in 1:length(unlist(wert_null[i]))){
             wert <- 0
-            writeWorksheet (wb, wert, sheet=sheets[sheet], startRow=as.numeric(unlist(wert_null[i])[j])+(ersteZeile-1), startCol=grep(names(wert_null)[i],LETTERS) ,header=FALSE )
-            setCellStyle(wb, sheet=sheets[sheet], row=as.numeric(unlist(wert_null[i])[j])+(ersteZeile-1), col=grep(names(wert_null)[i],LETTERS), cellstyle=strich_statt_null)
+            XLConnect::writeWorksheet (wb, wert, sheet=sheets[sheet], startRow=as.numeric(unlist(wert_null[i])[j])+(ersteZeile-1), startCol=grep(names(wert_null)[i],LETTERS) ,header=FALSE )
+            XLConnect::setCellStyle(wb, sheet=sheets[sheet], row=as.numeric(unlist(wert_null[i])[j])+(ersteZeile-1), col=grep(names(wert_null)[i],LETTERS), cellstyle=strich_statt_null)
           }
         }
       }
@@ -534,8 +546,8 @@ FillExcelTemplate <- function(tab1,tab2=NULL,startingPoints,nrEmptyRows,
         if(length(unlist(notanumber[i]))>0){
           for(j in 1:length(unlist(notanumber[i]))){
             wert <- 0 #Im Hintergrund soll 0 stehen?
-            writeWorksheet (wb, wert, sheet=sheets[sheet], startRow=as.numeric(unlist(notanumber[i])[j])+(ersteZeile-1), startCol=grep(names(notanumber)[i],LETTERS) ,header=FALSE )
-            setCellStyle(wb, sheet=sheets[sheet], row=as.numeric(unlist(notanumber[i])[j])+(ersteZeile-1), col=grep(names(notanumber)[i],LETTERS), cellstyle=strich_statt_null)
+            XLConnect::writeWorksheet (wb, wert, sheet=sheets[sheet], startRow=as.numeric(unlist(notanumber[i])[j])+(ersteZeile-1), startCol=grep(names(notanumber)[i],LETTERS) ,header=FALSE )
+            XLConnect::setCellStyle(wb, sheet=sheets[sheet], row=as.numeric(unlist(notanumber[i])[j])+(ersteZeile-1), col=grep(names(notanumber)[i],LETTERS), cellstyle=strich_statt_null)
           }
         }
       }
@@ -547,8 +559,8 @@ FillExcelTemplate <- function(tab1,tab2=NULL,startingPoints,nrEmptyRows,
         if(length(unlist(zelle_leer[i]))>0){
           for(j in 1:length(unlist(zelle_leer[i]))){
             wert <- "."
-            writeWorksheet (wb, wert, sheet=sheets[sheet], startRow=as.numeric(unlist(zelle_leer[i])[j])+(ersteZeile-1), startCol=grep(names(zelle_leer)[i],LETTERS) ,header=FALSE )
-            setCellStyle(wb, sheet=sheets[sheet], row=as.numeric(unlist(zelle_leer[i])[j])+(ersteZeile-1), col=grep(names(zelle_leer)[i],LETTERS), cellstyle=kein_eintrag)
+            XLConnect::writeWorksheet (wb, wert, sheet=sheets[sheet], startRow=as.numeric(unlist(zelle_leer[i])[j])+(ersteZeile-1), startCol=grep(names(zelle_leer)[i],LETTERS) ,header=FALSE )
+            XLConnect::setCellStyle(wb, sheet=sheets[sheet], row=as.numeric(unlist(zelle_leer[i])[j])+(ersteZeile-1), col=grep(names(zelle_leer)[i],LETTERS), cellstyle=kein_eintrag)
           }
         }
       }
@@ -556,18 +568,18 @@ FillExcelTemplate <- function(tab1,tab2=NULL,startingPoints,nrEmptyRows,
     
     # ### Falls eine Fussnote eingefuegt werden soll
     # if(!is.null(footnote)){
-    #   writeWorksheet (wb, footnote, sheet=sheets[sheet], startRow=nrow(erg)+2, startCol=1 ,header=FALSE)
+    #   XLConnect::writeWorksheet (wb, footnote, sheet=sheets[sheet], startRow=nrow(erg)+2, startCol=1 ,header=FALSE)
     # }
     
     ### Falls einzelne Zellen individuell angepasst werden sollen
     if(!is.null(customCellList)){
       if(length(unlist(customCellList))<4){
         stopifnot(all(names(customCellList)%in%c("row","col","entry")))
-        writeWorksheet (wb, customCellList[["entry"]], sheet=sheets[sheet], startRow=customCellList[["row"]], startCol=customCellList[["col"]] ,header=FALSE) 
+        XLConnect::writeWorksheet (wb, customCellList[["entry"]], sheet=sheets[sheet], startRow=customCellList[["row"]], startCol=customCellList[["col"]] ,header=FALSE) 
       }else{
         for(i in 1:length(customCellList)){
           stopifnot(all(names(customCellList[[i]])%in%c("row","col","entry")))
-          writeWorksheet (wb, customCellList[[i]][["entry"]], sheet=sheets[sheet], startRow=customCellList[[i]][["row"]], startCol=customCellList[[i]][["col"]] ,header=FALSE) 
+          XLConnect::writeWorksheet (wb, customCellList[[i]][["entry"]], sheet=sheets[sheet], startRow=customCellList[[i]][["row"]], startCol=customCellList[[i]][["col"]] ,header=FALSE) 
         }
       }
     }
@@ -597,22 +609,22 @@ FillExcelTemplate <- function(tab1,tab2=NULL,startingPoints,nrEmptyRows,
                   newfile <- paste0(dirname(newfile),"/",newfile2,"_(",n,").",fileExtension)
                   n <- n+1
                 }
-                saveWorkbook(wb,file=newfile)
+                XLConnect::saveWorkbook(wb,file=newfile)
               }
             }
             
           }
         }
       }
-      removeSheet(wb,sheet=loeschen)
+      XLConnect::removeSheet(wb,sheet=loeschen)
     }
     
   }else{#ende not finalize file
     cat("\n",f_in," wird eingelesen.\n")
     # Excel-File Einlesen
-    wb <- loadWorkbook(f_in, create=TRUE)
-    setStyleAction(wb,XLC$"STYLE_ACTION.NONE") #dadurch werden die vorgegebenen Formate beibehalten
-    sheets <- getSheets(wb)
+    wb <- XLConnect::loadWorkbook(f_in, create=TRUE)
+    XLConnect::setStyleAction(wb,XLC$"STYLE_ACTION.NONE") #dadurch werden die vorgegebenen Formate beibehalten
+    sheets <- XLConnect::getSheets(wb)
     loeschen <- which(substr(sheets,1,1)==prefixTSN)
     if(interactive){
       
@@ -638,20 +650,65 @@ FillExcelTemplate <- function(tab1,tab2=NULL,startingPoints,nrEmptyRows,
                 newfile <- paste0(dirname(newfile),"/",newfile2,"_(",n,").",fileExtension)
                 n <- n+1
               }
-              saveWorkbook(wb,file=newfile)
+              XLConnect::saveWorkbook(wb,file=newfile)
             }
           }
         }
         
       }
     }
-    loeschen <- loeschen-seq(0,length(loeschen)-1,by=1) ##removeSheet loescht nicht alle Spalten auf einmal die man angibt sondern iterativ, d.h. loeschen Spalte 3 bezieht sich nach dem Loeschen von Spalte 1 auf die urspruengliche Spalte 4.
-    removeSheet(wb,sheet=loeschen)
+    loeschen <- loeschen-seq(0,length(loeschen)-1,by=1) ##XLConnect::removeSheet loescht nicht alle Spalten auf einmal die man angibt sondern iterativ, d.h. loeschen Spalte 3 bezieht sich nach dem Loeschen von Spalte 1 auf die urspruengliche Spalte 4.
+    XLConnect::removeSheet(wb,sheet=loeschen)
     
   }  
-  #removeSheet(wb,sheets[1])
-  saveWorkbook(wb,file=f_in)
+  #XLConnect::removeSheet(wb,sheets[1])
+  XLConnect::saveWorkbook(wb,file=f_in)
   cat("\n",f_in," wird wieder ausgelesen.\n")
+  
+  # openxlsx für fontsize and fonttype
+  if(!is.null(fontSizeData) | !is.null(fontNameData)) {
+    
+    #library(openxlsx)
+    cat("\n",f_in," wird nocheinmal eingelesen (Schriftart/-groesse).\n")
+    wb_adj <- openxlsx::loadWorkbook(f_in)
+    
+    # nimmt Defaultwerte von openxlsx falls NULL
+    # style_data <- openxlsx::createStyle(fontSize = fontSizeData, fontName = fontNameData)
+    # wollen wir nicht, Einstellungen von Originalfile sollen erhalten bleiben außer
+    # explizit anders definiert.
+    style_data <- do.call(openxlsx::createStyle,
+                          c(if (!is.null(fontSizeData)) list(fontSize = fontSizeData),
+                            if (!is.null(fontNameData)) list(fontName = fontNameData)))
+    
+    # Bestimme welche Spalten bearbeitet werden sollen (NOT inheritTemplateColNr)
+    if(!is.null(inheritTemplateColNr)) {
+      cols_to_format <- setdiff(1:ncol(erg), inheritTemplateColNr)
+    } else {
+      cols_to_format <- 1:ncol(erg)
+    }
+    
+    # Durchlaufe jeden Datenblock und wende Schriftgröße an
+    for(i in 1:length(startingPoints)) {
+      
+      if(i < length(startingPoints)) {
+        block_nrow <- startingPoints[i+1] - startingPoints[i] - nrEmptyRows[i+1]
+      } else {
+        block_nrow <- nrow(erg) - startingPoints[i] + 1
+      }
+      
+      excel_rows <- startingPoints[i]:(startingPoints[i] + block_nrow - 1)
+      
+      # Schriftgröße nur auf die Datenspalten anwenden (stack=TRUE!)
+      openxlsx::addStyle(wb_adj, sheet = which(getSheets(wb) == sheets[sheet]), 
+                         style = style_data,
+                         rows = excel_rows, cols = cols_to_format,
+                         gridExpand = TRUE, stack = TRUE)
+    }
+    
+    # Speichern
+    openxlsx::saveWorkbook(wb_adj, file = f_in, overwrite = TRUE)
+    cat("\n",f_in," wird nocheinmal ausgelesen (Schriftart/-groesse).\n")
+  }
   cat("\n[fertig]\n")
   cat("\n")
   

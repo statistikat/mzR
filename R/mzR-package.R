@@ -1,4 +1,4 @@
-#' mzR: Microcensus tools
+#' mzR: Microcensus Tools
 #'
 #' R package to compute estimates and their errors for Austrian Microcensus (labour force survey) 
 #' data.
@@ -36,5 +36,6 @@
 #'
 #' @md
 #' @name mzR
-#' @docType package
-NULL
+#' @keywords internal
+"_PACKAGE"
+

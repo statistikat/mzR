@@ -1,15 +1,16 @@
 Package: mzR
-Version: 1.1.4.1
-Date: 2025-04-01
-Title: mzR - To compute estimates and their errors for Austrian microcensus data
-Authors@R: c(person("Gregor", "de Cillia", role = c("aut")),
-             person("Alexander", "Kowarik", role = c("aut")),
-             person("Angelika", "Meraner", role = c("aut", "cre"), email = "angelika.meraner@statistik.gv.at"))
-Author: Alexander Kowarik <alexander.kowarik@statistik.gv.at>, Angelika Meraner
-    <angelika.meraner@statistik.gv.at>, Gregor de Cillia <Gregor.DeCillia@statistik.gv.at>
-Maintainer: Angelika Meraner <angelika.meraner@statistik.gv.at>
+Version: 1.1.5
+Date: 2026-03-09
+Title: mzR - Tools to Compute Estimates and Errors for Austrian Microcensus Data
+Authors@R: 
+    c(
+      person("Gregor", "de Cillia", role = "aut"),
+      person("Alexander", "Kowarik", role = "aut"),
+      person("Angelika", "Meraner", role = c("aut", "cre"),
+             email = "angelika.meraner@statistik.gv.at")
+    )
 Depends:
-    R (>= 2.14.0),stats,utils,grDevices,data.table
+    R (>= 4.4.0)
 Imports:
     methods,
     survey,
@@ -17,8 +18,10 @@ Imports:
     Hmisc,
     readr,
     XLConnect,
+    openxlsx,
     lubridate,
     tidyr,
+    data.table,
     ggplot2,
     dplyr
 Suggests: 
@@ -26,12 +29,13 @@ Suggests:
     mountSTAT,
     laeken,
     rmarkdown
-Description: Data sets from Austrian Microcensus can be loaded and estimates
-    with their respective errors can be computed.
+Description: Provides tools to import and process Austrian Microcensus datasets,
+    compute estimates and associated standard errors, and create formatted
+    output tables including Excel exports.
 URL: https://github.com/statistikat/mzR
 License: GPL-3
 LazyData: TRUE
-ByteCompile: TRUE
+ByteCompile: yes
 Encoding: UTF-8
 VignetteBuilder: knitr
 RoxygenNote: 7.3.2

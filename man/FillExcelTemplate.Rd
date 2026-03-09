@@ -20,7 +20,9 @@ FillExcelTemplate(
   removeAllTemplates = FALSE,
   interactive = TRUE,
   showFinalTab = FALSE,
-  showSplitTab = FALSE
+  showSplitTab = FALSE,
+  fontSizeData = NULL,
+  fontNameData = NULL
 )
 }
 \arguments{
@@ -100,6 +102,18 @@ sie auch im ausgelesenen Excel-File landen wuerde. Ist dieser Parameter gesetzt,
 
 \item{showSplitTab}{Logical: Falls TRUE, wird in R die durch \code{startingPoints} aufgesplittete Tabelle ausgegeben.
 Ist dieser Parameter gesetzt, wird also kein Excel-File erstellt.}
+
+\item{fontSizeData}{Numerisch oder \code{NULL}: Schriftgröße der in das Excel-File geschriebenen Datenspalten.
+Wird dieser Parameter gesetzt, überschreibt die angegebene Schriftgröße die im Template-Excel-Sheet (XLConnect)
+hinterlegte Formatierung.
+Entspricht dem Argument \code{fontSize} in \code{openxlsx::createStyle()} und muss ein numerischer Wert > 0 sein.
+Default ist \code{NULL}, d.h. die im Template definierte Schriftgröße bleibt vollständig erhalten.}
+
+\item{fontNameData}{Character oder \code{NULL}: Schriftart der in das Excel-File geschriebenen Datenspalten.
+Wird dieser Parameter gesetzt, überschreibt die angegebene Schriftart die im Template-Excel-Sheet (XLConnect)
+hinterlegte Formatierung.
+Entspricht dem Argument \code{fontName} in \code{openxlsx::createStyle()}. Hinweis: \code{openxlsx} überprüft Schriftartnamen nicht auf Gültigkeit.
+Default ist \code{NULL}, d.h. die im Template definierte Schriftart bleibt vollständig erhalten.#'}
 }
 \value{
 Output ist ein Excel-File.

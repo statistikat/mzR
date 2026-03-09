@@ -1,5 +1,7 @@
 # Helper Functions
 # Die RND Funktion in SPSS rundet bei 5 immer weg von 0 (also bei positiven Zahlen immer auf, bei negativen Zahlen immer ab)
+#' @export
+#' @method round spss
 round.spss = function(x, digits=0) {
   posneg = sign(x)
   z = abs(x)*10^digits

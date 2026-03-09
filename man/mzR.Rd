@@ -4,7 +4,7 @@
 \name{mzR}
 \alias{mzR-package}
 \alias{mzR}
-\title{mzR: Microcensus tools}
+\title{mzR: Microcensus Tools}
 \description{
 R package to compute estimates and their errors for Austrian Microcensus (labour force survey)
 data.
@@ -71,3 +71,4 @@ Authors:
 }
 
 }
+\keyword{internal}
