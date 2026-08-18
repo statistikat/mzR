@@ -13,3 +13,4 @@ vignettes/*.pdf
 .Rproj.user
 *.Rproj
 inst/doc
+.posit/assistant/settings.json
