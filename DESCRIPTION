@@ -1,8 +1,8 @@
 Package: mzR
-Version: 1.1.5.1
-Date: 2026-03-09
+Version: 1.2.0
+Date: 2026-08-18
 Title: mzR - Tools to Compute Estimates and Errors for Austrian Microcensus Data
-Authors@R: 
+Authors@R:
     c(
       person("Gregor", "de Cillia", role = "aut"),
       person("Alexander", "Kowarik", role = "aut"),
@@ -24,7 +24,7 @@ Imports:
     data.table,
     ggplot2,
     dplyr
-Suggests: 
+Suggests:
     knitr,
     mountSTAT,
     laeken,

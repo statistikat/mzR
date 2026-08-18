@@ -1,0 +1,5 @@
+@Library('jenkins-r-shared-library') _
+
+rPackageQualification(
+  config: "config/jenkins.yaml"
+)
