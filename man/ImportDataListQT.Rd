@@ -51,7 +51,7 @@ Files vom Typ .sav, .csv und .csv.gz.}
 soll (default=c("asbper","ajahr","amonat")).}
 
 \item{mz_intern}{Pfad zu dem \code{mz_intern} Ordner in der STAT Infrastruktur.
-Standardmäßig wird dieser mit \code{mountSTAT} innerhalb von \code{sampSTAT} generiert.}
+Standardmaessig wird dieser mit \code{mountSTAT} innerhalb von \code{sampSTAT} generiert.}
 
 \item{mz_ergebnisse}{Pfad zu dem \verb{06 Ergebnisse} Ordner in der STAT
 Infrastruktur. Standardmäßig wird dieser mit \code{mountSTAT} innerhalb von \code{sampSTAT} generiert.}

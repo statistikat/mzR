@@ -14,7 +14,7 @@ mzRComponent <- function(date, est, estb, returnBR = FALSE) {
     ciu = quantNA(estb, .975)
   )
 
-  ## ggf. bootstrap replikas hinzufügen
+  ## ggf. bootstrap replikas hinzufuegen
   if (returnBR) {
     out$replicates <- as.numeric(estb)
   }
@@ -63,7 +63,7 @@ mzRComponent2 <- function(
     ciuRelChange = quantNA(ratediffb, .975)
   )
 
-  ## ggf. bootstrap replikas hinzufügen
+  ## ggf. bootstrap replikas hinzufuegen
   if (returnBR) {
     out$replicates <- as.numeric(estb)
     out$replicatesPrev <- as.numeric(estb2)
@@ -298,17 +298,17 @@ print.mzR <- function(x, ...) {
 #' Extrahiere die Bootstrap Replikla aus einem mzR Objekt
 #'
 #' Falls ein `mzR` Objekt mit dem Parameter `replicate = TRUE` erzeugt wurde, lassen sich mit dieser
-#' Funktion alle Schätzwerte zurückgeben.
+#' Funktion alle Schaetzwerte zurueckgeben.
 #'
 #' @param x Ein Objekt der Klasse `mzR`. Typischerweise generiert durch `GroupRate`, `Groupsize`,
 #' `Median`, `Mean` oder `Total`.
 #' @export
 #' @return Tabelle mit Bootstrapreplika. Die Spalten entsprechen den Gruppierungsvariablen der
 #' Auswertung, falls vorhanden (siehe das Argument `each` in `GroupRate`, `Median`, etc.). Die Zeilen
-#' enstsprechen den Bootstrapgewichten (typischerweise 500 Stück).
+#' enstsprechen den Bootstrapgewichten (typischerweise 500 Stueck).
 #' @examples
 #' \dontrun{
-#' library(dplyr)  ## Für %>%
+#' library(dplyr)  ## Fuer %>%
 #' library(ggplot2)
 #'
 #' ######################## Beispiel 1: Durschnittliche Arbeitsstunden #############################
@@ -343,6 +343,7 @@ print.mzR <- function(x, ...) {
 #'   geom_boxplot(outlier.shape = NA, alpha = 0.5) +
 #'   geom_jitter(aes(col = Bundesland), alpha = 0.05) +
 #'   ylab("Arbeislosenzahlen in Bootstrap-Replika")
+#' }
 getReplicates <- function(x) {
   if (is.null(attr(x, "each"))) {
     as.data.table(list(replicates = x$replicates))
@@ -350,17 +351,16 @@ getReplicates <- function(x) {
     lapply(x, function(comp) comp$replicates) %>% as.data.table
   }
 }
-#' }
 #' Visualisiere ein mzR Objekt
 #'
-#' Standarplots für `mzR` Objecte. Nur anwendbar, wenn das Objekt bootsrtap Replikate beinhaltet,
+#' Standarplots fuer `mzR` Objecte. Nur anwendbar, wenn das Objekt bootsrtap Replikate beinhaltet,
 #' ansonsten wird eine Warnung geworfen. Siehe auch [getReplicates].
 #' @param x Ein Objekt der Klasse `mzR`.
-#' @param ... Ungenützt.
+#' @param ... Ungenuetzt.
 #' @examples
-#' dat <- ImportData(year = 2014, quarter = 4)
-#' mzObj <- Mean(dat, TFstring = "xerwstat==1&balt >= 15&balt <= 74",
-#'               var = "estund*13+dtstd*13", replicates = TRUE)
+#' data(mzTestData)
+#' mzObj <- Mean(mzTestData, TFstring = "xerwstat==1&balt >= 15&balt <= 74",
+#'               var = "estund+dtstd", replicates = TRUE)
 #' plot(mzObj)
 #' @import ggplot2
 #' @export
@@ -399,10 +399,10 @@ plot.mzR <- function(x, ...) {
 
 #' Kopnvertiere ein `mzR` Objekt in ein Tabelle
 #'
-#' Generische Funktion [as.data.frame] implementiert für `mzR` Objekte.
+#' Generische Funktion [as.data.frame] implementiert fuer `mzR` Objekte.
 #'
 #' @param x Ein Objekt der Klasse `mzR`.
-#' @param ... Ungenützt
+#' @param ... Ungenuetzt
 #' @export
 as.data.frame.mzR <- function(x, ...) {
   if ("cil" %in% names(x)) {
@@ -429,11 +429,11 @@ as.data.frame.mzR <- function(x, ...) {
       pos <- tail(indVar[[i]], 1)
       nms[i] <- paste0(
         substring(nms[i], 1, pos - 1),
-        "§",
+        "\u00a7",
         substring(nms[i], pos + 1)
       )
     }
-    nms <- strsplit(nms, "§")
+    nms <- strsplit(nms, "\u00a7")
   } else {
     nms <- strsplit(nms, "_")
   }

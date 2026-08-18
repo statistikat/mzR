@@ -58,7 +58,7 @@ gerundet nach SPSS RND Logik (0.5 bwz. -0.5 wird dabei immer "weg von 0" gerunde
 Falls NULL, werden die Gewichte nicht gerundet.}
 
 \item{mz_intern}{Pfad zu dem \code{mz_intern} Ordner in der STAT Infrastruktur.
-Standardmäßig wird dieser mit \code{mountSTAT} innerhalb von \code{sampSTAT} generiert.}
+Standardmaessig wird dieser mit \code{mountSTAT} innerhalb von \code{sampSTAT} generiert.}
 }
 \value{
 Output ist eine Liste mit einem oder zwei Elementen, je nachdem ob

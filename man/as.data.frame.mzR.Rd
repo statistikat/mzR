@@ -9,8 +9,8 @@
 \arguments{
 \item{x}{Ein Objekt der Klasse \code{mzR}.}
 
-\item{...}{Ungenützt}
+\item{...}{Ungenuetzt}
 }
 \description{
-Generische Funktion \link{as.data.frame} implementiert für \code{mzR} Objekte.
+Generische Funktion \link{as.data.frame} implementiert fuer \code{mzR} Objekte.
 }

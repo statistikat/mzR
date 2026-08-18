@@ -97,7 +97,7 @@ mount_mz_intern <- function() {
 #' gerundet nach SPSS RND Logik (0.5 bwz. -0.5 wird dabei immer "weg von 0" gerundet). 
 #' Falls NULL, werden die Gewichte nicht gerundet.
 #' @param mz_intern Pfad zu dem `mz_intern` Ordner in der STAT Infrastruktur.
-#'   Standardmäßig wird dieser mit `mountSTAT` innerhalb von `sampSTAT` generiert.
+#'   Standardmaessig wird dieser mit `mountSTAT` innerhalb von `sampSTAT` generiert.
 #' @return Output ist eine Liste mit einem oder zwei Elementen, je nachdem ob
 #' \code{comp_diff_lag=NULL} oder nicht. Die Listenelemente sind Objekte der Klasse data.table.
 #' @seealso
@@ -234,7 +234,7 @@ ImportDataQ <- function(
     sav_path <- paste0(dircurr,"/dg7.mz",name_teil,".sav")
     if(file.exists(sav_path)) {
     warning("Fuer das Quartal ",q," in ",j," gab es noch keine Datenfreigabe!\n",
-            "Für UserInnen mit entsprechenden Zugriffsrechten werden jedoch die noch nicht freigegebenen Daten eingelesen.")
+            "Fuer UserInnen mit entsprechenden Zugriffsrechten werden jedoch die noch nicht freigegebenen Daten eingelesen.")
     } 
   }
   dat <- data.table(suppressWarnings(spss.get(
@@ -497,4 +497,3 @@ ImportDataJQ <- function(
   return(indat)
   
 }
-
