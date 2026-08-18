@@ -2,7 +2,8 @@
 % Please edit documentation in R/print.R
 \name{plot.mzR}
 \alias{plot.mzR}
-\title{Visualisiere ein mzR Objekt}
+\title{}
+Visualisiere ein mzR Objekt}
 \usage{
 \method{plot}{mzR}(x, ...)
 }
@@ -17,7 +18,7 @@ ansonsten wird eine Warnung geworfen. Siehe auch \link{getReplicates}.
 }
 \examples{
 dat <- ImportData(year = 2014, quarter = 4)
-mzObj <- Mean(dat, TFstring = "xerwstat==1&balt >= 15&balt <= 74", 
+mzObj <- Mean(dat, TFstring = "xerwstat==1&balt >= 15&balt <= 74",
               var = "estund*13+dtstd*13", replicates = TRUE)
 plot(mzObj)
 }

@@ -38,5 +38,5 @@ LazyData: TRUE
 ByteCompile: yes
 Encoding: UTF-8
 VignetteBuilder: knitr
-RoxygenNote: 7.3.2
 Roxygen: list(markdown = TRUE)
+Config/roxygen2/version: 8.1.0

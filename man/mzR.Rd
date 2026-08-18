@@ -66,6 +66,7 @@ Useful links:
 
 Authors:
 \itemize{
+  \item Angelika Meraner \email{angelika.meraner@statistik.gv.at}
   \item Gregor de Cillia
   \item Alexander Kowarik
 }
