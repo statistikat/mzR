@@ -16,10 +16,22 @@ for instructions). The development version of the package can also be checked
 out from https://github.com/statistikat/mzR and then installed manually.
 
 Internal development: After a checkout from the internal bitbucket,
-add the Github remote for synchronised development:
+configure the internal repository as `origin` and Github as a second remote:
 
-git remote set-url origin --add --push https://github.com/statistikat/mzR.git
-git remote set-url origin --add https://github.com/statistikat/mzR.git
+```sh
+git remote set-url origin ssh://git@gitrepo:7999/mz/basis_mzr.git
+git remote add github https://github.com/statistikat/mzR.git
+```
+
+Pull and push the current branch from both remotes to keep them synchronised:
+
+```sh
+branch=$(git branch --show-current)
+git pull --ff-only origin "$branch"
+git pull --ff-only github "$branch"
+git push origin "$branch"
+git push github "$branch"
+```
 
 ### Getting started
 
