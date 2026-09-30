@@ -163,7 +163,7 @@ MedianX <- function(xx, TFstring,var, negativeZero = TRUE, replicates = replicat
     ytmp <-y[eval(parse(text=TFstring))]
     setkey(ytmp,varNumTmp)
     ytmp[,gew1Num:=cumsum(gew1)]
-    est2 <- ytmp[gew1Num<=y[,sum(gew1)/2],tail(varNumTmp,1)]
+    est2 <- ytmp[gew1Num<=ytmp[,sum(gew1)/2],tail(varNumTmp,1)]
     #TODO: Schoener Loesung fuer die Generierung der Variablen
     for(i in seq_along(bw)){
       setnames(ytmp,bw[i],"bwTmp")
